@@ -1,0 +1,16 @@
+# Spec files are fetched from the backend and normalized locally, not checked
+# in. Covers the shared spec and every per-service spec (openapi.<svc>.json /
+# openapi_edited.<svc>.json).
+openapi.json
+openapi.*.json
+openapi_edited.json
+openapi_edited.*.json
+
+# Local workspace files are never part of the published single module.
+go.work
+go.work.sum
+
+# Local environment variables
+.env
+.env.*
+!.env.example

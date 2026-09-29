@@ -1,0 +1,51 @@
+# golangci-lint v2 config — the linter of record for the SDK module
+# (run via `make lint`; the same command CI runs).
+#
+# Kept deliberately in step with viettel-cloud-terraform-provider/.golangci.yml
+# so the two Go repositories in this group lint identically.
+version: "2"
+
+linters:
+  default: none
+  # errcheck is deliberately not enabled: forcing `_, _ =` on best-effort
+  # writes makes the code uglier than the risk warrants.
+  enable:
+    - govet
+    - staticcheck
+    - ineffassign
+    - unused
+    - bodyclose
+    - gosec
+    - exhaustive
+    - nilerr
+    - contextcheck
+    - noctx
+
+  settings:
+    exhaustive:
+      # A handled `default:` is exhaustive. Without this the linter demands a
+      # case per constant even where the default is the whole point, as in
+      # internal/oapi's escapeParameterString.
+      default-signifies-exhaustive: true
+      # reflect.Kind is not a domain enum — it has 27 members and the type
+      # switches in internal/oapi/param.go deliberately handle only the kinds
+      # OpenAPI parameters can take. Listing the rest would be noise.
+      ignore-enum-types: 'reflect\.Kind'
+    gosec:
+      excludes:
+        # G404 (weak RNG): the only math/rand use is retry backoff jitter in
+        # core/retry.go, where unpredictability buys nothing and crypto/rand
+        # would just make every retry slower.
+        - G404
+
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+
+# Formatters double as linters: `golangci-lint run` reports files goimports
+# would change as issues; `golangci-lint fmt` rewrites them.
+formatters:
+  enable:
+    - goimports

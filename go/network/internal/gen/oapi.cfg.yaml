@@ -1,0 +1,12 @@
+package: gen
+generate:
+  client: true
+  models: true
+compatibility:
+  always-prefix-enum-values: true
+output-options:
+  skip-client-response-content-type: true
+  skip-response-body-getters: true
+  include-tags:
+  - Network
+output: network/internal/gen/network.gen.go
