@@ -1,0 +1,116 @@
+# Viettel Cloud Go SDK — Pipeline Configuration
+#
+# Single source of truth for the whole generation pipeline. The Makefile is a
+# thin wrapper; all real work lives in pipeline/{main,normalize,gen_facade}.py.
+#
+# Override order (lowest to highest): defaults here < per-service overrides <
+# environment variables (SPEC_URL, SERVICES) < command-line flags.
+
+# --- Go module ------------------------------------------------------------
+module:
+  path: github.com/viettelcloud-oss/sdks/go
+  go_version: "1.26.8"
+
+# --- OpenAPI spec ---------------------------------------------------------
+# The default spec every service reads. A service can point at a different
+# backend with its own `spec:` block (see below).
+spec:
+  # Backend endpoint path to fetch from (combined with SPEC_BASE_URL from env or .env).
+  # Can also be overridden per-run with SPEC_URL=<full-url>.
+  path: /v2/docs/openapi.json
+  src: openapi.json          # raw spec (fetched or supplied by hand)
+  edited: openapi_edited.json # normalized spec that codegen reads
+
+# --- Normalization (default policy) ---------------------------------------
+# Rewrites Pydantic shapes the spec can't express cleanly and strips the
+# Django "<app>_views_" operationId prefix. One normalize pass runs per spec;
+# a service may add its own rules under `policy:` below, merged over these
+# defaults for the spec that service reads.
+normalize:
+  # Go type for string/format:decimal (Pydantic Decimal). Set to "string" and
+  # drop the import to fall back to a plain string.
+  decimal_go_type: core.Decimal
+  decimal_go_import: core
+
+  # Go type for string/format:uuid. core.UUID aliases google/uuid.UUID, so this
+  # only changes which package the generated code names. Set to "" to leave
+  # uuid strings to oapi-codegen's own type.
+  uuid_go_type: core.UUID
+  uuid_go_import: core
+
+  # Escape hatch for a property the backend leaves untyped (Any). Key is a
+  # dotted path (Schema.property, [] for a list item); "*.name" matches `name`
+  # at any depth; "nullable: true" wraps in anyOf[..., null] (a Go pointer).
+  # Empty by default: the backend types its fields, so a rule here is rare.
+  overrides: {}
+
+# --- oapi-codegen (default config) ----------------------------------------
+# `config` is passed straight through to oapi-codegen as its --config file,
+# so keys use oapi-codegen's own names. main.py injects `output` and
+# `output-options.include-tags` per service. A service may override or extend
+# any of this under its own `config:` key.
+oapi_codegen:
+  version: v2.8.0
+  config:
+    package: gen
+    generate:
+      client: true
+      models: true
+    compatibility:
+      always-prefix-enum-values: true
+    output-options:
+      skip-client-response-content-type: true
+      skip-response-body-getters: true
+
+# --- Services -------------------------------------------------------------
+# Each entry: name (package + folder), folder (output dir), tag (OpenAPI tag
+# selecting its operations). Optional overrides:
+#   config:  deep-merged over the default oapi-codegen config
+#   policy:  merged over the default normalize policy
+#   spec:    read this service from a different backend. Set just `url` — the
+#            raw and normalized files default to openapi.<name>.json /
+#            openapi_edited.<name>.json so a second backend never clobbers the
+#            shared spec. Override src/edited only if you want to rename them.
+#            Services that omit `spec` share one fetch + normalize of the
+#            default spec above.
+#
+# The backend now serves one spec per service (…/v2/openapi/<slug>.json), so
+# each service reads its own. Setting `url` is enough — the raw/normalized files
+# auto-derive as openapi.<name>.json / openapi_edited.<name>.json.
+services:
+  - name: server
+    folder: server
+    tag: Server
+    spec:
+      path: /v2/docs/api-v2/server.json
+
+  - name: blockstorage
+    folder: blockstorage
+    tag: "Block Storage"
+    spec:
+      path: /v2/docs/api-v2/block-storage.json
+
+  - name: network
+    folder: network
+    tag: Network
+    spec:
+      path: /v2/docs/api-v2/network.json
+
+  - name: project
+    folder: project
+    tag: Project
+    spec:
+      path: /v2/docs/api-v2/project.json
+
+  - name: loadbalancer
+    folder: loadbalancer
+    tag: Load Balancing
+    spec:
+      path: /v2/docs/api-v2/load-balancing.json
+    # Other optional per-service overrides:
+    # config:
+    #   output-options:
+    #     skip-response-body-getters: false
+    # policy:
+    #   overrides:
+    #     "*.foo": { type: string }
