@@ -337,8 +337,10 @@ if id == core.NilUUID { /* unset */ }
 
 The entire module uses one SemVer version. Since this module is located in the
 repository's `go/` subdirectory, release tags have the form `go/vX.Y.Z`.
-Generated `core.Version` records the SDK version and `core.SpecVersion` records
-the upstream OpenAPI `info.version`. See [RELEASING.md](RELEASING.md).
+`core.Version` records the SDK version. Each service package also has a
+generated `SpecVersion` constant (for example `server.SpecVersion`) that
+records the `info.version` of the upstream OpenAPI spec it was generated from.
+See [RELEASING.md](RELEASING.md).
 
 ## Development
 
@@ -378,8 +380,9 @@ the upstream OpenAPI `info.version`. See [RELEASING.md](RELEASING.md).
 | `make fix` | Rewrite `core/` and `internal/` using deprecated APIs (`go fix`) |
 | `make fix-check` | Fail if `make fix` would rewrite anything |
 | `make lint` | `golangci-lint run ./...` |
-| `make test` | `go test -race -cover ./...` |
-| `make spec-version` | Print the upstream `info.version` next to `core.SpecVersion` |
+| `make pipeline-test` | Test the Python generation pipeline |
+| `make test` | Run the pipeline tests, then `go test -race -cover ./...` |
+| `make spec-version` | Print each service's generated `SpecVersion` |
 
 Run `make verify` before pushing — it is the same command
 [`.jenkins/check_merge_request.yml`](../.jenkins/check_merge_request.yml) runs,

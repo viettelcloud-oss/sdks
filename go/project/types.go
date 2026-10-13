@@ -29,6 +29,7 @@ type ProjectServiceRegionSchema = gen.ProjectServiceRegionSchema
 type ProjectStatus = gen.ProjectStatus
 type ProjectZoneSchema = gen.ProjectZoneSchema
 type ProviderError = gen.ProviderError
+type ServiceFeatureSchema = gen.ServiceFeatureSchema
 type ValidationError = gen.ValidationError
 type ZoneNetworkScope = gen.ZoneNetworkScope
 

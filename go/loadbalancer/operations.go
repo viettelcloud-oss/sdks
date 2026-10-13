@@ -54,7 +54,7 @@ func (c *Client) UpdateLoadBalancer(ctx context.Context, LoadBalancerID core.UUI
 	if err != nil {
 		return nil, err
 	}
-	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, core.FirstNonNil(resp.JSON200, resp.JSON202), 200, 202)
 }
 
 // PartialUpdateLoadBalancer Partial Update Load Balancer
@@ -66,7 +66,7 @@ func (c *Client) PartialUpdateLoadBalancer(ctx context.Context, LoadBalancerID c
 	if err != nil {
 		return nil, err
 	}
-	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, core.FirstNonNil(resp.JSON200, resp.JSON202), 200, 202)
 }
 
 // DeleteLoadBalancer Delete Load Balancer
@@ -110,18 +110,6 @@ func (c *Client) GetLoadBalancerMetricsSchema(ctx context.Context) (*MetricSchem
 func (c *Client) GetLoadBalancerMetrics(ctx context.Context, LoadBalancerID core.UUID, params GetLoadBalancerMetricsParams) (*PagedMetricResultSchema, error) {
 	genParams := params
 	resp, err := c.gen.GetLoadBalancerMetricsWithResponse(ctx, LoadBalancerID, &genParams)
-	if err != nil {
-		return nil, err
-	}
-	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
-}
-
-// EstimateLoadBalancerCost Estimate Load Balancer Cost
-//
-// POST /v2/load-balancing/loadbalancers/estimate-cost/
-func (c *Client) EstimateLoadBalancerCost(ctx context.Context, params EstimateLoadBalancerCostParams, body LoadBalancerEstimateCostSchema) (*EstimatedPaygCostSchema, error) {
-	genParams := params
-	resp, err := c.gen.EstimateLoadBalancerCostWithResponse(ctx, &genParams, body)
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +161,7 @@ func (c *Client) UpdateListener(ctx context.Context, LoadBalancerID core.UUID, L
 	if err != nil {
 		return nil, err
 	}
-	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, core.FirstNonNil(resp.JSON200, resp.JSON202), 200, 202)
 }
 
 // PartialUpdateListener Partial Update Listener
@@ -185,7 +173,7 @@ func (c *Client) PartialUpdateListener(ctx context.Context, LoadBalancerID core.
 	if err != nil {
 		return nil, err
 	}
-	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, core.FirstNonNil(resp.JSON200, resp.JSON202), 200, 202)
 }
 
 // DeleteListener Delete Listener
@@ -364,7 +352,7 @@ func (c *Client) UpdateServerGroup(ctx context.Context, LoadBalancerID core.UUID
 	if err != nil {
 		return nil, err
 	}
-	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, core.FirstNonNil(resp.JSON200, resp.JSON202), 200, 202)
 }
 
 // PartialUpdateServerGroup Partial Update Server Group
@@ -376,7 +364,7 @@ func (c *Client) PartialUpdateServerGroup(ctx context.Context, LoadBalancerID co
 	if err != nil {
 		return nil, err
 	}
-	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, core.FirstNonNil(resp.JSON200, resp.JSON202), 200, 202)
 }
 
 // DeleteServerGroup Delete Server Group
@@ -400,7 +388,7 @@ func (c *Client) BatchUpdateMemberServerGroup(ctx context.Context, LoadBalancerI
 	if err != nil {
 		return err
 	}
-	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 200)
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 200, 202)
 }
 
 // ListServerGroupMembers List Server Group Members
@@ -448,7 +436,7 @@ func (c *Client) UpdateServerGroupMember(ctx context.Context, ServerGroupID core
 	if err != nil {
 		return nil, err
 	}
-	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, core.FirstNonNil(resp.JSON200, resp.JSON202), 200, 202)
 }
 
 // PartialUpdateServerGroupMember Partial Update Server Group Member
@@ -460,7 +448,7 @@ func (c *Client) PartialUpdateServerGroupMember(ctx context.Context, ServerGroup
 	if err != nil {
 		return nil, err
 	}
-	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, core.FirstNonNil(resp.JSON200, resp.JSON202), 200, 202)
 }
 
 // DeleteServerGroupMember Delete Server Group Member
@@ -520,7 +508,7 @@ func (c *Client) UpdateL7policy(ctx context.Context, L7policyID core.UUID, param
 	if err != nil {
 		return nil, err
 	}
-	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, core.FirstNonNil(resp.JSON200, resp.JSON202), 200, 202)
 }
 
 // PartialUpdateL7policy Partial Update L7Policy
@@ -532,7 +520,7 @@ func (c *Client) PartialUpdateL7policy(ctx context.Context, L7policyID core.UUID
 	if err != nil {
 		return nil, err
 	}
-	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, core.FirstNonNil(resp.JSON200, resp.JSON202), 200, 202)
 }
 
 // DeleteL7policy Delete L7Policy

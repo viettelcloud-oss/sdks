@@ -225,6 +225,30 @@ func (c *Client) RebootServer(ctx context.Context, ServerID core.UUID, params Re
 	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 202)
 }
 
+// AttachVolume Attach Volume
+//
+// POST /v2/server/servers/{server_id}/attach-volume/
+func (c *Client) AttachVolume(ctx context.Context, ServerID core.UUID, params AttachVolumeParams, body ServerVolumeAttachSchema) error {
+	genParams := params
+	resp, err := c.gen.AttachVolumeWithResponse(ctx, ServerID, &genParams, body)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 202)
+}
+
+// DetachVolume Detach Volume
+//
+// POST /v2/server/servers/{server_id}/detach-volume/
+func (c *Client) DetachVolume(ctx context.Context, ServerID core.UUID, params DetachVolumeParams, body ServerVolumeAttachSchema) error {
+	genParams := params
+	resp, err := c.gen.DetachVolumeWithResponse(ctx, ServerID, &genParams, body)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 202)
+}
+
 // RebuildServer Rebuild Server
 //
 // POST /v2/server/servers/{server_id}/rebuild/

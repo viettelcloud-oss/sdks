@@ -735,6 +735,7 @@ type VolumeCreateSourceOptions struct {
 
 // VolumeDetailSchema defines model for VolumeDetailSchema.
 type VolumeDetailSchema struct {
+	Attachable     bool                              `json:"attachable"`
 	Attachments    *[]NestedVolumeAttachmentSchema   `json:"attachments,omitempty"`
 	BackupPolicy   *NestedVolumeBackupPolicySchema   `json:"backup_policy,omitempty"`
 	Bootable       bool                              `json:"bootable"`
@@ -779,6 +780,7 @@ type VolumeRetypeSchema struct {
 
 // VolumeSchema defines model for VolumeSchema.
 type VolumeSchema struct {
+	Attachable  bool                            `json:"attachable"`
 	Attachments *[]NestedVolumeAttachmentSchema `json:"attachments,omitempty"`
 	Bootable    bool                            `json:"bootable"`
 	CreateFrom  NestedVolumeOriginSchema        `json:"create_from"`
@@ -1003,10 +1005,13 @@ type ListVolumeParams struct {
 	Bootable          *bool           `form:"bootable,omitempty" json:"bootable,omitempty"`
 
 	// Multiattach If true, volume can be attached to multiple servers; otherwise it cannot.
-	Multiattach *bool     `form:"multiattach,omitempty" json:"multiattach,omitempty"`
-	PageSize    *int      `form:"page_size,omitempty" json:"page_size,omitempty"`
-	PageNumber  *int      `form:"page_number,omitempty" json:"page_number,omitempty"`
-	ProjectID   core.UUID `json:"Project-ID"`
+	Multiattach *bool `form:"multiattach,omitempty" json:"multiattach,omitempty"`
+
+	// Attachable If true, only return Volumes that can be attached to a Server: status `available`, or `in-use` for a multiattach Volume, and not already at the limit of attached Servers. If false, return the other Volumes. Only covers the rules that depend on the Volume alone — a Volume in a different project or zone from the target Server, or already attached to it, still passes this filter, so attach can fail. Use `zone_id` to narrow by zone.
+	Attachable *bool     `form:"attachable,omitempty" json:"attachable,omitempty"`
+	PageSize   *int      `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber *int      `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID  core.UUID `json:"Project-ID"`
 }
 
 // CreateVolumeParams defines parameters for CreateVolume.
@@ -3649,6 +3654,18 @@ func NewListVolumeRequest(server string, params *ListVolumeParams) (*http.Reques
 		if params.Multiattach != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "multiattach", *params.Multiattach, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Attachable != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "attachable", *params.Attachable, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {

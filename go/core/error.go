@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
+	"strconv"
 	"strings"
 )
 
@@ -200,19 +202,22 @@ func ParseErrorResponseWithHeader(statusCode int, header http.Header, body []byt
 	}
 }
 
-// ParseResponse validates the documented success status and returns a decoded
-// payload. If oapi-codegen skipped decoding because Content-Type was missing or
-// incorrect, it makes one JSON decode attempt from the retained raw body.
-func ParseResponse[T any](response *http.Response, body []byte, payload *T, expectedStatus int) (*T, error) {
+// ParseResponse validates that the response carries one of the documented
+// success statuses (expectedStatus or any of otherStatuses) and returns a
+// decoded payload. When several statuses share one payload type, callers pass
+// the matching oapi-codegen fields through [FirstNonNil]. If oapi-codegen
+// skipped decoding because Content-Type was missing or incorrect, it makes one
+// JSON decode attempt from the retained raw body.
+func ParseResponse[T any](response *http.Response, body []byte, payload *T, expectedStatus int, otherStatuses ...int) (*T, error) {
 	statusCode, header := responseMetadata(response)
-	if statusCode != expectedStatus {
+	if !matchesStatus(statusCode, expectedStatus, otherStatuses) {
 		if statusCode >= http.StatusBadRequest {
 			return nil, ParseErrorResponseWithHeader(statusCode, header, body)
 		}
 		return nil, &ResponseError{
 			StatusCode: statusCode,
 			RequestID:  RequestIDFromHeader(header),
-			Message:    fmt.Sprintf("unexpected HTTP status; expected %d", expectedStatus),
+			Message:    formatUnexpectedStatus(expectedStatus, otherStatuses),
 			Raw:        body,
 		}
 	}
@@ -238,10 +243,11 @@ func ParseResponse[T any](response *http.Response, body []byte, payload *T, expe
 	return &decoded, nil
 }
 
-// ParseEmptyResponse validates a successful operation that has no response body.
-func ParseEmptyResponse(response *http.Response, body []byte, expectedStatus int) error {
+// ParseEmptyResponse validates a successful operation that has no response
+// body: the status must be expectedStatus or any of otherStatuses.
+func ParseEmptyResponse(response *http.Response, body []byte, expectedStatus int, otherStatuses ...int) error {
 	statusCode, header := responseMetadata(response)
-	if statusCode == expectedStatus {
+	if matchesStatus(statusCode, expectedStatus, otherStatuses) {
 		return nil
 	}
 	if statusCode >= http.StatusBadRequest {
@@ -250,9 +256,38 @@ func ParseEmptyResponse(response *http.Response, body []byte, expectedStatus int
 	return &ResponseError{
 		StatusCode: statusCode,
 		RequestID:  RequestIDFromHeader(header),
-		Message:    fmt.Sprintf("unexpected HTTP status; expected %d", expectedStatus),
+		Message:    formatUnexpectedStatus(expectedStatus, otherStatuses),
 		Raw:        body,
 	}
+}
+
+// FirstNonNil returns the first non-nil pointer in ptrs, or nil if all are nil.
+func FirstNonNil[T any](ptrs ...*T) *T {
+	for _, p := range ptrs {
+		if p != nil {
+			return p
+		}
+	}
+	return nil
+}
+
+func matchesStatus(code int, expected int, others []int) bool {
+	if code == expected {
+		return true
+	}
+	return slices.Contains(others, code)
+}
+
+func formatUnexpectedStatus(expected int, others []int) string {
+	if len(others) == 0 {
+		return fmt.Sprintf("unexpected HTTP status; expected %d", expected)
+	}
+	statuses := make([]string, 0, 1+len(others))
+	statuses = append(statuses, strconv.Itoa(expected))
+	for _, o := range others {
+		statuses = append(statuses, strconv.Itoa(o))
+	}
+	return fmt.Sprintf("unexpected HTTP status; expected one of %s", strings.Join(statuses, ", "))
 }
 
 func responseMetadata(response *http.Response) (int, http.Header) {
