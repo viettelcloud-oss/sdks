@@ -45,18 +45,13 @@ Mark a breaking change with `!` — there is no `break:` type here.
    releasing — a release should not be the commit that also rewrites the
    generated code.
 
-2. Update `SpecVersion` in `core/version.go` if the upstream spec moved.
-   It tracks the backend's OpenAPI `info.version`, not this repository's
-   commits, so nothing can infer it:
+   Each service's `SpecVersion` constant is generated from its spec's
+   `info.version`, so a spec that moved shows up here as a change to
+   `<service>/client.go`. Neither it nor `Version` is updated by hand —
+   semantic-release rewrites `Version` during the release (see the
+   `@semantic-release/exec` step in `.releaserc`).
 
-   ```bash
-   make spec-version   # prints upstream info.version next to core.SpecVersion
-   ```
-
-   `Version` is *not* updated by hand — semantic-release rewrites it during the
-   release (see the `@semantic-release/exec` step in `.releaserc`).
-
-3. Confirm the module is healthy:
+2. Confirm the module is healthy:
 
    ```bash
    make verify
@@ -64,12 +59,12 @@ Mark a breaking change with `!` — there is no `break:` type here.
 
 ## Cutting the release
 
-4. Run the `release` pipeline in Jenkins. It defaults to `option: --dry-run`;
+3. Run the `release` pipeline in Jenkins. It defaults to `option: --dry-run`;
    before calculating a release, the pipeline runs `make verify` again on the
    exact checkout it will tag. Read the log and confirm the version it computed
    and the notes it generated.
 
-5. Re-run it with `option` cleared. semantic-release then:
+4. Re-run it with `option` cleared. semantic-release then:
 
    - bumps `Version` in `go/core/version.go`,
    - commits it as `chore(release): bump version to go/vX.Y.Z`,
@@ -77,12 +72,15 @@ Mark a breaking change with `!` — there is no `break:` type here.
 
    There is no `CHANGELOG.md`; the generated notes live on the GitLab release.
 
-6. Record the upstream spec version in the release notes alongside the SDK
-   version, since the two move independently:
+5. Record the upstream spec versions in the release notes alongside the SDK
+   version, since they move independently. `make spec-version` prints one line
+   per service:
 
    ```text
    SDK version: 1.2.3
-   Upstream OpenAPI info.version: <core.SpecVersion>
+   Upstream OpenAPI info.version:
+   server/client.go:const SpecVersion = "8.43.0"
+   ...
    ```
 
 Never tag service packages independently; the root module provides one

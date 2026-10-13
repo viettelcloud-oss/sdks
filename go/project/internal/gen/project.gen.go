@@ -173,9 +173,12 @@ type ProjectSchema struct {
 // ProjectServiceRegionSchema defines model for ProjectServiceRegionSchema.
 type ProjectServiceRegionSchema struct {
 	// Active Whether the service is active in given project on this region
-	Active  bool                       `json:"active"`
-	Region  NestedRegionSchema         `json:"region"`
-	Service NestedProjectServiceSchema `json:"service"`
+	Active bool `json:"active"`
+
+	// Features Fine-grained features this service exposes in this region
+	Features *[]ServiceFeatureSchema    `json:"features,omitempty"`
+	Region   NestedRegionSchema         `json:"region"`
+	Service  NestedProjectServiceSchema `json:"service"`
 }
 
 // ProjectStatus defines model for ProjectStatus.
@@ -190,6 +193,12 @@ type ProjectZoneSchema struct {
 	// NetworkScope The network scope of a zone, with its display label.
 	NetworkScope LabeledZoneNetworkScope `json:"network_scope"`
 	Region       NestedRegionSchema      `json:"region"`
+}
+
+// ServiceFeatureSchema defines model for ServiceFeatureSchema.
+type ServiceFeatureSchema struct {
+	Enabled bool   `json:"enabled"`
+	Feature string `json:"feature"`
 }
 
 // ZoneNetworkScope defines model for ZoneNetworkScope.

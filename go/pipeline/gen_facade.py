@@ -3,7 +3,7 @@
 gen_facade.py — Generate the public SDK facade from the OpenAPI spec.
 
 Reads openapi_edited.json and produces:
-  <svc>/client.go        — Client struct, NewClient, functional options
+  <svc>/client.go        — SpecVersion, Client struct, NewClient, functional options
   <svc>/types.go         — type aliases re-exporting generated models
   <svc>/operations.go    — typed facade methods wrapping internal/gen
   <svc>/error.go         — re-exports sentinels from core
@@ -64,7 +64,7 @@ def paged_item(name, schemas):
 class Op:
     __slots__ = ('op_id', 'method', 'path', 'summary',
                  'path_params', 'query_params', 'header_params',
-                 'body', 'resp_type', 'resp_schema', 'resp_code',
+                 'body', 'resp_type', 'resp_schema', 'resp_codes',
                  'is_list', 'item_type', 'no_body')
 
     def __init__(self):
@@ -78,10 +78,19 @@ class Op:
         self.body = None
         self.resp_type = ''       # gen response wrapper, e.g. CreateVolumeResponse
         self.resp_schema = None   # payload type, e.g. VolumeDetailSchema
-        self.resp_code = '200'
+        self.resp_codes = []      # documented success statuses, in numeric order
         self.is_list = False
         self.item_type = None
         self.no_body = False
+
+
+class FacadeGenerationError(ValueError):
+    """A documented success response cannot fit the public facade."""
+
+
+def _fail_response(o, msg):
+    raise FacadeGenerationError('%s %s (%s): %s' % (
+        o.method, o.path, o.op_id, msg))
 
 
 def parse_ops(spec, tag):
@@ -120,27 +129,62 @@ def parse_ops(spec, tag):
                         o.body = ref_name(ref)
                     break
 
-            for code in ('200', '201', '202', '204'):
-                resp = op.get('responses', {}).get(code, {})
+            # Accept only documented success codes. Fail before writing the
+            # facade if any success response cannot fit its return type.
+            responses = op.get('responses', {})
+            if '2XX' in responses:
+                _fail_response(o, 'response range 2XX is not supported. '
+                               'Declare each success status explicitly')
+            codes = sorted((code for code in responses
+                            if re.fullmatch(r'2[0-9]{2}', code)), key=int)
+            if not codes:
+                _fail_response(o, 'no explicit success status is declared. '
+                               'Declare a response in the range 200-299')
+
+            schema_codes = []
+            empty_codes = []
+            payload_ref = None
+            for code in codes:
+                resp = responses[code]
+                if '$ref' in resp:
+                    _fail_response(o, 'success response %s uses a response reference. '
+                                   'Resolve the reference before facade generation' % code)
                 content = resp.get('content', {})
+                if not content:
+                    empty_codes.append(code)
+                    continue
+                ref = ''
                 for ct, info in content.items():
                     if 'json' in ct:
                         ref = info.get('schema', {}).get('$ref', '')
-                        if ref:
-                            sn = ref_name(ref)
-                            o.resp_schema = sn
-                            o.resp_code = code
-                            o.resp_type = pascal(o.op_id) + 'Response'
-                            if is_paged(sn, schemas):
-                                o.is_list = True
-                                o.item_type = paged_item(sn, schemas)
                         break
-                if o.resp_schema:
-                    break
-                if not content and resp:
-                    o.resp_code = code
-                    o.no_body = True
-                    break
+                if not ref:
+                    _fail_response(o, 'success response %s has no supported JSON '
+                                   'schema reference. Add a JSON schema reference '
+                                   'or extend the facade to return this body' % code)
+                if payload_ref is None:
+                    payload_ref = ref
+                    o.resp_schema = ref_name(ref)
+                    o.resp_type = pascal(o.op_id) + 'Response'
+                    if is_paged(o.resp_schema, schemas):
+                        o.is_list = True
+                        o.item_type = paged_item(o.resp_schema, schemas)
+                elif ref != payload_ref:
+                    _fail_response(o, 'success responses %s and %s use different '
+                                   'JSON schema references. Extend the facade '
+                                   'to return both payload types' % (schema_codes[0], code))
+                schema_codes.append(code)
+
+            if schema_codes and empty_codes:
+                _fail_response(o, 'success responses mix JSON bodies (%s) and '
+                               'empty bodies (%s). Extend the facade to represent '
+                               'both response forms' % (', '.join(schema_codes),
+                                                       ', '.join(empty_codes)))
+            if schema_codes:
+                o.resp_codes = schema_codes
+            else:
+                o.resp_codes = empty_codes
+                o.no_body = True
 
             out.append(o)
     return out
@@ -236,7 +280,7 @@ def _indent(text, tab='\t'):
     return '\n'.join(tab + line if line.strip() else '' for line in text.split('\n'))
 
 
-def gen_client(svc, ops, module_path):
+def gen_client(svc, ops, module_path, spec_version):
     """Generate the public Client struct with functional options."""
     return _GEN_MARKER + '''
 
@@ -250,6 +294,11 @@ import (
 \t"''' + module_path + '''/core"
 \tgen "''' + module_path + '''/''' + svc + '''/internal/gen"
 )
+
+// SpecVersion is the info.version of the upstream OpenAPI spec this package
+// was generated from. Each service reads its own spec, so the value can differ
+// between packages.
+const SpecVersion = ''' + json.dumps(spec_version) + '''
 
 // ---------------------------------------------------------------------------
 // Client
@@ -407,10 +456,8 @@ def gen_operations(svc, ops, module_path):
         # --- Return type ---
         if o.no_body:
             ret = 'error'
-        elif o.resp_schema:
-            ret = '*' + o.resp_schema + ', error'
         else:
-            ret = 'error'
+            ret = '*' + o.resp_schema + ', error'
 
         summary = o.summary or (o.method + ' ' + o.path)
         lines.append('// ' + name + ' ' + summary)
@@ -447,11 +494,16 @@ def gen_operations(svc, ops, module_path):
         lines.append('\t}')
 
         # --- Parse response ---
-        json_field = 'JSON' + o.resp_code
+        # parse_ops guarantees exactly one of no_body / resp_schema, so every
+        # function ends in a return.
+        codes_str = ', '.join(o.resp_codes)
         if o.no_body:
-            lines.append('\treturn core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, ' + o.resp_code + ')')
-        elif o.resp_schema:
-            lines.append('\treturn core.ParseResponse(resp.HTTPResponse, resp.Body, resp.' + json_field + ', ' + o.resp_code + ')')
+            lines.append('\treturn core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, ' + codes_str + ')')
+        else:
+            fields = ', '.join('resp.JSON' + c for c in o.resp_codes)
+            if len(o.resp_codes) > 1:
+                fields = 'core.FirstNonNil(' + fields + ')'
+            lines.append('\treturn core.ParseResponse(resp.HTTPResponse, resp.Body, ' + fields + ', ' + codes_str + ')')
 
         lines.append('}')
         lines.append('')
@@ -526,7 +578,14 @@ def main():
 
     tag = args.tag
 
-    ops = parse_ops(spec, tag)
+    spec_version = spec.get('info', {}).get('version')
+    if not isinstance(spec_version, str) or not spec_version:
+        parser.error('%s has no info.version' % spec_path)
+
+    try:
+        ops = parse_ops(spec, tag)
+    except FacadeGenerationError as exc:
+        parser.exit(1, 'ERROR: %s\n' % exc)
     print('  [%s] tag="%s" -> %d operations' % (svc, tag, len(ops)))
 
     target.mkdir(parents=True, exist_ok=True)
@@ -543,9 +602,9 @@ def main():
                    if not any(c == d or c.startswith(d) for d in discriminators)]
 
     (target / 'client.go').write_text(
-        gen_client(svc, ops, args.module_path)
+        gen_client(svc, ops, args.module_path, spec_version)
     )
-    print('  [%s] wrote client.go' % (svc,))
+    print('  [%s] wrote client.go (SpecVersion %s)' % (svc, spec_version))
 
     (target / 'types.go').write_text(
         gen_types(svc, type_names, const_names, args.module_path)

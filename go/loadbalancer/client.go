@@ -11,6 +11,11 @@ import (
 	gen "github.com/viettelcloud-oss/sdks/go/loadbalancer/internal/gen"
 )
 
+// SpecVersion is the info.version of the upstream OpenAPI spec this package
+// was generated from. Each service reads its own spec, so the value can differ
+// between packages.
+const SpecVersion = "8.44.0"
+
 // ---------------------------------------------------------------------------
 // Client
 // ---------------------------------------------------------------------------

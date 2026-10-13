@@ -8,7 +8,7 @@
 #   FETCH_SPEC=1            fetch the spec instead of reusing openapi.json
 
 .PHONY: help init spec generate all build vet tidy clean clean-all \
-        tools fmt fmt-check fix fix-check lint test verify spec-version
+        tools fmt fmt-check fix fix-check lint pipeline-test test verify spec-version
 
 PY := python3 pipeline/main.py
 
@@ -109,19 +109,18 @@ fix-check: ## Fail if `go fix` would rewrite core/ or internal/
 lint: $(GOBIN)/golangci-lint ## Run golangci-lint over the module
 	@$(GOBIN)/golangci-lint run ./...
 
-test: ## Run the unit tests with the race detector
+pipeline-test: ## Test the Python generation pipeline
+	@python3 -m unittest discover -s pipeline -p 'test_*.py'
+
+test: pipeline-test ## Run the pipeline tests and Go tests with the race detector
 	@go test -race -cover ./...
 
 verify: fmt-check fix-check vet lint test build ## Everything CI runs on a merge request
 
 # --- Spec version ---------------------------------------------------------
 
-spec-version: ## Compare the upstream info.version with core.SpecVersion
-	@python3 -c "import glob, json; \
-	print('upstream info.version:', \
-	      sorted({json.load(open(f))['info']['version'] \
-	              for f in glob.glob('openapi*.json')}) or '(no spec fetched)')"
-	@grep -E '^const (Spec)?Version' core/version.go
+spec-version: ## Print the spec info.version each service was generated from
+	@grep -H '^const SpecVersion' */client.go
 
 # Install on first use so `make lint` works in a fresh checkout.
 $(GOBIN)/golangci-lint $(GOBIN)/gofumpt $(GOBIN)/goimports:

@@ -241,6 +241,24 @@ func (e LoadBalancerTopology) Valid() bool {
 	}
 }
 
+// Defines values for LoadBalancerType.
+const (
+	LoadBalancerTypeAppliance LoadBalancerType = "appliance"
+	LoadBalancerTypeNative    LoadBalancerType = "native"
+)
+
+// Valid indicates whether the value is a known member of the LoadBalancerType enum.
+func (e LoadBalancerType) Valid() bool {
+	switch e {
+	case LoadBalancerTypeAppliance:
+		return true
+	case LoadBalancerTypeNative:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for LoadBalancingProvisioningStatus.
 const (
 	LoadBalancingProvisioningStatusACTIVE        LoadBalancingProvisioningStatus = "ACTIVE"
@@ -674,27 +692,6 @@ type ErrorSchema struct {
 	Message  string `json:"message"`
 }
 
-// EstimatedCostComponentSchema defines model for EstimatedCostComponentSchema.
-type EstimatedCostComponentSchema struct {
-	AdjustedPrice  core.Decimal  `json:"adjusted_price"`
-	DiscountAmount core.Decimal  `json:"discount_amount"`
-	Granularity    *string       `json:"granularity"`
-	Label          string        `json:"label"`
-	OriginalPrice  core.Decimal  `json:"original_price"`
-	Quantity       *core.Decimal `json:"quantity"`
-	TaxAmount      core.Decimal  `json:"tax_amount"`
-	Unit           *string       `json:"unit"`
-}
-
-// EstimatedPaygCostSchema defines model for EstimatedPaygCostSchema.
-type EstimatedPaygCostSchema struct {
-	Components    []EstimatedCostComponentSchema `json:"components"`
-	HourlyPrice   core.Decimal                   `json:"hourly_price"`
-	MonthlyPrice  core.Decimal                   `json:"monthly_price"`
-	ReserveAmount core.Decimal                   `json:"reserve_amount"`
-	Total         EstimatedCostComponentSchema   `json:"total"`
-}
-
 // L7PolicyAction defines model for L7PolicyAction.
 type L7PolicyAction string
 
@@ -864,13 +861,13 @@ type LBListenerCreateSchema struct {
 	DefaultTlsCertId        *core.UUID                 `json:"default_tls_cert_id,omitempty"`
 	Description             *string                    `json:"description,omitempty"`
 	EnableH2                *bool                      `json:"enable_h2,omitempty"`
-	ListenerTimeout         *int                       `json:"listener_timeout,omitempty"`
+	ListenerTimeout         *int                       `json:"listener_timeout"`
 	Name                    string                     `json:"name"`
 	Protocol                ListenerProtocolType       `json:"protocol"`
 	ProtocolPort            int                        `json:"protocol_port"`
-	ServerConnectingTimeout *int                       `json:"server_connecting_timeout,omitempty"`
+	ServerConnectingTimeout *int                       `json:"server_connecting_timeout"`
 	ServerGroup             *LBServerGroupCreateSchema `json:"server_group"`
-	ServerTimeout           *int                       `json:"server_timeout,omitempty"`
+	ServerTimeout           *int                       `json:"server_timeout"`
 	SetXForwardedFor        *bool                      `json:"set_x_forwarded_for,omitempty"`
 	SetXForwardedPort       *bool                      `json:"set_x_forwarded_port,omitempty"`
 	SetXForwardedProto      *bool                      `json:"set_x_forwarded_proto,omitempty"`
@@ -927,13 +924,13 @@ type ListenerCreateSchema struct {
 	DefaultTlsCertId        *core.UUID           `json:"default_tls_cert_id,omitempty"`
 	Description             *string              `json:"description,omitempty"`
 	EnableH2                *bool                `json:"enable_h2,omitempty"`
-	ListenerTimeout         *int                 `json:"listener_timeout,omitempty"`
+	ListenerTimeout         *int                 `json:"listener_timeout"`
 	Name                    string               `json:"name"`
 	Protocol                ListenerProtocolType `json:"protocol"`
 	ProtocolPort            int                  `json:"protocol_port"`
-	ServerConnectingTimeout *int                 `json:"server_connecting_timeout,omitempty"`
+	ServerConnectingTimeout *int                 `json:"server_connecting_timeout"`
 	ServerGroupId           *core.UUID           `json:"server_group_id"`
-	ServerTimeout           *int                 `json:"server_timeout,omitempty"`
+	ServerTimeout           *int                 `json:"server_timeout"`
 	SetXForwardedFor        *bool                `json:"set_x_forwarded_for,omitempty"`
 	SetXForwardedPort       *bool                `json:"set_x_forwarded_port,omitempty"`
 	SetXForwardedProto      *bool                `json:"set_x_forwarded_proto,omitempty"`
@@ -947,15 +944,15 @@ type ListenerDetailSchema struct {
 	DefaultTlsCertId        *core.UUID                      `json:"default_tls_cert_id,omitempty"`
 	EnableH2                *bool                           `json:"enable_h2"`
 	Id                      core.UUID                       `json:"id"`
-	ListenerTimeout         int                             `json:"listener_timeout"`
+	ListenerTimeout         *int                            `json:"listener_timeout"`
 	LoadBalancer            NestedLoadBalancerSchema        `json:"load_balancer"`
 	Name                    string                          `json:"name"`
 	Protocol                ListenerProtocolType            `json:"protocol"`
 	ProtocolPort            int                             `json:"protocol_port"`
 	ProvisioningStatus      LoadBalancingProvisioningStatus `json:"provisioning_status"`
-	ServerConnectingTimeout int                             `json:"server_connecting_timeout"`
+	ServerConnectingTimeout *int                            `json:"server_connecting_timeout"`
 	ServerGroup             *NestedServerGroupSchema        `json:"server_group"`
-	ServerTimeout           int                             `json:"server_timeout"`
+	ServerTimeout           *int                            `json:"server_timeout"`
 	SetXForwardedFor        *bool                           `json:"set_x_forwarded_for"`
 	SetXForwardedPort       *bool                           `json:"set_x_forwarded_port"`
 	SetXForwardedProto      *bool                           `json:"set_x_forwarded_proto"`
@@ -1026,11 +1023,11 @@ type ListenerUpdateSchema struct {
 	DefaultTlsCertId        *core.UUID   `json:"default_tls_cert_id"`
 	Description             string       `json:"description"`
 	EnableH2                *bool        `json:"enable_h2"`
-	ListenerTimeout         int          `json:"listener_timeout"`
+	ListenerTimeout         *int         `json:"listener_timeout"`
 	Name                    string       `json:"name"`
-	ServerConnectingTimeout int          `json:"server_connecting_timeout"`
+	ServerConnectingTimeout *int         `json:"server_connecting_timeout"`
 	ServerGroupId           *core.UUID   `json:"server_group_id"`
-	ServerTimeout           int          `json:"server_timeout"`
+	ServerTimeout           *int         `json:"server_timeout"`
 	SetXForwardedFor        *bool        `json:"set_x_forwarded_for"`
 	SetXForwardedPort       *bool        `json:"set_x_forwarded_port"`
 	SetXForwardedProto      *bool        `json:"set_x_forwarded_proto"`
@@ -1048,11 +1045,14 @@ type LoadBalancerCreateSchema struct {
 	RegionId     core.UUID                    `json:"region_id"`
 	ServerGroups *[]LBServerGroupCreateSchema `json:"server_groups,omitempty"`
 	Topology     LoadBalancerTopology         `json:"topology"`
+	Type         *LoadBalancerType            `json:"type,omitempty"`
 	VpcId        core.UUID                    `json:"vpc_id"`
 }
 
 // LoadBalancerDetailSchema defines model for LoadBalancerDetailSchema.
 type LoadBalancerDetailSchema struct {
+	AccessLogEnabled   bool                            `json:"access_log_enabled"`
+	AccessLogStore     *NestedLogStoreSchema           `json:"access_log_store,omitempty"`
 	CreatedAt          time.Time                       `json:"created_at"`
 	Description        *string                         `json:"description"`
 	Id                 core.UUID                       `json:"id"`
@@ -1065,16 +1065,11 @@ type LoadBalancerDetailSchema struct {
 	Region             NestedRegionSchema              `json:"region"`
 	Status             LoadBalancingStatus             `json:"status"`
 	Topology           LoadBalancerTopology            `json:"topology"`
+	Type               LoadBalancerType                `json:"type"`
 	UpdatedAt          time.Time                       `json:"updated_at"`
 	V6PublicAddress    *string                         `json:"v6_public_address,omitempty"`
 	VipAddress         *string                         `json:"vip_address,omitempty"`
 	Vpc                NestedVPCSchema                 `json:"vpc"`
-}
-
-// LoadBalancerEstimateCostSchema defines model for LoadBalancerEstimateCostSchema.
-type LoadBalancerEstimateCostSchema struct {
-	Package  LoadBalancerPackage  `json:"package"`
-	Topology LoadBalancerTopology `json:"topology"`
 }
 
 // LoadBalancerPackage defines model for LoadBalancerPackage.
@@ -1098,6 +1093,8 @@ type LoadBalancerPublicIPSchema struct {
 
 // LoadBalancerSchema defines model for LoadBalancerSchema.
 type LoadBalancerSchema struct {
+	AccessLogEnabled   bool                            `json:"access_log_enabled"`
+	AccessLogStore     *NestedLogStoreSchema           `json:"access_log_store,omitempty"`
 	CreatedAt          time.Time                       `json:"created_at"`
 	Id                 core.UUID                       `json:"id"`
 	Name               string                          `json:"name"`
@@ -1109,6 +1106,7 @@ type LoadBalancerSchema struct {
 	Region             NestedRegionSchema              `json:"region"`
 	Status             LoadBalancingStatus             `json:"status"`
 	Topology           LoadBalancerTopology            `json:"topology"`
+	Type               LoadBalancerType                `json:"type"`
 	UpdatedAt          time.Time                       `json:"updated_at"`
 	V6PublicAddress    *string                         `json:"v6_public_address,omitempty"`
 	VipAddress         *string                         `json:"vip_address,omitempty"`
@@ -1116,6 +1114,9 @@ type LoadBalancerSchema struct {
 
 // LoadBalancerTopology defines model for LoadBalancerTopology.
 type LoadBalancerTopology string
+
+// LoadBalancerType defines model for LoadBalancerType.
+type LoadBalancerType string
 
 // LoadBalancerUpdateSchema defines model for LoadBalancerUpdateSchema.
 type LoadBalancerUpdateSchema struct {
@@ -1169,6 +1170,12 @@ type NestedL7RuleSchema struct {
 
 // NestedLoadBalancerSchema defines model for NestedLoadBalancerSchema.
 type NestedLoadBalancerSchema struct {
+	Id   core.UUID `json:"id"`
+	Name string    `json:"name"`
+}
+
+// NestedLogStoreSchema defines model for NestedLogStoreSchema.
+type NestedLogStoreSchema struct {
 	Id   core.UUID `json:"id"`
 	Name string    `json:"name"`
 }
@@ -1609,27 +1616,23 @@ type PartialUpdateListenerRateLimitParams struct {
 
 // ListLoadBalancersParams defines parameters for ListLoadBalancers.
 type ListLoadBalancersParams struct {
-	Name            *string               `form:"name,omitempty" json:"name,omitempty"`
-	RegionId        *core.UUID            `form:"region_id,omitempty" json:"region_id,omitempty"`
-	VipAddress      *string               `form:"vip_address,omitempty" json:"vip_address,omitempty"`
-	PublicAddress   *string               `form:"public_address,omitempty" json:"public_address,omitempty"`
-	V6PublicAddress *string               `form:"v6_public_address,omitempty" json:"v6_public_address,omitempty"`
-	Package         *LoadBalancerPackage  `form:"package,omitempty" json:"package,omitempty"`
-	Topology        *LoadBalancerTopology `form:"topology,omitempty" json:"topology,omitempty"`
-	PageSize        *int                  `form:"page_size,omitempty" json:"page_size,omitempty"`
-	PageNumber      *int                  `form:"page_number,omitempty" json:"page_number,omitempty"`
-	ProjectID       core.UUID             `json:"Project-ID"`
+	Name             *string               `form:"name,omitempty" json:"name,omitempty"`
+	RegionId         *core.UUID            `form:"region_id,omitempty" json:"region_id,omitempty"`
+	Type             *LoadBalancerType     `form:"type,omitempty" json:"type,omitempty"`
+	VipAddress       *string               `form:"vip_address,omitempty" json:"vip_address,omitempty"`
+	PublicAddress    *string               `form:"public_address,omitempty" json:"public_address,omitempty"`
+	V6PublicAddress  *string               `form:"v6_public_address,omitempty" json:"v6_public_address,omitempty"`
+	Package          *LoadBalancerPackage  `form:"package,omitempty" json:"package,omitempty"`
+	Topology         *LoadBalancerTopology `form:"topology,omitempty" json:"topology,omitempty"`
+	AccessLogEnabled *bool                 `form:"access_log_enabled,omitempty" json:"access_log_enabled,omitempty"`
+	PageSize         *int                  `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber       *int                  `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID        core.UUID             `json:"Project-ID"`
 }
 
 // CreateLoadBalancerParams defines parameters for CreateLoadBalancer.
 type CreateLoadBalancerParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
-}
-
-// EstimateLoadBalancerCostParams defines parameters for EstimateLoadBalancerCost.
-type EstimateLoadBalancerCostParams struct {
-	ProjectID core.UUID `json:"Project-ID"`
-	RegionId  core.UUID `json:"region-id"`
 }
 
 // DeleteLoadBalancerParams defines parameters for DeleteLoadBalancer.
@@ -1828,9 +1831,6 @@ type PartialUpdateListenerRateLimitJSONRequestBody = ListenerRateLimitPartialUpd
 
 // CreateLoadBalancerJSONRequestBody defines body for CreateLoadBalancer for application/json ContentType.
 type CreateLoadBalancerJSONRequestBody = LoadBalancerCreateSchema
-
-// EstimateLoadBalancerCostJSONRequestBody defines body for EstimateLoadBalancerCost for application/json ContentType.
-type EstimateLoadBalancerCostJSONRequestBody = LoadBalancerEstimateCostSchema
 
 // PartialUpdateLoadBalancerJSONRequestBody defines body for PartialUpdateLoadBalancer for application/json ContentType.
 type PartialUpdateLoadBalancerJSONRequestBody = LoadBalancerPartialUpdateSchema
@@ -2642,20 +2642,6 @@ type ClientInterface interface {
 	//
 	// Corresponds with POST /v2/load-balancing/loadbalancers/ (the `CreateLoadBalancer` operationId).
 	CreateLoadBalancer(ctx context.Context, params *CreateLoadBalancerParams, body CreateLoadBalancerJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// EstimateLoadBalancerCostWithBody Estimate Load Balancer Cost
-	//
-	// Takes any type of body and a specified content type.
-	//
-	// Corresponds with POST /v2/load-balancing/loadbalancers/estimate-cost/ (the `EstimateLoadBalancerCost` operationId).
-	EstimateLoadBalancerCostWithBody(ctx context.Context, params *EstimateLoadBalancerCostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// EstimateLoadBalancerCost Estimate Load Balancer Cost
-	//
-	// Takes a body of the `application/json` content type.
-	//
-	// Corresponds with POST /v2/load-balancing/loadbalancers/estimate-cost/ (the `EstimateLoadBalancerCost` operationId).
-	EstimateLoadBalancerCost(ctx context.Context, params *EstimateLoadBalancerCostParams, body EstimateLoadBalancerCostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetLoadBalancerMetricsSchema Get Load Balancer Metrics Schema
 	//
@@ -3796,40 +3782,6 @@ func (c *Client) CreateLoadBalancerWithBody(ctx context.Context, params *CreateL
 // Corresponds with POST /v2/load-balancing/loadbalancers/ (the `CreateLoadBalancer` operationId).
 func (c *Client) CreateLoadBalancer(ctx context.Context, params *CreateLoadBalancerParams, body CreateLoadBalancerJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateLoadBalancerRequest(c.Server, params, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// EstimateLoadBalancerCostWithBody Estimate Load Balancer Cost
-//
-// Takes any type of body and a specified content type.
-//
-// Corresponds with POST /v2/load-balancing/loadbalancers/estimate-cost/ (the `EstimateLoadBalancerCost` operationId).
-func (c *Client) EstimateLoadBalancerCostWithBody(ctx context.Context, params *EstimateLoadBalancerCostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewEstimateLoadBalancerCostRequestWithBody(c.Server, params, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// EstimateLoadBalancerCost Estimate Load Balancer Cost
-//
-// Takes a body of the `application/json` content type.
-//
-// Corresponds with POST /v2/load-balancing/loadbalancers/estimate-cost/ (the `EstimateLoadBalancerCost` operationId).
-func (c *Client) EstimateLoadBalancerCost(ctx context.Context, params *EstimateLoadBalancerCostParams, body EstimateLoadBalancerCostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewEstimateLoadBalancerCostRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -6119,6 +6071,18 @@ func NewListLoadBalancersRequest(server string, params *ListLoadBalancersParams)
 
 		}
 
+		if params.Type != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "type", *params.Type, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.VipAddress != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "vip_address", *params.VipAddress, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
@@ -6170,6 +6134,18 @@ func NewListLoadBalancersRequest(server string, params *ListLoadBalancersParams)
 		if params.Topology != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "topology", *params.Topology, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.AccessLogEnabled != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "access_log_enabled", *params.AccessLogEnabled, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -6277,68 +6253,6 @@ func NewCreateLoadBalancerRequestWithBody(server string, params *CreateLoadBalan
 		}
 
 		req.Header.Set("Project-ID", headerParam0)
-
-	}
-
-	return req, nil
-}
-
-// NewEstimateLoadBalancerCostRequest calls the generic EstimateLoadBalancerCost builder with application/json body
-func NewEstimateLoadBalancerCostRequest(server string, params *EstimateLoadBalancerCostParams, body EstimateLoadBalancerCostJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewEstimateLoadBalancerCostRequestWithBody(server, params, "application/json", bodyReader)
-}
-
-// NewEstimateLoadBalancerCostRequestWithBody constructs an http.Request for the EstimateLoadBalancerCost method, with any body, and a specified content type
-func NewEstimateLoadBalancerCostRequestWithBody(server string, params *EstimateLoadBalancerCostParams, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v2/load-balancing/loadbalancers/estimate-cost/")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	if params != nil {
-
-		var headerParam0 string
-
-		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("Project-ID", headerParam0)
-
-		var headerParam1 string
-
-		headerParam1, err = runtime.StyleParamWithOptions("simple", false, "region-id", params.RegionId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "", Format: ""})
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("region-id", headerParam1)
 
 	}
 
@@ -8657,20 +8571,6 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /v2/load-balancing/loadbalancers/ (the `CreateLoadBalancer` operationId).
 	CreateLoadBalancerWithResponse(ctx context.Context, params *CreateLoadBalancerParams, body CreateLoadBalancerJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateLoadBalancerResponse, error)
 
-	// EstimateLoadBalancerCostWithBodyWithResponse Estimate Load Balancer Cost
-	//
-	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /v2/load-balancing/loadbalancers/estimate-cost/ (the `EstimateLoadBalancerCost` operationId).
-	EstimateLoadBalancerCostWithBodyWithResponse(ctx context.Context, params *EstimateLoadBalancerCostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*EstimateLoadBalancerCostResponse, error)
-
-	// EstimateLoadBalancerCostWithResponse Estimate Load Balancer Cost
-	//
-	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /v2/load-balancing/loadbalancers/estimate-cost/ (the `EstimateLoadBalancerCost` operationId).
-	EstimateLoadBalancerCostWithResponse(ctx context.Context, params *EstimateLoadBalancerCostParams, body EstimateLoadBalancerCostJSONRequestBody, reqEditors ...RequestEditorFn) (*EstimateLoadBalancerCostResponse, error)
-
 	// GetLoadBalancerMetricsSchemaWithResponse Get Load Balancer Metrics Schema
 	//
 	// Returns a wrapper object for the known response body format(s).
@@ -9895,39 +9795,6 @@ func (r CreateLoadBalancerResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r CreateLoadBalancerResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type EstimateLoadBalancerCostResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *EstimatedPaygCostSchema
-	// JSON400 the response for an HTTP 400 `application/json` response
-	JSON400 *ValidationError
-	// JSON401 the response for an HTTP 401 `application/json` response
-	JSON401 *AuthenticationError
-	// JSON403 the response for an HTTP 403 `application/json` response
-	JSON403 *PermissionDenied
-	// JSON500 the response for an HTTP 500 `application/json` response
-	JSON500 *InternalError
-	// JSON502 the response for an HTTP 502 `application/json` response
-	JSON502 *ProviderError
-}
-
-// Status returns HTTPResponse.Status
-func (r EstimateLoadBalancerCostResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r EstimateLoadBalancerCostResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -11421,32 +11288,6 @@ func (c *ClientWithResponses) CreateLoadBalancerWithResponse(ctx context.Context
 		return nil, err
 	}
 	return ParseCreateLoadBalancerResponse(rsp)
-}
-
-// EstimateLoadBalancerCostWithBodyWithResponse Estimate Load Balancer Cost
-//
-// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /v2/load-balancing/loadbalancers/estimate-cost/ (the `EstimateLoadBalancerCost` operationId).
-func (c *ClientWithResponses) EstimateLoadBalancerCostWithBodyWithResponse(ctx context.Context, params *EstimateLoadBalancerCostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*EstimateLoadBalancerCostResponse, error) {
-	rsp, err := c.EstimateLoadBalancerCostWithBody(ctx, params, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseEstimateLoadBalancerCostResponse(rsp)
-}
-
-// EstimateLoadBalancerCostWithResponse Estimate Load Balancer Cost
-//
-// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /v2/load-balancing/loadbalancers/estimate-cost/ (the `EstimateLoadBalancerCost` operationId).
-func (c *ClientWithResponses) EstimateLoadBalancerCostWithResponse(ctx context.Context, params *EstimateLoadBalancerCostParams, body EstimateLoadBalancerCostJSONRequestBody, reqEditors ...RequestEditorFn) (*EstimateLoadBalancerCostResponse, error) {
-	rsp, err := c.EstimateLoadBalancerCost(ctx, params, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseEstimateLoadBalancerCostResponse(rsp)
 }
 
 // GetLoadBalancerMetricsSchemaWithResponse Get Load Balancer Metrics Schema
@@ -13501,67 +13342,6 @@ func ParseCreateLoadBalancerResponse(rsp *http.Response) (*CreateLoadBalancerRes
 			return nil, err
 		}
 		response.JSON201 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest ValidationError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest AuthenticationError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
-		var dest PermissionDenied
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON403 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest InternalError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
-		var dest ProviderError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON502 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseEstimateLoadBalancerCostResponse parses an HTTP response from a EstimateLoadBalancerCostWithResponse call
-func ParseEstimateLoadBalancerCostResponse(rsp *http.Response) (*EstimateLoadBalancerCostResponse, error) {
-	bodyBytes, err := core.ReadResponseBody(rsp)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &EstimateLoadBalancerCostResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest EstimatedPaygCostSchema
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest ValidationError

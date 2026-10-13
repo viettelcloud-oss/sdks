@@ -1220,6 +1220,11 @@ type ServerUpdateSecurityGroupSchema struct {
 	SecurityGroups []ServerSecurityGroup `json:"security_groups"`
 }
 
+// ServerVolumeAttachSchema Schema for attaching/detaching a volume to/from a server.
+type ServerVolumeAttachSchema struct {
+	VolumeId core.UUID `json:"volume_id"`
+}
+
 // ServersCreatedSchema defines model for ServersCreatedSchema.
 type ServersCreatedSchema struct {
 	ServerIds []core.UUID `json:"server_ids"`
@@ -1248,21 +1253,23 @@ type ValidationError = ErrorResponseSchema
 
 // ListCustomImagesParams defines parameters for ListCustomImages.
 type ListCustomImagesParams struct {
-	Name          *string        `form:"name,omitempty" json:"name,omitempty"`
-	Status        *[]ImageStatus `form:"status,omitempty" json:"status,omitempty"`
-	State         *[]ImageState  `form:"state,omitempty" json:"state,omitempty"`
-	Region        *string        `form:"region,omitempty" json:"region,omitempty"`
-	RegionId      *core.UUID     `form:"region_id,omitempty" json:"region_id,omitempty"`
-	Volume        *string        `form:"volume,omitempty" json:"volume,omitempty"`
-	VolumeId      *core.UUID     `form:"volume_id,omitempty" json:"volume_id,omitempty"`
-	Project       *string        `form:"project,omitempty" json:"project,omitempty"`
-	ProjectId     *core.UUID     `form:"project_id,omitempty" json:"project_id,omitempty"`
-	Os            *string        `form:"os,omitempty" json:"os,omitempty"`
-	Version       *string        `form:"version,omitempty" json:"version,omitempty"`
-	IsSharedImage *bool          `form:"is_shared_image,omitempty" json:"is_shared_image,omitempty"`
-	PageSize      *int           `form:"page_size,omitempty" json:"page_size,omitempty"`
-	PageNumber    *int           `form:"page_number,omitempty" json:"page_number,omitempty"`
-	ProjectID     core.UUID      `json:"Project-ID"`
+	Name     *string        `form:"name,omitempty" json:"name,omitempty"`
+	Status   *[]ImageStatus `form:"status,omitempty" json:"status,omitempty"`
+	State    *[]ImageState  `form:"state,omitempty" json:"state,omitempty"`
+	Region   *string        `form:"region,omitempty" json:"region,omitempty"`
+	RegionId *core.UUID     `form:"region_id,omitempty" json:"region_id,omitempty"`
+	Volume   *string        `form:"volume,omitempty" json:"volume,omitempty"`
+	VolumeId *core.UUID     `form:"volume_id,omitempty" json:"volume_id,omitempty"`
+
+	// Project Partial, case-insensitive match on the owning project's name.
+	Project       *string    `form:"project,omitempty" json:"project,omitempty"`
+	ProjectId     *core.UUID `form:"project_id,omitempty" json:"project_id,omitempty"`
+	Os            *string    `form:"os,omitempty" json:"os,omitempty"`
+	Version       *string    `form:"version,omitempty" json:"version,omitempty"`
+	IsSharedImage *bool      `form:"is_shared_image,omitempty" json:"is_shared_image,omitempty"`
+	PageSize      *int       `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber    *int       `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID     core.UUID  `json:"Project-ID"`
 }
 
 // CreateCustomImageParams defines parameters for CreateCustomImage.
@@ -1459,6 +1466,11 @@ type AttachServerSubnetParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
+// AttachVolumeParams defines parameters for AttachVolume.
+type AttachVolumeParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
 // UpdateServerBandwidthParams defines parameters for UpdateServerBandwidth.
 type UpdateServerBandwidthParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
@@ -1481,6 +1493,11 @@ type DetachServerEipParams struct {
 
 // DetachPrivateIpParams defines parameters for DetachPrivateIp.
 type DetachPrivateIpParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// DetachVolumeParams defines parameters for DetachVolume.
+type DetachVolumeParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
@@ -1561,6 +1578,9 @@ type AttachPrivateIpJSONRequestBody = ServerAttachPrivateIPSchema
 // AttachServerSubnetJSONRequestBody defines body for AttachServerSubnet for application/json ContentType.
 type AttachServerSubnetJSONRequestBody = ServerAttachSubnetSchema
 
+// AttachVolumeJSONRequestBody defines body for AttachVolume for application/json ContentType.
+type AttachVolumeJSONRequestBody = ServerVolumeAttachSchema
+
 // UpdateServerBandwidthJSONRequestBody defines body for UpdateServerBandwidth for application/json ContentType.
 type UpdateServerBandwidthJSONRequestBody = ServerUpdateBandwidthSchema
 
@@ -1575,6 +1595,9 @@ type DetachServerEipJSONRequestBody = ServerElasticIPAttachSchema
 
 // DetachPrivateIpJSONRequestBody defines body for DetachPrivateIp for application/json ContentType.
 type DetachPrivateIpJSONRequestBody = ServerDetachPrivateIPSchema
+
+// DetachVolumeJSONRequestBody defines body for DetachVolume for application/json ContentType.
+type DetachVolumeJSONRequestBody = ServerVolumeAttachSchema
 
 // UpdateServerPasswordJSONRequestBody defines body for UpdateServerPassword for application/json ContentType.
 type UpdateServerPasswordJSONRequestBody = ServerChangePasswordSchema
@@ -2647,6 +2670,28 @@ type ClientInterface interface {
 	// Corresponds with POST /v2/server/servers/{server_id}/attach-subnet/ (the `AttachServerSubnet` operationId).
 	AttachServerSubnet(ctx context.Context, serverId core.UUID, params *AttachServerSubnetParams, body AttachServerSubnetJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// AttachVolumeWithBody Attach Volume
+	//
+	// **Required project permissions:**
+	//
+	// - `urn:action:server:server:attach_volume`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v2/server/servers/{server_id}/attach-volume/ (the `AttachVolume` operationId).
+	AttachVolumeWithBody(ctx context.Context, serverId core.UUID, params *AttachVolumeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AttachVolume Attach Volume
+	//
+	// **Required project permissions:**
+	//
+	// - `urn:action:server:server:attach_volume`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v2/server/servers/{server_id}/attach-volume/ (the `AttachVolume` operationId).
+	AttachVolume(ctx context.Context, serverId core.UUID, params *AttachVolumeParams, body AttachVolumeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// UpdateServerBandwidthWithBody Update Server Bandwidth
 	//
 	// **Required project permissions:**
@@ -2756,6 +2801,28 @@ type ClientInterface interface {
 	//
 	// Corresponds with POST /v2/server/servers/{server_id}/detach-private-ip/ (the `DetachPrivateIp` operationId).
 	DetachPrivateIp(ctx context.Context, serverId core.UUID, params *DetachPrivateIpParams, body DetachPrivateIpJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DetachVolumeWithBody Detach Volume
+	//
+	// **Required project permissions:**
+	//
+	// - `urn:action:server:server:detach_volume`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v2/server/servers/{server_id}/detach-volume/ (the `DetachVolume` operationId).
+	DetachVolumeWithBody(ctx context.Context, serverId core.UUID, params *DetachVolumeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DetachVolume Detach Volume
+	//
+	// **Required project permissions:**
+	//
+	// - `urn:action:server:server:detach_volume`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v2/server/servers/{server_id}/detach-volume/ (the `DetachVolume` operationId).
+	DetachVolume(ctx context.Context, serverId core.UUID, params *DetachVolumeParams, body DetachVolumeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateServerPasswordWithBody Update Server Password
 	//
@@ -3842,6 +3909,48 @@ func (c *Client) AttachServerSubnet(ctx context.Context, serverId core.UUID, par
 	return c.Client.Do(req)
 }
 
+// AttachVolumeWithBody Attach Volume
+//
+// **Required project permissions:**
+//
+// - `urn:action:server:server:attach_volume`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/server/servers/{server_id}/attach-volume/ (the `AttachVolume` operationId).
+func (c *Client) AttachVolumeWithBody(ctx context.Context, serverId core.UUID, params *AttachVolumeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAttachVolumeRequestWithBody(c.Server, serverId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// AttachVolume Attach Volume
+//
+// **Required project permissions:**
+//
+// - `urn:action:server:server:attach_volume`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/server/servers/{server_id}/attach-volume/ (the `AttachVolume` operationId).
+func (c *Client) AttachVolume(ctx context.Context, serverId core.UUID, params *AttachVolumeParams, body AttachVolumeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAttachVolumeRequest(c.Server, serverId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // UpdateServerBandwidthWithBody Update Server Bandwidth
 //
 // **Required project permissions:**
@@ -4042,6 +4151,48 @@ func (c *Client) DetachPrivateIpWithBody(ctx context.Context, serverId core.UUID
 // Corresponds with POST /v2/server/servers/{server_id}/detach-private-ip/ (the `DetachPrivateIp` operationId).
 func (c *Client) DetachPrivateIp(ctx context.Context, serverId core.UUID, params *DetachPrivateIpParams, body DetachPrivateIpJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDetachPrivateIpRequest(c.Server, serverId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DetachVolumeWithBody Detach Volume
+//
+// **Required project permissions:**
+//
+// - `urn:action:server:server:detach_volume`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/server/servers/{server_id}/detach-volume/ (the `DetachVolume` operationId).
+func (c *Client) DetachVolumeWithBody(ctx context.Context, serverId core.UUID, params *DetachVolumeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDetachVolumeRequestWithBody(c.Server, serverId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DetachVolume Detach Volume
+//
+// **Required project permissions:**
+//
+// - `urn:action:server:server:detach_volume`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/server/servers/{server_id}/detach-volume/ (the `DetachVolume` operationId).
+func (c *Client) DetachVolume(ctx context.Context, serverId core.UUID, params *DetachVolumeParams, body DetachVolumeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDetachVolumeRequest(c.Server, serverId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -6641,6 +6792,66 @@ func NewAttachServerSubnetRequestWithBody(server string, serverId core.UUID, par
 	return req, nil
 }
 
+// NewAttachVolumeRequest calls the generic AttachVolume builder with application/json body
+func NewAttachVolumeRequest(server string, serverId core.UUID, params *AttachVolumeParams, body AttachVolumeJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAttachVolumeRequestWithBody(server, serverId, params, "application/json", bodyReader)
+}
+
+// NewAttachVolumeRequestWithBody constructs an http.Request for the AttachVolume method, with any body, and a specified content type
+func NewAttachVolumeRequestWithBody(server string, serverId core.UUID, params *AttachVolumeParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "server_id", serverId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/servers/%s/attach-volume/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
 // NewUpdateServerBandwidthRequest calls the generic UpdateServerBandwidth builder with application/json body
 func NewUpdateServerBandwidthRequest(server string, serverId core.UUID, params *UpdateServerBandwidthParams, body UpdateServerBandwidthJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -6909,6 +7120,66 @@ func NewDetachPrivateIpRequestWithBody(server string, serverId core.UUID, params
 	}
 
 	operationPath := fmt.Sprintf("/v2/server/servers/%s/detach-private-ip/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewDetachVolumeRequest calls the generic DetachVolume builder with application/json body
+func NewDetachVolumeRequest(server string, serverId core.UUID, params *DetachVolumeParams, body DetachVolumeJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewDetachVolumeRequestWithBody(server, serverId, params, "application/json", bodyReader)
+}
+
+// NewDetachVolumeRequestWithBody constructs an http.Request for the DetachVolume method, with any body, and a specified content type
+func NewDetachVolumeRequestWithBody(server string, serverId core.UUID, params *DetachVolumeParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "server_id", serverId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/servers/%s/detach-volume/", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -7919,6 +8190,28 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /v2/server/servers/{server_id}/attach-subnet/ (the `AttachServerSubnet` operationId).
 	AttachServerSubnetWithResponse(ctx context.Context, serverId core.UUID, params *AttachServerSubnetParams, body AttachServerSubnetJSONRequestBody, reqEditors ...RequestEditorFn) (*AttachServerSubnetResponse, error)
 
+	// AttachVolumeWithBodyWithResponse Attach Volume
+	//
+	// **Required project permissions:**
+	//
+	// - `urn:action:server:server:attach_volume`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/server/servers/{server_id}/attach-volume/ (the `AttachVolume` operationId).
+	AttachVolumeWithBodyWithResponse(ctx context.Context, serverId core.UUID, params *AttachVolumeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AttachVolumeResponse, error)
+
+	// AttachVolumeWithResponse Attach Volume
+	//
+	// **Required project permissions:**
+	//
+	// - `urn:action:server:server:attach_volume`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/server/servers/{server_id}/attach-volume/ (the `AttachVolume` operationId).
+	AttachVolumeWithResponse(ctx context.Context, serverId core.UUID, params *AttachVolumeParams, body AttachVolumeJSONRequestBody, reqEditors ...RequestEditorFn) (*AttachVolumeResponse, error)
+
 	// UpdateServerBandwidthWithBodyWithResponse Update Server Bandwidth
 	//
 	// **Required project permissions:**
@@ -8028,6 +8321,28 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with POST /v2/server/servers/{server_id}/detach-private-ip/ (the `DetachPrivateIp` operationId).
 	DetachPrivateIpWithResponse(ctx context.Context, serverId core.UUID, params *DetachPrivateIpParams, body DetachPrivateIpJSONRequestBody, reqEditors ...RequestEditorFn) (*DetachPrivateIpResponse, error)
+
+	// DetachVolumeWithBodyWithResponse Detach Volume
+	//
+	// **Required project permissions:**
+	//
+	// - `urn:action:server:server:detach_volume`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/server/servers/{server_id}/detach-volume/ (the `DetachVolume` operationId).
+	DetachVolumeWithBodyWithResponse(ctx context.Context, serverId core.UUID, params *DetachVolumeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DetachVolumeResponse, error)
+
+	// DetachVolumeWithResponse Detach Volume
+	//
+	// **Required project permissions:**
+	//
+	// - `urn:action:server:server:detach_volume`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/server/servers/{server_id}/detach-volume/ (the `DetachVolume` operationId).
+	DetachVolumeWithResponse(ctx context.Context, serverId core.UUID, params *DetachVolumeParams, body DetachVolumeJSONRequestBody, reqEditors ...RequestEditorFn) (*DetachVolumeResponse, error)
 
 	// UpdateServerPasswordWithBodyWithResponse Update Server Password
 	//
@@ -9169,6 +9484,37 @@ func (r AttachServerSubnetResponse) StatusCode() int {
 	return 0
 }
 
+type AttachVolumeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r AttachVolumeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AttachVolumeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type UpdateServerBandwidthResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -9320,6 +9666,37 @@ func (r DetachPrivateIpResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r DetachPrivateIpResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DetachVolumeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r DetachVolumeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DetachVolumeResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10353,6 +10730,40 @@ func (c *ClientWithResponses) AttachServerSubnetWithResponse(ctx context.Context
 	return ParseAttachServerSubnetResponse(rsp)
 }
 
+// AttachVolumeWithBodyWithResponse Attach Volume
+//
+// **Required project permissions:**
+//
+// - `urn:action:server:server:attach_volume`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/server/servers/{server_id}/attach-volume/ (the `AttachVolume` operationId).
+func (c *ClientWithResponses) AttachVolumeWithBodyWithResponse(ctx context.Context, serverId core.UUID, params *AttachVolumeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AttachVolumeResponse, error) {
+	rsp, err := c.AttachVolumeWithBody(ctx, serverId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAttachVolumeResponse(rsp)
+}
+
+// AttachVolumeWithResponse Attach Volume
+//
+// **Required project permissions:**
+//
+// - `urn:action:server:server:attach_volume`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/server/servers/{server_id}/attach-volume/ (the `AttachVolume` operationId).
+func (c *ClientWithResponses) AttachVolumeWithResponse(ctx context.Context, serverId core.UUID, params *AttachVolumeParams, body AttachVolumeJSONRequestBody, reqEditors ...RequestEditorFn) (*AttachVolumeResponse, error) {
+	rsp, err := c.AttachVolume(ctx, serverId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAttachVolumeResponse(rsp)
+}
+
 // UpdateServerBandwidthWithBodyWithResponse Update Server Bandwidth
 //
 // **Required project permissions:**
@@ -10521,6 +10932,40 @@ func (c *ClientWithResponses) DetachPrivateIpWithResponse(ctx context.Context, s
 		return nil, err
 	}
 	return ParseDetachPrivateIpResponse(rsp)
+}
+
+// DetachVolumeWithBodyWithResponse Detach Volume
+//
+// **Required project permissions:**
+//
+// - `urn:action:server:server:detach_volume`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/server/servers/{server_id}/detach-volume/ (the `DetachVolume` operationId).
+func (c *ClientWithResponses) DetachVolumeWithBodyWithResponse(ctx context.Context, serverId core.UUID, params *DetachVolumeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DetachVolumeResponse, error) {
+	rsp, err := c.DetachVolumeWithBody(ctx, serverId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDetachVolumeResponse(rsp)
+}
+
+// DetachVolumeWithResponse Detach Volume
+//
+// **Required project permissions:**
+//
+// - `urn:action:server:server:detach_volume`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/server/servers/{server_id}/detach-volume/ (the `DetachVolume` operationId).
+func (c *ClientWithResponses) DetachVolumeWithResponse(ctx context.Context, serverId core.UUID, params *DetachVolumeParams, body DetachVolumeJSONRequestBody, reqEditors ...RequestEditorFn) (*DetachVolumeResponse, error) {
+	rsp, err := c.DetachVolume(ctx, serverId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDetachVolumeResponse(rsp)
 }
 
 // UpdateServerPasswordWithBodyWithResponse Update Server Password
@@ -10851,7 +11296,7 @@ func ParseCreateCustomImageResponse(rsp *http.Response) (*CreateCustomImageRespo
 
 // ParseImportCustomImageResponse parses an HTTP response from a ImportCustomImageWithResponse call
 func ParseImportCustomImageResponse(rsp *http.Response) (*ImportCustomImageResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
+	bodyBytes, err := core.ReadResponseBody(rsp)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
@@ -11091,7 +11536,7 @@ func ParsePartialUpdateCustomImageResponse(rsp *http.Response) (*PartialUpdateCu
 
 // ParseExportCustomImageResponse parses an HTTP response from a ExportCustomImageWithResponse call
 func ParseExportCustomImageResponse(rsp *http.Response) (*ExportCustomImageResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
+	bodyBytes, err := core.ReadResponseBody(rsp)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
@@ -12586,6 +13031,63 @@ func ParseAttachServerSubnetResponse(rsp *http.Response) (*AttachServerSubnetRes
 	return response, nil
 }
 
+// ParseAttachVolumeResponse parses an HTTP response from a AttachVolumeWithResponse call
+func ParseAttachVolumeResponse(rsp *http.Response) (*AttachVolumeResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AttachVolumeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 202:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseUpdateServerBandwidthResponse parses an HTTP response from a UpdateServerBandwidthWithResponse call
 func ParseUpdateServerBandwidthResponse(rsp *http.Response) (*UpdateServerBandwidthResponse, error) {
 	bodyBytes, err := core.ReadResponseBody(rsp)
@@ -12827,6 +13329,63 @@ func ParseDetachPrivateIpResponse(rsp *http.Response) (*DetachPrivateIpResponse,
 	}
 
 	response := &DetachPrivateIpResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 202:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDetachVolumeResponse parses an HTTP response from a DetachVolumeWithResponse call
+func ParseDetachVolumeResponse(rsp *http.Response) (*DetachVolumeResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DetachVolumeResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
