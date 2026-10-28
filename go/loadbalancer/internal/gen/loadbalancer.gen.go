@@ -1176,8 +1176,11 @@ type NestedLoadBalancerSchema struct {
 
 // NestedLogStoreSchema defines model for NestedLogStoreSchema.
 type NestedLogStoreSchema struct {
-	Id   core.UUID `json:"id"`
-	Name string    `json:"name"`
+	Id         core.UUID `json:"id"`
+	IsReadOnly bool      `json:"is_read_only"`
+	Name       string    `json:"name"`
+	Quota      int       `json:"quota"`
+	StoredSize int       `json:"stored_size"`
 }
 
 // NestedQoSPolicySchema defines model for NestedQoSPolicySchema.
@@ -2304,7 +2307,7 @@ type ClientInterface interface {
 
 	// ListL7policies List L7Policies
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:list`
 	//
@@ -2313,7 +2316,7 @@ type ClientInterface interface {
 
 	// CreateL7policyWithBody Create L7Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:create`
 	//
@@ -2324,7 +2327,7 @@ type ClientInterface interface {
 
 	// CreateL7policy Create L7Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:create`
 	//
@@ -2335,7 +2338,7 @@ type ClientInterface interface {
 
 	// DeleteL7policy Delete L7Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:delete`
 	//
@@ -2344,7 +2347,7 @@ type ClientInterface interface {
 
 	// GetL7policy Get L7Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:get`
 	//
@@ -2353,7 +2356,7 @@ type ClientInterface interface {
 
 	// PartialUpdateL7policyWithBody Partial Update L7Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:update`
 	//
@@ -2364,7 +2367,7 @@ type ClientInterface interface {
 
 	// PartialUpdateL7policy Partial Update L7Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:update`
 	//
@@ -2375,7 +2378,7 @@ type ClientInterface interface {
 
 	// UpdateL7policyWithBody Update L7Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:update`
 	//
@@ -2386,7 +2389,7 @@ type ClientInterface interface {
 
 	// UpdateL7policy Update L7Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:update`
 	//
@@ -2397,7 +2400,7 @@ type ClientInterface interface {
 
 	// ListL7rule List L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:list`
 	//
@@ -2406,7 +2409,7 @@ type ClientInterface interface {
 
 	// CreateL7ruleWithBody Create L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:create`
 	//
@@ -2417,7 +2420,7 @@ type ClientInterface interface {
 
 	// CreateL7rule Create L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:create`
 	//
@@ -2428,7 +2431,7 @@ type ClientInterface interface {
 
 	// DeleteL7rule Delete L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:delete`
 	//
@@ -2437,7 +2440,7 @@ type ClientInterface interface {
 
 	// GetL7rule Get L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:get`
 	//
@@ -2446,7 +2449,7 @@ type ClientInterface interface {
 
 	// PartialUpdateL7ruleWithBody Partial Update L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:update`
 	//
@@ -2457,7 +2460,7 @@ type ClientInterface interface {
 
 	// PartialUpdateL7rule Partial Update L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:update`
 	//
@@ -2468,7 +2471,7 @@ type ClientInterface interface {
 
 	// UpdateL7ruleWithBody Update L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:update`
 	//
@@ -2479,7 +2482,7 @@ type ClientInterface interface {
 
 	// UpdateL7rule Update L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:update`
 	//
@@ -2490,7 +2493,7 @@ type ClientInterface interface {
 
 	// ListListenerAuthUsers List Listener Auth Users
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:auth_user:list`
 	//
@@ -2499,7 +2502,7 @@ type ClientInterface interface {
 
 	// CreateListenerAuthUserWithBody Create Listener Auth User
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:auth_user:create`
 	//
@@ -2510,7 +2513,7 @@ type ClientInterface interface {
 
 	// CreateListenerAuthUser Create Listener Auth User
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:auth_user:create`
 	//
@@ -2521,7 +2524,7 @@ type ClientInterface interface {
 
 	// DeleteListenerAuthUser Delete Listener Auth User
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:auth_user:delete`
 	//
@@ -2530,7 +2533,7 @@ type ClientInterface interface {
 
 	// ChangePasswordListenerAuthUserWithBody Change Password Listener Auth User
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:auth_user:change_password`
 	//
@@ -2541,7 +2544,7 @@ type ClientInterface interface {
 
 	// ChangePasswordListenerAuthUser Change Password Listener Auth User
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:auth_user:change_password`
 	//
@@ -2552,7 +2555,7 @@ type ClientInterface interface {
 
 	// ListListenerRateLimits List Listener Rate Limits
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:rate_limit:list`
 	//
@@ -2561,7 +2564,7 @@ type ClientInterface interface {
 
 	// CreateListenerRateLimitWithBody Create Listener Rate Limit
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:rate_limit:create`
 	//
@@ -2572,7 +2575,7 @@ type ClientInterface interface {
 
 	// CreateListenerRateLimit Create Listener Rate Limit
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:rate_limit:create`
 	//
@@ -2583,7 +2586,7 @@ type ClientInterface interface {
 
 	// DeleteListenerRateLimit Delete Listener Rate Limit
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:rate_limit:delete`
 	//
@@ -2592,7 +2595,7 @@ type ClientInterface interface {
 
 	// PartialUpdateListenerRateLimitWithBody Partial Update Listener Rate Limit
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:rate_limit:update`
 	//
@@ -2603,7 +2606,7 @@ type ClientInterface interface {
 
 	// PartialUpdateListenerRateLimit Partial Update Listener Rate Limit
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:rate_limit:update`
 	//
@@ -2614,7 +2617,7 @@ type ClientInterface interface {
 
 	// ListLoadBalancers List Load Balancers
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:list`
 	//
@@ -2623,7 +2626,7 @@ type ClientInterface interface {
 
 	// CreateLoadBalancerWithBody Create Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:create`
 	//
@@ -2634,7 +2637,7 @@ type ClientInterface interface {
 
 	// CreateLoadBalancer Create Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:create`
 	//
@@ -2650,7 +2653,7 @@ type ClientInterface interface {
 
 	// DeleteLoadBalancer Delete Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:delete`
 	//
@@ -2659,7 +2662,7 @@ type ClientInterface interface {
 
 	// GetLoadBalancer Get Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:get`
 	//
@@ -2668,7 +2671,7 @@ type ClientInterface interface {
 
 	// PartialUpdateLoadBalancerWithBody Partial Update Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:update`
 	//
@@ -2679,7 +2682,7 @@ type ClientInterface interface {
 
 	// PartialUpdateLoadBalancer Partial Update Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:update`
 	//
@@ -2690,7 +2693,7 @@ type ClientInterface interface {
 
 	// UpdateLoadBalancerWithBody Update Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:update`
 	//
@@ -2701,7 +2704,7 @@ type ClientInterface interface {
 
 	// UpdateLoadBalancer Update Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:update`
 	//
@@ -2712,7 +2715,7 @@ type ClientInterface interface {
 
 	// ListListeners List Listeners
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:list`
 	//
@@ -2721,7 +2724,7 @@ type ClientInterface interface {
 
 	// CreateListenerWithBody Create Listener
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:create`
 	//
@@ -2732,7 +2735,7 @@ type ClientInterface interface {
 
 	// CreateListener Create Listener
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:create`
 	//
@@ -2748,7 +2751,7 @@ type ClientInterface interface {
 
 	// DeleteListener Delete Listener
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:delete`
 	//
@@ -2757,7 +2760,7 @@ type ClientInterface interface {
 
 	// GetListener Get Listener
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:get`
 	//
@@ -2771,7 +2774,7 @@ type ClientInterface interface {
 	// A listener is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:update`
 	//
@@ -2787,7 +2790,7 @@ type ClientInterface interface {
 	// A listener is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:update`
 	//
@@ -2803,7 +2806,7 @@ type ClientInterface interface {
 	// A listener is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:update`
 	//
@@ -2819,7 +2822,7 @@ type ClientInterface interface {
 	// A listener is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:update`
 	//
@@ -2830,7 +2833,7 @@ type ClientInterface interface {
 
 	// GetListenerMetrics Get Listener Metrics
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:get_metrics`
 	//
@@ -2839,7 +2842,7 @@ type ClientInterface interface {
 
 	// GetLoadBalancerMetrics Get Load Balancer Metrics
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:get_metrics`
 	//
@@ -2848,7 +2851,7 @@ type ClientInterface interface {
 
 	// ConfigurePublicIpLoadBalancerWithBody Configure Public Ip Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:configure_public_ip`
 	//
@@ -2859,7 +2862,7 @@ type ClientInterface interface {
 
 	// ConfigurePublicIpLoadBalancer Configure Public Ip Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:configure_public_ip`
 	//
@@ -2870,7 +2873,7 @@ type ClientInterface interface {
 
 	// ListServerGroups List Server Groups
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:list`
 	//
@@ -2879,7 +2882,7 @@ type ClientInterface interface {
 
 	// CreateServerGroupWithBody Create Server Group
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:create`
 	//
@@ -2890,7 +2893,7 @@ type ClientInterface interface {
 
 	// CreateServerGroup Create Server Group
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:create`
 	//
@@ -2901,7 +2904,7 @@ type ClientInterface interface {
 
 	// DeleteServerGroup Delete Server Group
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:delete`
 	//
@@ -2910,7 +2913,7 @@ type ClientInterface interface {
 
 	// GetServerGroup Get Server Group
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:get`
 	//
@@ -2924,7 +2927,7 @@ type ClientInterface interface {
 	// A server group is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:update`
 	//
@@ -2940,7 +2943,7 @@ type ClientInterface interface {
 	// A server group is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:update`
 	//
@@ -2956,7 +2959,7 @@ type ClientInterface interface {
 	// A server group is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:update`
 	//
@@ -2972,7 +2975,7 @@ type ClientInterface interface {
 	// A server group is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:update`
 	//
@@ -2985,7 +2988,7 @@ type ClientInterface interface {
 	//
 	// This API replaces the members of a server group with the members provided in the request body. Members without an id are created, members with an id are updated or kept unchanged, and existing members omitted from the request body are deleted.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:batch_update_members`
 	//
@@ -2998,7 +3001,7 @@ type ClientInterface interface {
 	//
 	// This API replaces the members of a server group with the members provided in the request body. Members without an id are created, members with an id are updated or kept unchanged, and existing members omitted from the request body are deleted.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:batch_update_members`
 	//
@@ -3009,7 +3012,7 @@ type ClientInterface interface {
 
 	// ListServerGroupMembers List Server Group Members
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:list`
 	//
@@ -3018,7 +3021,7 @@ type ClientInterface interface {
 
 	// CreateServerGroupMemberWithBody Create Server Group Member
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:create`
 	//
@@ -3029,7 +3032,7 @@ type ClientInterface interface {
 
 	// CreateServerGroupMember Create Server Group Member
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:create`
 	//
@@ -3040,7 +3043,7 @@ type ClientInterface interface {
 
 	// DeleteServerGroupMember Delete Server Group Member
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:delete`
 	//
@@ -3049,7 +3052,7 @@ type ClientInterface interface {
 
 	// GetServerGroupMember Get Server Group Member
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:get`
 	//
@@ -3063,7 +3066,7 @@ type ClientInterface interface {
 	// A server group member is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:update`
 	//
@@ -3079,7 +3082,7 @@ type ClientInterface interface {
 	// A server group member is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:update`
 	//
@@ -3095,7 +3098,7 @@ type ClientInterface interface {
 	// A server group member is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:update`
 	//
@@ -3111,7 +3114,7 @@ type ClientInterface interface {
 	// A server group member is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:update`
 	//
@@ -3123,7 +3126,7 @@ type ClientInterface interface {
 
 // ListL7policies List L7Policies
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:list`
 //
@@ -3142,7 +3145,7 @@ func (c *Client) ListL7policies(ctx context.Context, params *ListL7policiesParam
 
 // CreateL7policyWithBody Create L7Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:create`
 //
@@ -3163,7 +3166,7 @@ func (c *Client) CreateL7policyWithBody(ctx context.Context, params *CreateL7pol
 
 // CreateL7policy Create L7Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:create`
 //
@@ -3184,7 +3187,7 @@ func (c *Client) CreateL7policy(ctx context.Context, params *CreateL7policyParam
 
 // DeleteL7policy Delete L7Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:delete`
 //
@@ -3203,7 +3206,7 @@ func (c *Client) DeleteL7policy(ctx context.Context, l7policyId core.UUID, param
 
 // GetL7policy Get L7Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:get`
 //
@@ -3222,7 +3225,7 @@ func (c *Client) GetL7policy(ctx context.Context, l7policyId core.UUID, params *
 
 // PartialUpdateL7policyWithBody Partial Update L7Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:update`
 //
@@ -3243,7 +3246,7 @@ func (c *Client) PartialUpdateL7policyWithBody(ctx context.Context, l7policyId c
 
 // PartialUpdateL7policy Partial Update L7Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:update`
 //
@@ -3264,7 +3267,7 @@ func (c *Client) PartialUpdateL7policy(ctx context.Context, l7policyId core.UUID
 
 // UpdateL7policyWithBody Update L7Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:update`
 //
@@ -3285,7 +3288,7 @@ func (c *Client) UpdateL7policyWithBody(ctx context.Context, l7policyId core.UUI
 
 // UpdateL7policy Update L7Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:update`
 //
@@ -3306,7 +3309,7 @@ func (c *Client) UpdateL7policy(ctx context.Context, l7policyId core.UUID, param
 
 // ListL7rule List L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:list`
 //
@@ -3325,7 +3328,7 @@ func (c *Client) ListL7rule(ctx context.Context, l7policyId core.UUID, params *L
 
 // CreateL7ruleWithBody Create L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:create`
 //
@@ -3346,7 +3349,7 @@ func (c *Client) CreateL7ruleWithBody(ctx context.Context, l7policyId core.UUID,
 
 // CreateL7rule Create L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:create`
 //
@@ -3367,7 +3370,7 @@ func (c *Client) CreateL7rule(ctx context.Context, l7policyId core.UUID, params 
 
 // DeleteL7rule Delete L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:delete`
 //
@@ -3386,7 +3389,7 @@ func (c *Client) DeleteL7rule(ctx context.Context, l7policyId core.UUID, l7ruleI
 
 // GetL7rule Get L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:get`
 //
@@ -3405,7 +3408,7 @@ func (c *Client) GetL7rule(ctx context.Context, l7policyId core.UUID, l7ruleId c
 
 // PartialUpdateL7ruleWithBody Partial Update L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:update`
 //
@@ -3426,7 +3429,7 @@ func (c *Client) PartialUpdateL7ruleWithBody(ctx context.Context, l7policyId cor
 
 // PartialUpdateL7rule Partial Update L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:update`
 //
@@ -3447,7 +3450,7 @@ func (c *Client) PartialUpdateL7rule(ctx context.Context, l7policyId core.UUID, 
 
 // UpdateL7ruleWithBody Update L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:update`
 //
@@ -3468,7 +3471,7 @@ func (c *Client) UpdateL7ruleWithBody(ctx context.Context, l7policyId core.UUID,
 
 // UpdateL7rule Update L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:update`
 //
@@ -3489,7 +3492,7 @@ func (c *Client) UpdateL7rule(ctx context.Context, l7policyId core.UUID, l7ruleI
 
 // ListListenerAuthUsers List Listener Auth Users
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:auth_user:list`
 //
@@ -3508,7 +3511,7 @@ func (c *Client) ListListenerAuthUsers(ctx context.Context, listenerId core.UUID
 
 // CreateListenerAuthUserWithBody Create Listener Auth User
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:auth_user:create`
 //
@@ -3529,7 +3532,7 @@ func (c *Client) CreateListenerAuthUserWithBody(ctx context.Context, listenerId 
 
 // CreateListenerAuthUser Create Listener Auth User
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:auth_user:create`
 //
@@ -3550,7 +3553,7 @@ func (c *Client) CreateListenerAuthUser(ctx context.Context, listenerId core.UUI
 
 // DeleteListenerAuthUser Delete Listener Auth User
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:auth_user:delete`
 //
@@ -3569,7 +3572,7 @@ func (c *Client) DeleteListenerAuthUser(ctx context.Context, listenerId core.UUI
 
 // ChangePasswordListenerAuthUserWithBody Change Password Listener Auth User
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:auth_user:change_password`
 //
@@ -3590,7 +3593,7 @@ func (c *Client) ChangePasswordListenerAuthUserWithBody(ctx context.Context, lis
 
 // ChangePasswordListenerAuthUser Change Password Listener Auth User
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:auth_user:change_password`
 //
@@ -3611,7 +3614,7 @@ func (c *Client) ChangePasswordListenerAuthUser(ctx context.Context, listenerId 
 
 // ListListenerRateLimits List Listener Rate Limits
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:rate_limit:list`
 //
@@ -3630,7 +3633,7 @@ func (c *Client) ListListenerRateLimits(ctx context.Context, listenerId core.UUI
 
 // CreateListenerRateLimitWithBody Create Listener Rate Limit
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:rate_limit:create`
 //
@@ -3651,7 +3654,7 @@ func (c *Client) CreateListenerRateLimitWithBody(ctx context.Context, listenerId
 
 // CreateListenerRateLimit Create Listener Rate Limit
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:rate_limit:create`
 //
@@ -3672,7 +3675,7 @@ func (c *Client) CreateListenerRateLimit(ctx context.Context, listenerId core.UU
 
 // DeleteListenerRateLimit Delete Listener Rate Limit
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:rate_limit:delete`
 //
@@ -3691,7 +3694,7 @@ func (c *Client) DeleteListenerRateLimit(ctx context.Context, listenerId core.UU
 
 // PartialUpdateListenerRateLimitWithBody Partial Update Listener Rate Limit
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:rate_limit:update`
 //
@@ -3712,7 +3715,7 @@ func (c *Client) PartialUpdateListenerRateLimitWithBody(ctx context.Context, lis
 
 // PartialUpdateListenerRateLimit Partial Update Listener Rate Limit
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:rate_limit:update`
 //
@@ -3733,7 +3736,7 @@ func (c *Client) PartialUpdateListenerRateLimit(ctx context.Context, listenerId 
 
 // ListLoadBalancers List Load Balancers
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:list`
 //
@@ -3752,7 +3755,7 @@ func (c *Client) ListLoadBalancers(ctx context.Context, params *ListLoadBalancer
 
 // CreateLoadBalancerWithBody Create Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:create`
 //
@@ -3773,7 +3776,7 @@ func (c *Client) CreateLoadBalancerWithBody(ctx context.Context, params *CreateL
 
 // CreateLoadBalancer Create Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:create`
 //
@@ -3809,7 +3812,7 @@ func (c *Client) GetLoadBalancerMetricsSchema(ctx context.Context, reqEditors ..
 
 // DeleteLoadBalancer Delete Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:delete`
 //
@@ -3828,7 +3831,7 @@ func (c *Client) DeleteLoadBalancer(ctx context.Context, loadBalancerId core.UUI
 
 // GetLoadBalancer Get Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:get`
 //
@@ -3847,7 +3850,7 @@ func (c *Client) GetLoadBalancer(ctx context.Context, loadBalancerId core.UUID, 
 
 // PartialUpdateLoadBalancerWithBody Partial Update Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:update`
 //
@@ -3868,7 +3871,7 @@ func (c *Client) PartialUpdateLoadBalancerWithBody(ctx context.Context, loadBala
 
 // PartialUpdateLoadBalancer Partial Update Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:update`
 //
@@ -3889,7 +3892,7 @@ func (c *Client) PartialUpdateLoadBalancer(ctx context.Context, loadBalancerId c
 
 // UpdateLoadBalancerWithBody Update Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:update`
 //
@@ -3910,7 +3913,7 @@ func (c *Client) UpdateLoadBalancerWithBody(ctx context.Context, loadBalancerId 
 
 // UpdateLoadBalancer Update Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:update`
 //
@@ -3931,7 +3934,7 @@ func (c *Client) UpdateLoadBalancer(ctx context.Context, loadBalancerId core.UUI
 
 // ListListeners List Listeners
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:list`
 //
@@ -3950,7 +3953,7 @@ func (c *Client) ListListeners(ctx context.Context, loadBalancerId core.UUID, pa
 
 // CreateListenerWithBody Create Listener
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:create`
 //
@@ -3971,7 +3974,7 @@ func (c *Client) CreateListenerWithBody(ctx context.Context, loadBalancerId core
 
 // CreateListener Create Listener
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:create`
 //
@@ -4007,7 +4010,7 @@ func (c *Client) GetListenerMetricsSchema(ctx context.Context, loadBalancerId co
 
 // DeleteListener Delete Listener
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:delete`
 //
@@ -4026,7 +4029,7 @@ func (c *Client) DeleteListener(ctx context.Context, loadBalancerId core.UUID, l
 
 // GetListener Get Listener
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:get`
 //
@@ -4050,7 +4053,7 @@ func (c *Client) GetListener(ctx context.Context, loadBalancerId core.UUID, list
 // A listener is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:update`
 //
@@ -4076,7 +4079,7 @@ func (c *Client) PartialUpdateListenerWithBody(ctx context.Context, loadBalancer
 // A listener is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:update`
 //
@@ -4102,7 +4105,7 @@ func (c *Client) PartialUpdateListener(ctx context.Context, loadBalancerId core.
 // A listener is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:update`
 //
@@ -4128,7 +4131,7 @@ func (c *Client) UpdateListenerWithBody(ctx context.Context, loadBalancerId core
 // A listener is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:update`
 //
@@ -4149,7 +4152,7 @@ func (c *Client) UpdateListener(ctx context.Context, loadBalancerId core.UUID, l
 
 // GetListenerMetrics Get Listener Metrics
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:get_metrics`
 //
@@ -4168,7 +4171,7 @@ func (c *Client) GetListenerMetrics(ctx context.Context, loadBalancerId core.UUI
 
 // GetLoadBalancerMetrics Get Load Balancer Metrics
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:get_metrics`
 //
@@ -4187,7 +4190,7 @@ func (c *Client) GetLoadBalancerMetrics(ctx context.Context, loadBalancerId core
 
 // ConfigurePublicIpLoadBalancerWithBody Configure Public Ip Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:configure_public_ip`
 //
@@ -4208,7 +4211,7 @@ func (c *Client) ConfigurePublicIpLoadBalancerWithBody(ctx context.Context, load
 
 // ConfigurePublicIpLoadBalancer Configure Public Ip Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:configure_public_ip`
 //
@@ -4229,7 +4232,7 @@ func (c *Client) ConfigurePublicIpLoadBalancer(ctx context.Context, loadBalancer
 
 // ListServerGroups List Server Groups
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:list`
 //
@@ -4248,7 +4251,7 @@ func (c *Client) ListServerGroups(ctx context.Context, loadBalancerId core.UUID,
 
 // CreateServerGroupWithBody Create Server Group
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:create`
 //
@@ -4269,7 +4272,7 @@ func (c *Client) CreateServerGroupWithBody(ctx context.Context, loadBalancerId c
 
 // CreateServerGroup Create Server Group
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:create`
 //
@@ -4290,7 +4293,7 @@ func (c *Client) CreateServerGroup(ctx context.Context, loadBalancerId core.UUID
 
 // DeleteServerGroup Delete Server Group
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:delete`
 //
@@ -4309,7 +4312,7 @@ func (c *Client) DeleteServerGroup(ctx context.Context, loadBalancerId core.UUID
 
 // GetServerGroup Get Server Group
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:get`
 //
@@ -4333,7 +4336,7 @@ func (c *Client) GetServerGroup(ctx context.Context, loadBalancerId core.UUID, s
 // A server group is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:update`
 //
@@ -4359,7 +4362,7 @@ func (c *Client) PartialUpdateServerGroupWithBody(ctx context.Context, loadBalan
 // A server group is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:update`
 //
@@ -4385,7 +4388,7 @@ func (c *Client) PartialUpdateServerGroup(ctx context.Context, loadBalancerId co
 // A server group is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:update`
 //
@@ -4411,7 +4414,7 @@ func (c *Client) UpdateServerGroupWithBody(ctx context.Context, loadBalancerId c
 // A server group is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:update`
 //
@@ -4434,7 +4437,7 @@ func (c *Client) UpdateServerGroup(ctx context.Context, loadBalancerId core.UUID
 //
 // This API replaces the members of a server group with the members provided in the request body. Members without an id are created, members with an id are updated or kept unchanged, and existing members omitted from the request body are deleted.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:batch_update_members`
 //
@@ -4457,7 +4460,7 @@ func (c *Client) BatchUpdateMemberServerGroupWithBody(ctx context.Context, loadB
 //
 // This API replaces the members of a server group with the members provided in the request body. Members without an id are created, members with an id are updated or kept unchanged, and existing members omitted from the request body are deleted.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:batch_update_members`
 //
@@ -4478,7 +4481,7 @@ func (c *Client) BatchUpdateMemberServerGroup(ctx context.Context, loadBalancerI
 
 // ListServerGroupMembers List Server Group Members
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:list`
 //
@@ -4497,7 +4500,7 @@ func (c *Client) ListServerGroupMembers(ctx context.Context, serverGroupId core.
 
 // CreateServerGroupMemberWithBody Create Server Group Member
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:create`
 //
@@ -4518,7 +4521,7 @@ func (c *Client) CreateServerGroupMemberWithBody(ctx context.Context, serverGrou
 
 // CreateServerGroupMember Create Server Group Member
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:create`
 //
@@ -4539,7 +4542,7 @@ func (c *Client) CreateServerGroupMember(ctx context.Context, serverGroupId core
 
 // DeleteServerGroupMember Delete Server Group Member
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:delete`
 //
@@ -4558,7 +4561,7 @@ func (c *Client) DeleteServerGroupMember(ctx context.Context, serverGroupId core
 
 // GetServerGroupMember Get Server Group Member
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:get`
 //
@@ -4582,7 +4585,7 @@ func (c *Client) GetServerGroupMember(ctx context.Context, serverGroupId core.UU
 // A server group member is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:update`
 //
@@ -4608,7 +4611,7 @@ func (c *Client) PartialUpdateServerGroupMemberWithBody(ctx context.Context, ser
 // A server group member is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:update`
 //
@@ -4634,7 +4637,7 @@ func (c *Client) PartialUpdateServerGroupMember(ctx context.Context, serverGroup
 // A server group member is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:update`
 //
@@ -4660,7 +4663,7 @@ func (c *Client) UpdateServerGroupMemberWithBody(ctx context.Context, serverGrou
 // A server group member is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:update`
 //
@@ -8210,7 +8213,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListL7policiesWithResponse List L7Policies
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:list`
 	//
@@ -8221,7 +8224,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateL7policyWithBodyWithResponse Create L7Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:create`
 	//
@@ -8232,7 +8235,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateL7policyWithResponse Create L7Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:create`
 	//
@@ -8243,7 +8246,7 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteL7policyWithResponse Delete L7Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:delete`
 	//
@@ -8254,7 +8257,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetL7policyWithResponse Get L7Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:get`
 	//
@@ -8265,7 +8268,7 @@ type ClientWithResponsesInterface interface {
 
 	// PartialUpdateL7policyWithBodyWithResponse Partial Update L7Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:update`
 	//
@@ -8276,7 +8279,7 @@ type ClientWithResponsesInterface interface {
 
 	// PartialUpdateL7policyWithResponse Partial Update L7Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:update`
 	//
@@ -8287,7 +8290,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateL7policyWithBodyWithResponse Update L7Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:update`
 	//
@@ -8298,7 +8301,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateL7policyWithResponse Update L7Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_policy:update`
 	//
@@ -8309,7 +8312,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListL7ruleWithResponse List L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:list`
 	//
@@ -8320,7 +8323,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateL7ruleWithBodyWithResponse Create L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:create`
 	//
@@ -8331,7 +8334,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateL7ruleWithResponse Create L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:create`
 	//
@@ -8342,7 +8345,7 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteL7ruleWithResponse Delete L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:delete`
 	//
@@ -8353,7 +8356,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetL7ruleWithResponse Get L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:get`
 	//
@@ -8364,7 +8367,7 @@ type ClientWithResponsesInterface interface {
 
 	// PartialUpdateL7ruleWithBodyWithResponse Partial Update L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:update`
 	//
@@ -8375,7 +8378,7 @@ type ClientWithResponsesInterface interface {
 
 	// PartialUpdateL7ruleWithResponse Partial Update L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:update`
 	//
@@ -8386,7 +8389,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateL7ruleWithBodyWithResponse Update L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:update`
 	//
@@ -8397,7 +8400,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateL7ruleWithResponse Update L7Rule
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:l7_rule:update`
 	//
@@ -8408,7 +8411,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListListenerAuthUsersWithResponse List Listener Auth Users
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:auth_user:list`
 	//
@@ -8419,7 +8422,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateListenerAuthUserWithBodyWithResponse Create Listener Auth User
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:auth_user:create`
 	//
@@ -8430,7 +8433,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateListenerAuthUserWithResponse Create Listener Auth User
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:auth_user:create`
 	//
@@ -8441,7 +8444,7 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteListenerAuthUserWithResponse Delete Listener Auth User
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:auth_user:delete`
 	//
@@ -8452,7 +8455,7 @@ type ClientWithResponsesInterface interface {
 
 	// ChangePasswordListenerAuthUserWithBodyWithResponse Change Password Listener Auth User
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:auth_user:change_password`
 	//
@@ -8463,7 +8466,7 @@ type ClientWithResponsesInterface interface {
 
 	// ChangePasswordListenerAuthUserWithResponse Change Password Listener Auth User
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:auth_user:change_password`
 	//
@@ -8474,7 +8477,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListListenerRateLimitsWithResponse List Listener Rate Limits
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:rate_limit:list`
 	//
@@ -8485,7 +8488,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateListenerRateLimitWithBodyWithResponse Create Listener Rate Limit
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:rate_limit:create`
 	//
@@ -8496,7 +8499,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateListenerRateLimitWithResponse Create Listener Rate Limit
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:rate_limit:create`
 	//
@@ -8507,7 +8510,7 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteListenerRateLimitWithResponse Delete Listener Rate Limit
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:rate_limit:delete`
 	//
@@ -8518,7 +8521,7 @@ type ClientWithResponsesInterface interface {
 
 	// PartialUpdateListenerRateLimitWithBodyWithResponse Partial Update Listener Rate Limit
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:rate_limit:update`
 	//
@@ -8529,7 +8532,7 @@ type ClientWithResponsesInterface interface {
 
 	// PartialUpdateListenerRateLimitWithResponse Partial Update Listener Rate Limit
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:rate_limit:update`
 	//
@@ -8540,7 +8543,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListLoadBalancersWithResponse List Load Balancers
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:list`
 	//
@@ -8551,7 +8554,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateLoadBalancerWithBodyWithResponse Create Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:create`
 	//
@@ -8562,7 +8565,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateLoadBalancerWithResponse Create Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:create`
 	//
@@ -8580,7 +8583,7 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteLoadBalancerWithResponse Delete Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:delete`
 	//
@@ -8591,7 +8594,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetLoadBalancerWithResponse Get Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:get`
 	//
@@ -8602,7 +8605,7 @@ type ClientWithResponsesInterface interface {
 
 	// PartialUpdateLoadBalancerWithBodyWithResponse Partial Update Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:update`
 	//
@@ -8613,7 +8616,7 @@ type ClientWithResponsesInterface interface {
 
 	// PartialUpdateLoadBalancerWithResponse Partial Update Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:update`
 	//
@@ -8624,7 +8627,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateLoadBalancerWithBodyWithResponse Update Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:update`
 	//
@@ -8635,7 +8638,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateLoadBalancerWithResponse Update Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:update`
 	//
@@ -8646,7 +8649,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListListenersWithResponse List Listeners
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:list`
 	//
@@ -8657,7 +8660,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateListenerWithBodyWithResponse Create Listener
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:create`
 	//
@@ -8668,7 +8671,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateListenerWithResponse Create Listener
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:create`
 	//
@@ -8686,7 +8689,7 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteListenerWithResponse Delete Listener
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:delete`
 	//
@@ -8697,7 +8700,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetListenerWithResponse Get Listener
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:get`
 	//
@@ -8713,7 +8716,7 @@ type ClientWithResponsesInterface interface {
 	// A listener is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:update`
 	//
@@ -8729,7 +8732,7 @@ type ClientWithResponsesInterface interface {
 	// A listener is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:update`
 	//
@@ -8745,7 +8748,7 @@ type ClientWithResponsesInterface interface {
 	// A listener is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:update`
 	//
@@ -8761,7 +8764,7 @@ type ClientWithResponsesInterface interface {
 	// A listener is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:update`
 	//
@@ -8772,7 +8775,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetListenerMetricsWithResponse Get Listener Metrics
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:listener:get_metrics`
 	//
@@ -8783,7 +8786,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetLoadBalancerMetricsWithResponse Get Load Balancer Metrics
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:get_metrics`
 	//
@@ -8794,7 +8797,7 @@ type ClientWithResponsesInterface interface {
 
 	// ConfigurePublicIpLoadBalancerWithBodyWithResponse Configure Public Ip Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:configure_public_ip`
 	//
@@ -8805,7 +8808,7 @@ type ClientWithResponsesInterface interface {
 
 	// ConfigurePublicIpLoadBalancerWithResponse Configure Public Ip Load Balancer
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:load_balancer:configure_public_ip`
 	//
@@ -8816,7 +8819,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListServerGroupsWithResponse List Server Groups
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:list`
 	//
@@ -8827,7 +8830,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateServerGroupWithBodyWithResponse Create Server Group
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:create`
 	//
@@ -8838,7 +8841,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateServerGroupWithResponse Create Server Group
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:create`
 	//
@@ -8849,7 +8852,7 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteServerGroupWithResponse Delete Server Group
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:delete`
 	//
@@ -8860,7 +8863,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetServerGroupWithResponse Get Server Group
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:get`
 	//
@@ -8876,7 +8879,7 @@ type ClientWithResponsesInterface interface {
 	// A server group is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:update`
 	//
@@ -8892,7 +8895,7 @@ type ClientWithResponsesInterface interface {
 	// A server group is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:update`
 	//
@@ -8908,7 +8911,7 @@ type ClientWithResponsesInterface interface {
 	// A server group is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:update`
 	//
@@ -8924,7 +8927,7 @@ type ClientWithResponsesInterface interface {
 	// A server group is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:update`
 	//
@@ -8937,7 +8940,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// This API replaces the members of a server group with the members provided in the request body. Members without an id are created, members with an id are updated or kept unchanged, and existing members omitted from the request body are deleted.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:batch_update_members`
 	//
@@ -8950,7 +8953,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// This API replaces the members of a server group with the members provided in the request body. Members without an id are created, members with an id are updated or kept unchanged, and existing members omitted from the request body are deleted.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:server_group:batch_update_members`
 	//
@@ -8961,7 +8964,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListServerGroupMembersWithResponse List Server Group Members
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:list`
 	//
@@ -8972,7 +8975,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateServerGroupMemberWithBodyWithResponse Create Server Group Member
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:create`
 	//
@@ -8983,7 +8986,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateServerGroupMemberWithResponse Create Server Group Member
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:create`
 	//
@@ -8994,7 +8997,7 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteServerGroupMemberWithResponse Delete Server Group Member
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:delete`
 	//
@@ -9005,7 +9008,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetServerGroupMemberWithResponse Get Server Group Member
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:get`
 	//
@@ -9021,7 +9024,7 @@ type ClientWithResponsesInterface interface {
 	// A server group member is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:update`
 	//
@@ -9037,7 +9040,7 @@ type ClientWithResponsesInterface interface {
 	// A server group member is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:update`
 	//
@@ -9053,7 +9056,7 @@ type ClientWithResponsesInterface interface {
 	// A server group member is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:update`
 	//
@@ -9069,7 +9072,7 @@ type ClientWithResponsesInterface interface {
 	// A server group member is in ``update_error`` status when its last update did not eventually
 	// succeed. The system does not auto-heal it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:load_balancing:member:update`
 	//
@@ -10731,7 +10734,7 @@ func (r UpdateServerGroupMemberResponse) StatusCode() int {
 
 // ListL7policiesWithResponse List L7Policies
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:list`
 //
@@ -10748,7 +10751,7 @@ func (c *ClientWithResponses) ListL7policiesWithResponse(ctx context.Context, pa
 
 // CreateL7policyWithBodyWithResponse Create L7Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:create`
 //
@@ -10765,7 +10768,7 @@ func (c *ClientWithResponses) CreateL7policyWithBodyWithResponse(ctx context.Con
 
 // CreateL7policyWithResponse Create L7Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:create`
 //
@@ -10782,7 +10785,7 @@ func (c *ClientWithResponses) CreateL7policyWithResponse(ctx context.Context, pa
 
 // DeleteL7policyWithResponse Delete L7Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:delete`
 //
@@ -10799,7 +10802,7 @@ func (c *ClientWithResponses) DeleteL7policyWithResponse(ctx context.Context, l7
 
 // GetL7policyWithResponse Get L7Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:get`
 //
@@ -10816,7 +10819,7 @@ func (c *ClientWithResponses) GetL7policyWithResponse(ctx context.Context, l7pol
 
 // PartialUpdateL7policyWithBodyWithResponse Partial Update L7Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:update`
 //
@@ -10833,7 +10836,7 @@ func (c *ClientWithResponses) PartialUpdateL7policyWithBodyWithResponse(ctx cont
 
 // PartialUpdateL7policyWithResponse Partial Update L7Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:update`
 //
@@ -10850,7 +10853,7 @@ func (c *ClientWithResponses) PartialUpdateL7policyWithResponse(ctx context.Cont
 
 // UpdateL7policyWithBodyWithResponse Update L7Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:update`
 //
@@ -10867,7 +10870,7 @@ func (c *ClientWithResponses) UpdateL7policyWithBodyWithResponse(ctx context.Con
 
 // UpdateL7policyWithResponse Update L7Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_policy:update`
 //
@@ -10884,7 +10887,7 @@ func (c *ClientWithResponses) UpdateL7policyWithResponse(ctx context.Context, l7
 
 // ListL7ruleWithResponse List L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:list`
 //
@@ -10901,7 +10904,7 @@ func (c *ClientWithResponses) ListL7ruleWithResponse(ctx context.Context, l7poli
 
 // CreateL7ruleWithBodyWithResponse Create L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:create`
 //
@@ -10918,7 +10921,7 @@ func (c *ClientWithResponses) CreateL7ruleWithBodyWithResponse(ctx context.Conte
 
 // CreateL7ruleWithResponse Create L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:create`
 //
@@ -10935,7 +10938,7 @@ func (c *ClientWithResponses) CreateL7ruleWithResponse(ctx context.Context, l7po
 
 // DeleteL7ruleWithResponse Delete L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:delete`
 //
@@ -10952,7 +10955,7 @@ func (c *ClientWithResponses) DeleteL7ruleWithResponse(ctx context.Context, l7po
 
 // GetL7ruleWithResponse Get L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:get`
 //
@@ -10969,7 +10972,7 @@ func (c *ClientWithResponses) GetL7ruleWithResponse(ctx context.Context, l7polic
 
 // PartialUpdateL7ruleWithBodyWithResponse Partial Update L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:update`
 //
@@ -10986,7 +10989,7 @@ func (c *ClientWithResponses) PartialUpdateL7ruleWithBodyWithResponse(ctx contex
 
 // PartialUpdateL7ruleWithResponse Partial Update L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:update`
 //
@@ -11003,7 +11006,7 @@ func (c *ClientWithResponses) PartialUpdateL7ruleWithResponse(ctx context.Contex
 
 // UpdateL7ruleWithBodyWithResponse Update L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:update`
 //
@@ -11020,7 +11023,7 @@ func (c *ClientWithResponses) UpdateL7ruleWithBodyWithResponse(ctx context.Conte
 
 // UpdateL7ruleWithResponse Update L7Rule
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:l7_rule:update`
 //
@@ -11037,7 +11040,7 @@ func (c *ClientWithResponses) UpdateL7ruleWithResponse(ctx context.Context, l7po
 
 // ListListenerAuthUsersWithResponse List Listener Auth Users
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:auth_user:list`
 //
@@ -11054,7 +11057,7 @@ func (c *ClientWithResponses) ListListenerAuthUsersWithResponse(ctx context.Cont
 
 // CreateListenerAuthUserWithBodyWithResponse Create Listener Auth User
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:auth_user:create`
 //
@@ -11071,7 +11074,7 @@ func (c *ClientWithResponses) CreateListenerAuthUserWithBodyWithResponse(ctx con
 
 // CreateListenerAuthUserWithResponse Create Listener Auth User
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:auth_user:create`
 //
@@ -11088,7 +11091,7 @@ func (c *ClientWithResponses) CreateListenerAuthUserWithResponse(ctx context.Con
 
 // DeleteListenerAuthUserWithResponse Delete Listener Auth User
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:auth_user:delete`
 //
@@ -11105,7 +11108,7 @@ func (c *ClientWithResponses) DeleteListenerAuthUserWithResponse(ctx context.Con
 
 // ChangePasswordListenerAuthUserWithBodyWithResponse Change Password Listener Auth User
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:auth_user:change_password`
 //
@@ -11122,7 +11125,7 @@ func (c *ClientWithResponses) ChangePasswordListenerAuthUserWithBodyWithResponse
 
 // ChangePasswordListenerAuthUserWithResponse Change Password Listener Auth User
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:auth_user:change_password`
 //
@@ -11139,7 +11142,7 @@ func (c *ClientWithResponses) ChangePasswordListenerAuthUserWithResponse(ctx con
 
 // ListListenerRateLimitsWithResponse List Listener Rate Limits
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:rate_limit:list`
 //
@@ -11156,7 +11159,7 @@ func (c *ClientWithResponses) ListListenerRateLimitsWithResponse(ctx context.Con
 
 // CreateListenerRateLimitWithBodyWithResponse Create Listener Rate Limit
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:rate_limit:create`
 //
@@ -11173,7 +11176,7 @@ func (c *ClientWithResponses) CreateListenerRateLimitWithBodyWithResponse(ctx co
 
 // CreateListenerRateLimitWithResponse Create Listener Rate Limit
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:rate_limit:create`
 //
@@ -11190,7 +11193,7 @@ func (c *ClientWithResponses) CreateListenerRateLimitWithResponse(ctx context.Co
 
 // DeleteListenerRateLimitWithResponse Delete Listener Rate Limit
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:rate_limit:delete`
 //
@@ -11207,7 +11210,7 @@ func (c *ClientWithResponses) DeleteListenerRateLimitWithResponse(ctx context.Co
 
 // PartialUpdateListenerRateLimitWithBodyWithResponse Partial Update Listener Rate Limit
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:rate_limit:update`
 //
@@ -11224,7 +11227,7 @@ func (c *ClientWithResponses) PartialUpdateListenerRateLimitWithBodyWithResponse
 
 // PartialUpdateListenerRateLimitWithResponse Partial Update Listener Rate Limit
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:rate_limit:update`
 //
@@ -11241,7 +11244,7 @@ func (c *ClientWithResponses) PartialUpdateListenerRateLimitWithResponse(ctx con
 
 // ListLoadBalancersWithResponse List Load Balancers
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:list`
 //
@@ -11258,7 +11261,7 @@ func (c *ClientWithResponses) ListLoadBalancersWithResponse(ctx context.Context,
 
 // CreateLoadBalancerWithBodyWithResponse Create Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:create`
 //
@@ -11275,7 +11278,7 @@ func (c *ClientWithResponses) CreateLoadBalancerWithBodyWithResponse(ctx context
 
 // CreateLoadBalancerWithResponse Create Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:create`
 //
@@ -11305,7 +11308,7 @@ func (c *ClientWithResponses) GetLoadBalancerMetricsSchemaWithResponse(ctx conte
 
 // DeleteLoadBalancerWithResponse Delete Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:delete`
 //
@@ -11322,7 +11325,7 @@ func (c *ClientWithResponses) DeleteLoadBalancerWithResponse(ctx context.Context
 
 // GetLoadBalancerWithResponse Get Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:get`
 //
@@ -11339,7 +11342,7 @@ func (c *ClientWithResponses) GetLoadBalancerWithResponse(ctx context.Context, l
 
 // PartialUpdateLoadBalancerWithBodyWithResponse Partial Update Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:update`
 //
@@ -11356,7 +11359,7 @@ func (c *ClientWithResponses) PartialUpdateLoadBalancerWithBodyWithResponse(ctx 
 
 // PartialUpdateLoadBalancerWithResponse Partial Update Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:update`
 //
@@ -11373,7 +11376,7 @@ func (c *ClientWithResponses) PartialUpdateLoadBalancerWithResponse(ctx context.
 
 // UpdateLoadBalancerWithBodyWithResponse Update Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:update`
 //
@@ -11390,7 +11393,7 @@ func (c *ClientWithResponses) UpdateLoadBalancerWithBodyWithResponse(ctx context
 
 // UpdateLoadBalancerWithResponse Update Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:update`
 //
@@ -11407,7 +11410,7 @@ func (c *ClientWithResponses) UpdateLoadBalancerWithResponse(ctx context.Context
 
 // ListListenersWithResponse List Listeners
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:list`
 //
@@ -11424,7 +11427,7 @@ func (c *ClientWithResponses) ListListenersWithResponse(ctx context.Context, loa
 
 // CreateListenerWithBodyWithResponse Create Listener
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:create`
 //
@@ -11441,7 +11444,7 @@ func (c *ClientWithResponses) CreateListenerWithBodyWithResponse(ctx context.Con
 
 // CreateListenerWithResponse Create Listener
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:create`
 //
@@ -11471,7 +11474,7 @@ func (c *ClientWithResponses) GetListenerMetricsSchemaWithResponse(ctx context.C
 
 // DeleteListenerWithResponse Delete Listener
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:delete`
 //
@@ -11488,7 +11491,7 @@ func (c *ClientWithResponses) DeleteListenerWithResponse(ctx context.Context, lo
 
 // GetListenerWithResponse Get Listener
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:get`
 //
@@ -11510,7 +11513,7 @@ func (c *ClientWithResponses) GetListenerWithResponse(ctx context.Context, loadB
 // A listener is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:update`
 //
@@ -11532,7 +11535,7 @@ func (c *ClientWithResponses) PartialUpdateListenerWithBodyWithResponse(ctx cont
 // A listener is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:update`
 //
@@ -11554,7 +11557,7 @@ func (c *ClientWithResponses) PartialUpdateListenerWithResponse(ctx context.Cont
 // A listener is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:update`
 //
@@ -11576,7 +11579,7 @@ func (c *ClientWithResponses) UpdateListenerWithBodyWithResponse(ctx context.Con
 // A listener is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:update`
 //
@@ -11593,7 +11596,7 @@ func (c *ClientWithResponses) UpdateListenerWithResponse(ctx context.Context, lo
 
 // GetListenerMetricsWithResponse Get Listener Metrics
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:listener:get_metrics`
 //
@@ -11610,7 +11613,7 @@ func (c *ClientWithResponses) GetListenerMetricsWithResponse(ctx context.Context
 
 // GetLoadBalancerMetricsWithResponse Get Load Balancer Metrics
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:get_metrics`
 //
@@ -11627,7 +11630,7 @@ func (c *ClientWithResponses) GetLoadBalancerMetricsWithResponse(ctx context.Con
 
 // ConfigurePublicIpLoadBalancerWithBodyWithResponse Configure Public Ip Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:configure_public_ip`
 //
@@ -11644,7 +11647,7 @@ func (c *ClientWithResponses) ConfigurePublicIpLoadBalancerWithBodyWithResponse(
 
 // ConfigurePublicIpLoadBalancerWithResponse Configure Public Ip Load Balancer
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:load_balancer:configure_public_ip`
 //
@@ -11661,7 +11664,7 @@ func (c *ClientWithResponses) ConfigurePublicIpLoadBalancerWithResponse(ctx cont
 
 // ListServerGroupsWithResponse List Server Groups
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:list`
 //
@@ -11678,7 +11681,7 @@ func (c *ClientWithResponses) ListServerGroupsWithResponse(ctx context.Context, 
 
 // CreateServerGroupWithBodyWithResponse Create Server Group
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:create`
 //
@@ -11695,7 +11698,7 @@ func (c *ClientWithResponses) CreateServerGroupWithBodyWithResponse(ctx context.
 
 // CreateServerGroupWithResponse Create Server Group
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:create`
 //
@@ -11712,7 +11715,7 @@ func (c *ClientWithResponses) CreateServerGroupWithResponse(ctx context.Context,
 
 // DeleteServerGroupWithResponse Delete Server Group
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:delete`
 //
@@ -11729,7 +11732,7 @@ func (c *ClientWithResponses) DeleteServerGroupWithResponse(ctx context.Context,
 
 // GetServerGroupWithResponse Get Server Group
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:get`
 //
@@ -11751,7 +11754,7 @@ func (c *ClientWithResponses) GetServerGroupWithResponse(ctx context.Context, lo
 // A server group is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:update`
 //
@@ -11773,7 +11776,7 @@ func (c *ClientWithResponses) PartialUpdateServerGroupWithBodyWithResponse(ctx c
 // A server group is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:update`
 //
@@ -11795,7 +11798,7 @@ func (c *ClientWithResponses) PartialUpdateServerGroupWithResponse(ctx context.C
 // A server group is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:update`
 //
@@ -11817,7 +11820,7 @@ func (c *ClientWithResponses) UpdateServerGroupWithBodyWithResponse(ctx context.
 // A server group is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:update`
 //
@@ -11836,7 +11839,7 @@ func (c *ClientWithResponses) UpdateServerGroupWithResponse(ctx context.Context,
 //
 // This API replaces the members of a server group with the members provided in the request body. Members without an id are created, members with an id are updated or kept unchanged, and existing members omitted from the request body are deleted.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:batch_update_members`
 //
@@ -11855,7 +11858,7 @@ func (c *ClientWithResponses) BatchUpdateMemberServerGroupWithBodyWithResponse(c
 //
 // This API replaces the members of a server group with the members provided in the request body. Members without an id are created, members with an id are updated or kept unchanged, and existing members omitted from the request body are deleted.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:server_group:batch_update_members`
 //
@@ -11872,7 +11875,7 @@ func (c *ClientWithResponses) BatchUpdateMemberServerGroupWithResponse(ctx conte
 
 // ListServerGroupMembersWithResponse List Server Group Members
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:list`
 //
@@ -11889,7 +11892,7 @@ func (c *ClientWithResponses) ListServerGroupMembersWithResponse(ctx context.Con
 
 // CreateServerGroupMemberWithBodyWithResponse Create Server Group Member
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:create`
 //
@@ -11906,7 +11909,7 @@ func (c *ClientWithResponses) CreateServerGroupMemberWithBodyWithResponse(ctx co
 
 // CreateServerGroupMemberWithResponse Create Server Group Member
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:create`
 //
@@ -11923,7 +11926,7 @@ func (c *ClientWithResponses) CreateServerGroupMemberWithResponse(ctx context.Co
 
 // DeleteServerGroupMemberWithResponse Delete Server Group Member
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:delete`
 //
@@ -11940,7 +11943,7 @@ func (c *ClientWithResponses) DeleteServerGroupMemberWithResponse(ctx context.Co
 
 // GetServerGroupMemberWithResponse Get Server Group Member
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:get`
 //
@@ -11962,7 +11965,7 @@ func (c *ClientWithResponses) GetServerGroupMemberWithResponse(ctx context.Conte
 // A server group member is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:update`
 //
@@ -11984,7 +11987,7 @@ func (c *ClientWithResponses) PartialUpdateServerGroupMemberWithBodyWithResponse
 // A server group member is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:update`
 //
@@ -12006,7 +12009,7 @@ func (c *ClientWithResponses) PartialUpdateServerGroupMemberWithResponse(ctx con
 // A server group member is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:update`
 //
@@ -12028,7 +12031,7 @@ func (c *ClientWithResponses) UpdateServerGroupMemberWithBodyWithResponse(ctx co
 // A server group member is in “update_error“ status when its last update did not eventually
 // succeed. The system does not auto-heal it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:load_balancing:member:update`
 //

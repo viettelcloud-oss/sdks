@@ -23,7 +23,7 @@ go/
   pipeline/              # Orchestrator + spec-normalize + facade scripts
   core/                  # Maintained: errors, retry, pagination, decimal, uuid
   internal/oapi/         # Maintained: runtime surface for generated clients
-  server/, blockstorage/, network/   # Generated: client + facade per service
+  server/, blockstorage/, network/, project/, loadbalancer/, caas/, dbaas/, dbaascluster/   # Generated: client + facade per service
   RELEASING.md           # Release procedure
 ```
 

@@ -107,6 +107,12 @@ type NestedRegionSchema struct {
 	Name        string    `json:"name"`
 }
 
+// NestedServiceFeatureSchema defines model for NestedServiceFeatureSchema.
+type NestedServiceFeatureSchema struct {
+	Enabled bool   `json:"enabled"`
+	Feature string `json:"feature"`
+}
+
 // PagedProjectAllowedActionSchema defines model for PagedProjectAllowedActionSchema.
 type PagedProjectAllowedActionSchema struct {
 	Count   int                          `json:"count"`
@@ -157,12 +163,15 @@ type ProjectSchema struct {
 	EnableIam   bool   `json:"enable_iam"`
 
 	// HasBillingPlan Whether the project is currently covered by a billing plan
-	HasBillingPlan      bool                      `json:"has_billing_plan"`
-	HasPaygSubscription bool                      `json:"has_payg_subscription"`
-	HasVrpPlan          bool                      `json:"has_vrp_plan"`
-	Id                  core.UUID                 `json:"id"`
-	Name                string                    `json:"name"`
-	Organization        *NestedOrganizationSchema `json:"organization,omitempty"`
+	HasBillingPlan      bool      `json:"has_billing_plan"`
+	HasPaygSubscription bool      `json:"has_payg_subscription"`
+	HasVrpPlan          bool      `json:"has_vrp_plan"`
+	Id                  core.UUID `json:"id"`
+
+	// IsPoc Whether the project has an active VRP plan created by an operator
+	IsPoc        bool                      `json:"is_poc"`
+	Name         string                    `json:"name"`
+	Organization *NestedOrganizationSchema `json:"organization,omitempty"`
 
 	// Path Breadcrumb of ancestor directories, from root to the project's directory
 	Path   []NestedDirectorySchema `json:"path"`
@@ -176,9 +185,9 @@ type ProjectServiceRegionSchema struct {
 	Active bool `json:"active"`
 
 	// Features Fine-grained features this service exposes in this region
-	Features *[]ServiceFeatureSchema    `json:"features,omitempty"`
-	Region   NestedRegionSchema         `json:"region"`
-	Service  NestedProjectServiceSchema `json:"service"`
+	Features *[]NestedServiceFeatureSchema `json:"features,omitempty"`
+	Region   NestedRegionSchema            `json:"region"`
+	Service  NestedProjectServiceSchema    `json:"service"`
 }
 
 // ProjectStatus defines model for ProjectStatus.
@@ -193,12 +202,6 @@ type ProjectZoneSchema struct {
 	// NetworkScope The network scope of a zone, with its display label.
 	NetworkScope LabeledZoneNetworkScope `json:"network_scope"`
 	Region       NestedRegionSchema      `json:"region"`
-}
-
-// ServiceFeatureSchema defines model for ServiceFeatureSchema.
-type ServiceFeatureSchema struct {
-	Enabled bool   `json:"enabled"`
-	Feature string `json:"feature"`
 }
 
 // ZoneNetworkScope defines model for ZoneNetworkScope.
@@ -225,11 +228,12 @@ type ListProjectsParams struct {
 	Name           *string    `form:"name,omitempty" json:"name,omitempty"`
 	OrganizationId *core.UUID `form:"organization_id,omitempty" json:"organization_id,omitempty"`
 
-	// Q Free-text search across name, description, slug, and VPC CIDR
+	// Q Free-text search across name, slug, and VPC CIDR
 	Q *string `form:"q,omitempty" json:"q,omitempty"`
 
 	// DirectAccess True: only projects the user directly belongs to. False: only projects inherited via group/directory membership.
 	DirectAccess *bool `form:"direct_access,omitempty" json:"direct_access,omitempty"`
+	IsPoc        *bool `form:"is_poc,omitempty" json:"is_poc,omitempty"`
 	PageSize     *int  `form:"page_size,omitempty" json:"page_size,omitempty"`
 	PageNumber   *int  `form:"page_number,omitempty" json:"page_number,omitempty"`
 }
@@ -340,7 +344,7 @@ type ClientInterface interface {
 
 	// ListProjectRegions List Project Regions
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:tenant:project:get`
 	//
@@ -349,7 +353,7 @@ type ClientInterface interface {
 
 	// ListProjectZones List Project Zones
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:tenant:project:get`
 	//
@@ -389,7 +393,7 @@ func (c *Client) ListAllowedActions(ctx context.Context, projectId core.UUID, pa
 
 // ListProjectRegions List Project Regions
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:tenant:project:get`
 //
@@ -408,7 +412,7 @@ func (c *Client) ListProjectRegions(ctx context.Context, projectId core.UUID, pa
 
 // ListProjectZones List Project Zones
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:tenant:project:get`
 //
@@ -504,6 +508,18 @@ func NewListProjectsRequest(server string, params *ListProjectsParams) (*http.Re
 		if params.DirectAccess != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "direct_access", *params.DirectAccess, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.IsPoc != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "is_poc", *params.IsPoc, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -854,7 +870,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListProjectRegionsWithResponse List Project Regions
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:tenant:project:get`
 	//
@@ -865,7 +881,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListProjectZonesWithResponse List Project Zones
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:tenant:project:get`
 	//
@@ -1035,7 +1051,7 @@ func (c *ClientWithResponses) ListAllowedActionsWithResponse(ctx context.Context
 
 // ListProjectRegionsWithResponse List Project Regions
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:tenant:project:get`
 //
@@ -1052,7 +1068,7 @@ func (c *ClientWithResponses) ListProjectRegionsWithResponse(ctx context.Context
 
 // ListProjectZonesWithResponse List Project Zones
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:tenant:project:get`
 //

@@ -16,6 +16,11 @@ github.com/viettelcloud-oss/sdks/go
 | Server | `github.com/viettelcloud-oss/sdks/go/server` | Virtual server lifecycle and related resources |
 | Network | `github.com/viettelcloud-oss/sdks/go/network` | Networks, subnets, routers and related resources |
 | Block Storage | `github.com/viettelcloud-oss/sdks/go/blockstorage` | Volumes, snapshots, backups and related resources |
+| Load Balancer | `github.com/viettelcloud-oss/sdks/go/loadbalancer` | Load balancers, listeners, pools and health monitors |
+| Project | `github.com/viettelcloud-oss/sdks/go/project` | Projects, regions and service quotas |
+| CaaS | `github.com/viettelcloud-oss/sdks/go/caas` | Container groups, revisions and container instances |
+| DBaaS | `github.com/viettelcloud-oss/sdks/go/dbaas` | Database instances, flavors and configurations |
+| DBaaS Cluster | `github.com/viettelcloud-oss/sdks/go/dbaascluster` | Database clusters, storage classes and resource packages |
 | Core | `github.com/viettelcloud-oss/sdks/go/core` | Shared options, errors, retry and pagination primitives |
 
 Generated HTTP bindings live under each service's `internal/gen` package.
@@ -130,6 +135,14 @@ go/
 ├── network/
 │   └── internal/gen/
 ├── project/
+│   └── internal/gen/
+├── loadbalancer/
+│   └── internal/gen/
+├── caas/
+│   └── internal/gen/
+├── dbaas/
+│   └── internal/gen/
+├── dbaascluster/
 │   └── internal/gen/
 └── blockstorage/
     └── internal/gen/

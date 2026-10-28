@@ -61,6 +61,45 @@ func (e ImageStatus) Valid() bool {
 	}
 }
 
+// Defines values for PolicyExecutionStrategy.
+const (
+	PolicyExecutionStrategyDaysOfMonth PolicyExecutionStrategy = "days_of_month"
+	PolicyExecutionStrategyPeriodic    PolicyExecutionStrategy = "periodic"
+)
+
+// Valid indicates whether the value is a known member of the PolicyExecutionStrategy enum.
+func (e PolicyExecutionStrategy) Valid() bool {
+	switch e {
+	case PolicyExecutionStrategyDaysOfMonth:
+		return true
+	case PolicyExecutionStrategyPeriodic:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PolicyFrequencyUnit.
+const (
+	PolicyFrequencyUnitDay   PolicyFrequencyUnit = "day"
+	PolicyFrequencyUnitMonth PolicyFrequencyUnit = "month"
+	PolicyFrequencyUnitWeek  PolicyFrequencyUnit = "week"
+)
+
+// Valid indicates whether the value is a known member of the PolicyFrequencyUnit enum.
+func (e PolicyFrequencyUnit) Valid() bool {
+	switch e {
+	case PolicyFrequencyUnitDay:
+		return true
+	case PolicyFrequencyUnitMonth:
+		return true
+	case PolicyFrequencyUnitWeek:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for SnapshotStatus.
 const (
 	SnapshotStatusAvailable SnapshotStatus = "available"
@@ -103,6 +142,108 @@ func (e ThresholdStatus) Valid() bool {
 	case ThresholdStatusDisabled:
 		return true
 	case ThresholdStatusEnabled:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for VolumeBackupPolicyDaysOfMonthScheduleExecutionStrategy.
+const (
+	VolumeBackupPolicyDaysOfMonthScheduleExecutionStrategyDaysOfMonth VolumeBackupPolicyDaysOfMonthScheduleExecutionStrategy = "days_of_month"
+)
+
+// Valid indicates whether the value is a known member of the VolumeBackupPolicyDaysOfMonthScheduleExecutionStrategy enum.
+func (e VolumeBackupPolicyDaysOfMonthScheduleExecutionStrategy) Valid() bool {
+	switch e {
+	case VolumeBackupPolicyDaysOfMonthScheduleExecutionStrategyDaysOfMonth:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for VolumeBackupPolicyDaysOfMonthScheduleSchemaExecutionStrategy.
+const (
+	VolumeBackupPolicyDaysOfMonthScheduleSchemaExecutionStrategyDaysOfMonth VolumeBackupPolicyDaysOfMonthScheduleSchemaExecutionStrategy = "days_of_month"
+)
+
+// Valid indicates whether the value is a known member of the VolumeBackupPolicyDaysOfMonthScheduleSchemaExecutionStrategy enum.
+func (e VolumeBackupPolicyDaysOfMonthScheduleSchemaExecutionStrategy) Valid() bool {
+	switch e {
+	case VolumeBackupPolicyDaysOfMonthScheduleSchemaExecutionStrategyDaysOfMonth:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for VolumeBackupPolicyPeriodicScheduleExecutionStrategy.
+const (
+	VolumeBackupPolicyPeriodicScheduleExecutionStrategyPeriodic VolumeBackupPolicyPeriodicScheduleExecutionStrategy = "periodic"
+)
+
+// Valid indicates whether the value is a known member of the VolumeBackupPolicyPeriodicScheduleExecutionStrategy enum.
+func (e VolumeBackupPolicyPeriodicScheduleExecutionStrategy) Valid() bool {
+	switch e {
+	case VolumeBackupPolicyPeriodicScheduleExecutionStrategyPeriodic:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for VolumeBackupPolicyPeriodicScheduleSchemaExecutionStrategy.
+const (
+	VolumeBackupPolicyPeriodicScheduleSchemaExecutionStrategyPeriodic VolumeBackupPolicyPeriodicScheduleSchemaExecutionStrategy = "periodic"
+)
+
+// Valid indicates whether the value is a known member of the VolumeBackupPolicyPeriodicScheduleSchemaExecutionStrategy enum.
+func (e VolumeBackupPolicyPeriodicScheduleSchemaExecutionStrategy) Valid() bool {
+	switch e {
+	case VolumeBackupPolicyPeriodicScheduleSchemaExecutionStrategyPeriodic:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for VolumeBackupPolicyState.
+const (
+	VolumeBackupPolicyStateDone    VolumeBackupPolicyState = "done"
+	VolumeBackupPolicyStateFail    VolumeBackupPolicyState = "fail"
+	VolumeBackupPolicyStateReady   VolumeBackupPolicyState = "ready"
+	VolumeBackupPolicyStateRunning VolumeBackupPolicyState = "running"
+)
+
+// Valid indicates whether the value is a known member of the VolumeBackupPolicyState enum.
+func (e VolumeBackupPolicyState) Valid() bool {
+	switch e {
+	case VolumeBackupPolicyStateDone:
+		return true
+	case VolumeBackupPolicyStateFail:
+		return true
+	case VolumeBackupPolicyStateReady:
+		return true
+	case VolumeBackupPolicyStateRunning:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for VolumeBackupPolicyStatus.
+const (
+	VolumeBackupPolicyStatusDisabled VolumeBackupPolicyStatus = "disabled"
+	VolumeBackupPolicyStatusEnabled  VolumeBackupPolicyStatus = "enabled"
+)
+
+// Valid indicates whether the value is a known member of the VolumeBackupPolicyStatus enum.
+func (e VolumeBackupPolicyStatus) Valid() bool {
+	switch e {
+	case VolumeBackupPolicyStatusDisabled:
+		return true
+	case VolumeBackupPolicyStatusEnabled:
 		return true
 	default:
 		return false
@@ -343,45 +484,6 @@ func (e VolumeTypeEncryptKeySize) Valid() bool {
 	}
 }
 
-// Defines values for VolumeTypeSpeed.
-const (
-	VolumeTypeSpeedN100k VolumeTypeSpeed = "100k"
-	VolumeTypeSpeedN10k  VolumeTypeSpeed = "10k"
-	VolumeTypeSpeedN1k   VolumeTypeSpeed = "1k"
-	VolumeTypeSpeedN20k  VolumeTypeSpeed = "20k"
-	VolumeTypeSpeedN2k   VolumeTypeSpeed = "2k"
-	VolumeTypeSpeedN30k  VolumeTypeSpeed = "30k"
-	VolumeTypeSpeedN500  VolumeTypeSpeed = "500"
-	VolumeTypeSpeedN50k  VolumeTypeSpeed = "50k"
-	VolumeTypeSpeedN5k   VolumeTypeSpeed = "5k"
-)
-
-// Valid indicates whether the value is a known member of the VolumeTypeSpeed enum.
-func (e VolumeTypeSpeed) Valid() bool {
-	switch e {
-	case VolumeTypeSpeedN100k:
-		return true
-	case VolumeTypeSpeedN10k:
-		return true
-	case VolumeTypeSpeedN1k:
-		return true
-	case VolumeTypeSpeedN20k:
-		return true
-	case VolumeTypeSpeedN2k:
-		return true
-	case VolumeTypeSpeedN30k:
-		return true
-	case VolumeTypeSpeedN500:
-		return true
-	case VolumeTypeSpeedN50k:
-		return true
-	case VolumeTypeSpeedN5k:
-		return true
-	default:
-		return false
-	}
-}
-
 // Defines values for VolumeTypeState.
 const (
 	VolumeTypeStateDown VolumeTypeState = "down"
@@ -446,10 +548,12 @@ type LabeledVolumeTypeEncryptKeySize struct {
 	Value VolumeTypeEncryptKeySize `json:"value"`
 }
 
-// LabeledVolumeTypeSpeed The speed tier of a volume type, with its display label.
+// LabeledVolumeTypeSpeed The speed of a volume type, kept in the labeled shape for backward compatibility.
+//
+// Speed is free-form, so there is no display label and “label“ is always empty.
 type LabeledVolumeTypeSpeed struct {
-	Label *string         `json:"label,omitempty"`
-	Value VolumeTypeSpeed `json:"value"`
+	Label *string `json:"label,omitempty"`
+	Value string  `json:"value"`
 }
 
 // LabeledVolumeTypeState Whether a volume type can be ordered, with its display label.
@@ -568,9 +672,9 @@ type NestedVolumeTypeSchema struct {
 	Id       core.UUID          `json:"id"`
 
 	// Multiattach The current state of multi-attach permission. If Volume Type supports multi-attach, this field is True. Conversely, it is False.
-	Multiattach bool            `json:"multiattach"`
-	Name        string          `json:"name"`
-	Speed       VolumeTypeSpeed `json:"speed"`
+	Multiattach bool   `json:"multiattach"`
+	Name        string `json:"name"`
+	Speed       string `json:"speed"`
 }
 
 // NestedZoneSchema defines model for NestedZoneSchema.
@@ -578,6 +682,14 @@ type NestedZoneSchema struct {
 	Description string    `json:"description"`
 	Id          core.UUID `json:"id"`
 	Name        string    `json:"name"`
+}
+
+// PagedVolumeBackupPolicySchema defines model for PagedVolumeBackupPolicySchema.
+type PagedVolumeBackupPolicySchema struct {
+	Count    int                        `json:"count"`
+	Next     *string                    `json:"next,omitempty"`
+	Previous *string                    `json:"previous,omitempty"`
+	Results  []VolumeBackupPolicySchema `json:"results"`
 }
 
 // PagedVolumeBackupSchema defines model for PagedVolumeBackupSchema.
@@ -612,6 +724,12 @@ type PagedVolumeTypeSchema struct {
 	Results  []VolumeTypeSchema `json:"results"`
 }
 
+// PolicyExecutionStrategy defines model for PolicyExecutionStrategy.
+type PolicyExecutionStrategy string
+
+// PolicyFrequencyUnit defines model for PolicyFrequencyUnit.
+type PolicyFrequencyUnit string
+
 // SnapshotStatus defines model for SnapshotStatus.
 type SnapshotStatus string
 
@@ -629,6 +747,118 @@ type VolumeBackupCreateSchema struct {
 type VolumeBackupPartialUpdateSchema struct {
 	Description *string `json:"description,omitempty"`
 	Name        *string `json:"name,omitempty"`
+}
+
+// VolumeBackupPolicyCreateSchema defines model for VolumeBackupPolicyCreateSchema.
+type VolumeBackupPolicyCreateSchema struct {
+	Description *string   `json:"description,omitempty"`
+	Name        string    `json:"name"`
+	RegionId    core.UUID `json:"region_id"`
+	Retention   *int      `json:"retention,omitempty"`
+
+	// Schedule VolumeBackupPolicySchedule is exactly one of: VolumeBackupPolicyDaysOfMonthSchedule, VolumeBackupPolicyPeriodicSchedule. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+	Schedule VolumeBackupPolicySchedule `json:"schedule"`
+	Status   VolumeBackupPolicyStatus   `json:"status"`
+}
+
+// VolumeBackupPolicyDaysOfMonthSchedule defines model for VolumeBackupPolicyDaysOfMonthSchedule.
+type VolumeBackupPolicyDaysOfMonthSchedule struct {
+	DaysOfMonth       []int                                                  `json:"days_of_month"`
+	ExecutionStrategy VolumeBackupPolicyDaysOfMonthScheduleExecutionStrategy `json:"execution_strategy"`
+	Time              string                                                 `json:"time"`
+}
+
+// VolumeBackupPolicyDaysOfMonthScheduleExecutionStrategy defines model for VolumeBackupPolicyDaysOfMonthSchedule.ExecutionStrategy.
+type VolumeBackupPolicyDaysOfMonthScheduleExecutionStrategy string
+
+// VolumeBackupPolicyDaysOfMonthScheduleSchema defines model for VolumeBackupPolicyDaysOfMonthScheduleSchema.
+type VolumeBackupPolicyDaysOfMonthScheduleSchema struct {
+	DaysOfMonth       []int                                                        `json:"days_of_month"`
+	ExecutionStrategy VolumeBackupPolicyDaysOfMonthScheduleSchemaExecutionStrategy `json:"execution_strategy"`
+	Time              string                                                       `json:"time"`
+}
+
+// VolumeBackupPolicyDaysOfMonthScheduleSchemaExecutionStrategy defines model for VolumeBackupPolicyDaysOfMonthScheduleSchema.ExecutionStrategy.
+type VolumeBackupPolicyDaysOfMonthScheduleSchemaExecutionStrategy string
+
+// VolumeBackupPolicyPartialUpdateSchema defines model for VolumeBackupPolicyPartialUpdateSchema.
+type VolumeBackupPolicyPartialUpdateSchema struct {
+	Description *string `json:"description,omitempty"`
+	Name        *string `json:"name,omitempty"`
+	Retention   *int    `json:"retention,omitempty"`
+
+	// Schedule VolumeBackupPolicySchedule is exactly one of: VolumeBackupPolicyDaysOfMonthSchedule, VolumeBackupPolicyPeriodicSchedule. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+	Schedule *VolumeBackupPolicySchedule `json:"schedule,omitempty"`
+	Status   *VolumeBackupPolicyStatus   `json:"status,omitempty"`
+}
+
+// VolumeBackupPolicyPeriodicSchedule defines model for VolumeBackupPolicyPeriodicSchedule.
+type VolumeBackupPolicyPeriodicSchedule struct {
+	ExecutionStrategy VolumeBackupPolicyPeriodicScheduleExecutionStrategy `json:"execution_strategy"`
+	FirstExecution    time.Time                                           `json:"first_execution"`
+	Frequency         int                                                 `json:"frequency"`
+	FrequencyUnit     PolicyFrequencyUnit                                 `json:"frequency_unit"`
+}
+
+// VolumeBackupPolicyPeriodicScheduleExecutionStrategy defines model for VolumeBackupPolicyPeriodicSchedule.ExecutionStrategy.
+type VolumeBackupPolicyPeriodicScheduleExecutionStrategy string
+
+// VolumeBackupPolicyPeriodicScheduleSchema defines model for VolumeBackupPolicyPeriodicScheduleSchema.
+type VolumeBackupPolicyPeriodicScheduleSchema struct {
+	ExecutionStrategy VolumeBackupPolicyPeriodicScheduleSchemaExecutionStrategy `json:"execution_strategy"`
+	FirstExecution    time.Time                                                 `json:"first_execution"`
+	Frequency         int                                                       `json:"frequency"`
+	FrequencyUnit     PolicyFrequencyUnit                                       `json:"frequency_unit"`
+}
+
+// VolumeBackupPolicyPeriodicScheduleSchemaExecutionStrategy defines model for VolumeBackupPolicyPeriodicScheduleSchema.ExecutionStrategy.
+type VolumeBackupPolicyPeriodicScheduleSchemaExecutionStrategy string
+
+// VolumeBackupPolicySchedule VolumeBackupPolicySchedule is exactly one of: VolumeBackupPolicyDaysOfMonthSchedule, VolumeBackupPolicyPeriodicSchedule. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+type VolumeBackupPolicySchedule struct {
+	union json.RawMessage
+}
+
+// VolumeBackupPolicyScheduleSchema VolumeBackupPolicyScheduleSchema is exactly one of: VolumeBackupPolicyDaysOfMonthScheduleSchema, VolumeBackupPolicyPeriodicScheduleSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+type VolumeBackupPolicyScheduleSchema struct {
+	union json.RawMessage
+}
+
+// VolumeBackupPolicySchema defines model for VolumeBackupPolicySchema.
+type VolumeBackupPolicySchema struct {
+	CreatedAt     time.Time           `json:"created_at"`
+	Description   *string             `json:"description"`
+	Id            core.UUID           `json:"id"`
+	LastExecution *time.Time          `json:"last_execution"`
+	Name          string              `json:"name"`
+	NextExecution *time.Time          `json:"next_execution"`
+	Project       NestedProjectSchema `json:"project"`
+	Region        NestedRegionSchema  `json:"region"`
+	Retention     int                 `json:"retention"`
+
+	// Schedule VolumeBackupPolicyScheduleSchema is exactly one of: VolumeBackupPolicyDaysOfMonthScheduleSchema, VolumeBackupPolicyPeriodicScheduleSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+	Schedule    VolumeBackupPolicyScheduleSchema `json:"schedule"`
+	State       VolumeBackupPolicyState          `json:"state"`
+	Status      VolumeBackupPolicyStatus         `json:"status"`
+	UpdatedAt   time.Time                        `json:"updated_at"`
+	VolumeCount int                              `json:"volume_count"`
+}
+
+// VolumeBackupPolicyState defines model for VolumeBackupPolicyState.
+type VolumeBackupPolicyState string
+
+// VolumeBackupPolicyStatus defines model for VolumeBackupPolicyStatus.
+type VolumeBackupPolicyStatus string
+
+// VolumeBackupPolicyUpdateSchema defines model for VolumeBackupPolicyUpdateSchema.
+type VolumeBackupPolicyUpdateSchema struct {
+	Description string `json:"description"`
+	Name        string `json:"name"`
+	Retention   int    `json:"retention"`
+
+	// Schedule VolumeBackupPolicySchedule is exactly one of: VolumeBackupPolicyDaysOfMonthSchedule, VolumeBackupPolicyPeriodicSchedule. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+	Schedule VolumeBackupPolicySchedule `json:"schedule"`
+	Status   VolumeBackupPolicyStatus   `json:"status"`
 }
 
 // VolumeBackupSchema defines model for VolumeBackupSchema.
@@ -733,29 +963,6 @@ type VolumeCreateSourceOptions struct {
 	union json.RawMessage
 }
 
-// VolumeDetailSchema defines model for VolumeDetailSchema.
-type VolumeDetailSchema struct {
-	Attachable     bool                              `json:"attachable"`
-	Attachments    *[]NestedVolumeAttachmentSchema   `json:"attachments,omitempty"`
-	BackupPolicy   *NestedVolumeBackupPolicySchema   `json:"backup_policy,omitempty"`
-	Bootable       bool                              `json:"bootable"`
-	CreateFrom     NestedVolumeOriginSchema          `json:"create_from"`
-	CreatedAt      time.Time                         `json:"created_at"`
-	Description    *string                           `json:"description,omitempty"`
-	Encrypted      *bool                             `json:"encrypted,omitempty"`
-	Id             core.UUID                         `json:"id"`
-	Iops           *int                              `json:"iops,omitempty"`
-	Name           string                            `json:"name"`
-	OwnerId        *core.UUID                        `json:"owner_id,omitempty"`
-	ProjectId      core.UUID                         `json:"project_id"`
-	ResizePolicy   *NestedVolumeResizePolicySchema   `json:"resize_policy,omitempty"`
-	Size           int                               `json:"size"`
-	SnapshotPolicy *NestedVolumeSnapshotPolicySchema `json:"snapshot_policy,omitempty"`
-	Status         VolumeStatus                      `json:"status"`
-	UpdatedAt      time.Time                         `json:"updated_at"`
-	Zone           NestedZoneSchema                  `json:"zone"`
-}
-
 // VolumeExtendSchema defines model for VolumeExtendSchema.
 type VolumeExtendSchema struct {
 	Size int `json:"size"`
@@ -780,21 +987,25 @@ type VolumeRetypeSchema struct {
 
 // VolumeSchema defines model for VolumeSchema.
 type VolumeSchema struct {
-	Attachable  bool                            `json:"attachable"`
-	Attachments *[]NestedVolumeAttachmentSchema `json:"attachments,omitempty"`
-	Bootable    bool                            `json:"bootable"`
-	CreateFrom  NestedVolumeOriginSchema        `json:"create_from"`
-	CreatedAt   time.Time                       `json:"created_at"`
-	Description *string                         `json:"description,omitempty"`
-	Encrypted   *bool                           `json:"encrypted,omitempty"`
-	Id          core.UUID                       `json:"id"`
-	Name        string                          `json:"name"`
-	OwnerId     *core.UUID                      `json:"owner_id,omitempty"`
-	ProjectId   core.UUID                       `json:"project_id"`
-	Size        int                             `json:"size"`
-	Status      VolumeStatus                    `json:"status"`
-	UpdatedAt   time.Time                       `json:"updated_at"`
-	Zone        NestedZoneSchema                `json:"zone"`
+	Attachable     bool                              `json:"attachable"`
+	Attachments    *[]NestedVolumeAttachmentSchema   `json:"attachments,omitempty"`
+	BackupPolicy   *NestedVolumeBackupPolicySchema   `json:"backup_policy,omitempty"`
+	Bootable       bool                              `json:"bootable"`
+	CreateFrom     NestedVolumeOriginSchema          `json:"create_from"`
+	CreatedAt      time.Time                         `json:"created_at"`
+	Description    *string                           `json:"description,omitempty"`
+	Encrypted      *bool                             `json:"encrypted,omitempty"`
+	Id             core.UUID                         `json:"id"`
+	Iops           int                               `json:"iops"`
+	Name           string                            `json:"name"`
+	OwnerId        *core.UUID                        `json:"owner_id,omitempty"`
+	ProjectId      core.UUID                         `json:"project_id"`
+	ResizePolicy   *NestedVolumeResizePolicySchema   `json:"resize_policy,omitempty"`
+	Size           int                               `json:"size"`
+	SnapshotPolicy *NestedVolumeSnapshotPolicySchema `json:"snapshot_policy,omitempty"`
+	Status         VolumeStatus                      `json:"status"`
+	UpdatedAt      time.Time                         `json:"updated_at"`
+	Zone           NestedZoneSchema                  `json:"zone"`
 }
 
 // VolumeSnapshotCreateSchema defines model for VolumeSnapshotCreateSchema.
@@ -856,7 +1067,9 @@ type VolumeTypeSchema struct {
 	Multiattach       bool                            `json:"multiattach"`
 	Name              string                          `json:"name"`
 
-	// Speed The speed tier of a volume type, with its display label.
+	// Speed The speed of a volume type, kept in the labeled shape for backward compatibility.
+	//
+	// Speed is free-form, so there is no display label and ``label`` is always empty.
 	Speed LabeledVolumeTypeSpeed `json:"speed"`
 
 	// State Whether a volume type can be ordered, with its display label.
@@ -868,9 +1081,6 @@ type VolumeTypeSchema struct {
 	VolumeBackendName string                  `json:"volume_backend_name"`
 	Zone              NestedZoneSchema        `json:"zone"`
 }
-
-// VolumeTypeSpeed defines model for VolumeTypeSpeed.
-type VolumeTypeSpeed string
 
 // VolumeTypeState defines model for VolumeTypeState.
 type VolumeTypeState string
@@ -892,6 +1102,42 @@ type ProviderError = ErrorResponseSchema
 
 // ValidationError defines model for ValidationError.
 type ValidationError = ErrorResponseSchema
+
+// ListVolumeBackupPoliciesParams defines parameters for ListVolumeBackupPolicies.
+type ListVolumeBackupPoliciesParams struct {
+	Name              *string                   `form:"name,omitempty" json:"name,omitempty"`
+	Status            *VolumeBackupPolicyStatus `form:"status,omitempty" json:"status,omitempty"`
+	ExecutionStrategy *PolicyExecutionStrategy  `form:"execution_strategy,omitempty" json:"execution_strategy,omitempty"`
+	RegionId          *core.UUID                `form:"region_id,omitempty" json:"region_id,omitempty"`
+	PageSize          *int                      `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber        *int                      `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID         core.UUID                 `json:"Project-ID"`
+}
+
+// CreateVolumeBackupPolicyParams defines parameters for CreateVolumeBackupPolicy.
+type CreateVolumeBackupPolicyParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// DeleteVolumeBackupPolicyParams defines parameters for DeleteVolumeBackupPolicy.
+type DeleteVolumeBackupPolicyParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// GetVolumeBackupPolicyParams defines parameters for GetVolumeBackupPolicy.
+type GetVolumeBackupPolicyParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// PartialUpdateVolumeBackupPolicyParams defines parameters for PartialUpdateVolumeBackupPolicy.
+type PartialUpdateVolumeBackupPolicyParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// UpdateVolumeBackupPolicyParams defines parameters for UpdateVolumeBackupPolicy.
+type UpdateVolumeBackupPolicyParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
 
 // ListVolumeBackupsParams defines parameters for ListVolumeBackups.
 type ListVolumeBackupsParams struct {
@@ -976,7 +1222,7 @@ type ListVolumeTypesParams struct {
 	Name              *string                   `form:"name,omitempty" json:"name,omitempty"`
 	Status            *VolumeTypeStatus         `form:"status,omitempty" json:"status,omitempty"`
 	DiskType          *VolumeTypeDiskType       `form:"disk_type,omitempty" json:"disk_type,omitempty"`
-	Speed             *VolumeTypeSpeed          `form:"speed,omitempty" json:"speed,omitempty"`
+	Speed             *string                   `form:"speed,omitempty" json:"speed,omitempty"`
 	EncryptionKeySize *VolumeTypeEncryptKeySize `form:"encryption_key_size,omitempty" json:"encryption_key_size,omitempty"`
 	Multiattach       *bool                     `form:"multiattach,omitempty" json:"multiattach,omitempty"`
 	Ordering          *string                   `form:"ordering,omitempty" json:"ordering,omitempty"`
@@ -1054,6 +1300,15 @@ type SetVolumeSnapshotPolicyParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
+// CreateVolumeBackupPolicyJSONRequestBody defines body for CreateVolumeBackupPolicy for application/json ContentType.
+type CreateVolumeBackupPolicyJSONRequestBody = VolumeBackupPolicyCreateSchema
+
+// PartialUpdateVolumeBackupPolicyJSONRequestBody defines body for PartialUpdateVolumeBackupPolicy for application/json ContentType.
+type PartialUpdateVolumeBackupPolicyJSONRequestBody = VolumeBackupPolicyPartialUpdateSchema
+
+// UpdateVolumeBackupPolicyJSONRequestBody defines body for UpdateVolumeBackupPolicy for application/json ContentType.
+type UpdateVolumeBackupPolicyJSONRequestBody = VolumeBackupPolicyUpdateSchema
+
 // CreateVolumeBackupJSONRequestBody defines body for CreateVolumeBackup for application/json ContentType.
 type CreateVolumeBackupJSONRequestBody = VolumeBackupCreateSchema
 
@@ -1086,6 +1341,208 @@ type RetypeVolumeJSONRequestBody = VolumeRetypeSchema
 
 // SetVolumeSnapshotPolicyJSONRequestBody defines body for SetVolumeSnapshotPolicy for application/json ContentType.
 type SetVolumeSnapshotPolicyJSONRequestBody = VolumeSnapshotPolicyUpdateSchema
+
+// AsVolumeBackupPolicyDaysOfMonthSchedule returns the union data inside the VolumeBackupPolicySchedule as a VolumeBackupPolicyDaysOfMonthSchedule
+func (t VolumeBackupPolicySchedule) AsVolumeBackupPolicyDaysOfMonthSchedule() (VolumeBackupPolicyDaysOfMonthSchedule, error) {
+	var body VolumeBackupPolicyDaysOfMonthSchedule
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromVolumeBackupPolicyDaysOfMonthSchedule overwrites any union data inside the VolumeBackupPolicySchedule as the provided VolumeBackupPolicyDaysOfMonthSchedule
+func (t *VolumeBackupPolicySchedule) FromVolumeBackupPolicyDaysOfMonthSchedule(v VolumeBackupPolicyDaysOfMonthSchedule) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"days_of_month"}`))
+	t.union = b
+	return err
+}
+
+// MergeVolumeBackupPolicyDaysOfMonthSchedule performs a merge with any union data inside the VolumeBackupPolicySchedule, using the provided VolumeBackupPolicyDaysOfMonthSchedule
+func (t *VolumeBackupPolicySchedule) MergeVolumeBackupPolicyDaysOfMonthSchedule(v VolumeBackupPolicyDaysOfMonthSchedule) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"days_of_month"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsVolumeBackupPolicyPeriodicSchedule returns the union data inside the VolumeBackupPolicySchedule as a VolumeBackupPolicyPeriodicSchedule
+func (t VolumeBackupPolicySchedule) AsVolumeBackupPolicyPeriodicSchedule() (VolumeBackupPolicyPeriodicSchedule, error) {
+	var body VolumeBackupPolicyPeriodicSchedule
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromVolumeBackupPolicyPeriodicSchedule overwrites any union data inside the VolumeBackupPolicySchedule as the provided VolumeBackupPolicyPeriodicSchedule
+func (t *VolumeBackupPolicySchedule) FromVolumeBackupPolicyPeriodicSchedule(v VolumeBackupPolicyPeriodicSchedule) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"periodic"}`))
+	t.union = b
+	return err
+}
+
+// MergeVolumeBackupPolicyPeriodicSchedule performs a merge with any union data inside the VolumeBackupPolicySchedule, using the provided VolumeBackupPolicyPeriodicSchedule
+func (t *VolumeBackupPolicySchedule) MergeVolumeBackupPolicyPeriodicSchedule(v VolumeBackupPolicyPeriodicSchedule) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"periodic"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t VolumeBackupPolicySchedule) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"execution_strategy"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t VolumeBackupPolicySchedule) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "days_of_month":
+		return t.AsVolumeBackupPolicyDaysOfMonthSchedule()
+	case "periodic":
+		return t.AsVolumeBackupPolicyPeriodicSchedule()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t VolumeBackupPolicySchedule) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *VolumeBackupPolicySchedule) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsVolumeBackupPolicyDaysOfMonthScheduleSchema returns the union data inside the VolumeBackupPolicyScheduleSchema as a VolumeBackupPolicyDaysOfMonthScheduleSchema
+func (t VolumeBackupPolicyScheduleSchema) AsVolumeBackupPolicyDaysOfMonthScheduleSchema() (VolumeBackupPolicyDaysOfMonthScheduleSchema, error) {
+	var body VolumeBackupPolicyDaysOfMonthScheduleSchema
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromVolumeBackupPolicyDaysOfMonthScheduleSchema overwrites any union data inside the VolumeBackupPolicyScheduleSchema as the provided VolumeBackupPolicyDaysOfMonthScheduleSchema
+func (t *VolumeBackupPolicyScheduleSchema) FromVolumeBackupPolicyDaysOfMonthScheduleSchema(v VolumeBackupPolicyDaysOfMonthScheduleSchema) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"days_of_month"}`))
+	t.union = b
+	return err
+}
+
+// MergeVolumeBackupPolicyDaysOfMonthScheduleSchema performs a merge with any union data inside the VolumeBackupPolicyScheduleSchema, using the provided VolumeBackupPolicyDaysOfMonthScheduleSchema
+func (t *VolumeBackupPolicyScheduleSchema) MergeVolumeBackupPolicyDaysOfMonthScheduleSchema(v VolumeBackupPolicyDaysOfMonthScheduleSchema) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"days_of_month"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsVolumeBackupPolicyPeriodicScheduleSchema returns the union data inside the VolumeBackupPolicyScheduleSchema as a VolumeBackupPolicyPeriodicScheduleSchema
+func (t VolumeBackupPolicyScheduleSchema) AsVolumeBackupPolicyPeriodicScheduleSchema() (VolumeBackupPolicyPeriodicScheduleSchema, error) {
+	var body VolumeBackupPolicyPeriodicScheduleSchema
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromVolumeBackupPolicyPeriodicScheduleSchema overwrites any union data inside the VolumeBackupPolicyScheduleSchema as the provided VolumeBackupPolicyPeriodicScheduleSchema
+func (t *VolumeBackupPolicyScheduleSchema) FromVolumeBackupPolicyPeriodicScheduleSchema(v VolumeBackupPolicyPeriodicScheduleSchema) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"periodic"}`))
+	t.union = b
+	return err
+}
+
+// MergeVolumeBackupPolicyPeriodicScheduleSchema performs a merge with any union data inside the VolumeBackupPolicyScheduleSchema, using the provided VolumeBackupPolicyPeriodicScheduleSchema
+func (t *VolumeBackupPolicyScheduleSchema) MergeVolumeBackupPolicyPeriodicScheduleSchema(v VolumeBackupPolicyPeriodicScheduleSchema) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"periodic"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t VolumeBackupPolicyScheduleSchema) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"execution_strategy"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t VolumeBackupPolicyScheduleSchema) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "days_of_month":
+		return t.AsVolumeBackupPolicyDaysOfMonthScheduleSchema()
+	case "periodic":
+		return t.AsVolumeBackupPolicyPeriodicScheduleSchema()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t VolumeBackupPolicyScheduleSchema) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *VolumeBackupPolicyScheduleSchema) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // AsVolumeCreateFromSnapshotSchema returns the union data inside the VolumeCreateSourceOptions as a VolumeCreateFromSnapshotSchema
 func (t VolumeCreateSourceOptions) AsVolumeCreateFromSnapshotSchema() (VolumeCreateFromSnapshotSchema, error) {
@@ -1370,9 +1827,102 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 // The interface specification for the client above.
 type ClientInterface interface {
 
+	// ListVolumeBackupPolicies List Volume Backup Policies
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:list`
+	//
+	// Corresponds with GET /v2/block-storage/volume-backup-policies/ (the `ListVolumeBackupPolicies` operationId).
+	ListVolumeBackupPolicies(ctx context.Context, params *ListVolumeBackupPoliciesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateVolumeBackupPolicyWithBody Create Volume Backup Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:create`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v2/block-storage/volume-backup-policies/ (the `CreateVolumeBackupPolicy` operationId).
+	CreateVolumeBackupPolicyWithBody(ctx context.Context, params *CreateVolumeBackupPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateVolumeBackupPolicy Create Volume Backup Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:create`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v2/block-storage/volume-backup-policies/ (the `CreateVolumeBackupPolicy` operationId).
+	CreateVolumeBackupPolicy(ctx context.Context, params *CreateVolumeBackupPolicyParams, body CreateVolumeBackupPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteVolumeBackupPolicy Delete Volume Backup Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:delete`
+	//
+	// Corresponds with DELETE /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `DeleteVolumeBackupPolicy` operationId).
+	DeleteVolumeBackupPolicy(ctx context.Context, volumeBackupPolicyId core.UUID, params *DeleteVolumeBackupPolicyParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetVolumeBackupPolicy Get Volume Backup Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:get`
+	//
+	// Corresponds with GET /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `GetVolumeBackupPolicy` operationId).
+	GetVolumeBackupPolicy(ctx context.Context, volumeBackupPolicyId core.UUID, params *GetVolumeBackupPolicyParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PartialUpdateVolumeBackupPolicyWithBody Partial Update Volume Backup Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:update`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PATCH /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `PartialUpdateVolumeBackupPolicy` operationId).
+	PartialUpdateVolumeBackupPolicyWithBody(ctx context.Context, volumeBackupPolicyId core.UUID, params *PartialUpdateVolumeBackupPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PartialUpdateVolumeBackupPolicy Partial Update Volume Backup Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:update`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PATCH /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `PartialUpdateVolumeBackupPolicy` operationId).
+	PartialUpdateVolumeBackupPolicy(ctx context.Context, volumeBackupPolicyId core.UUID, params *PartialUpdateVolumeBackupPolicyParams, body PartialUpdateVolumeBackupPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateVolumeBackupPolicyWithBody Update Volume Backup Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:update`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `UpdateVolumeBackupPolicy` operationId).
+	UpdateVolumeBackupPolicyWithBody(ctx context.Context, volumeBackupPolicyId core.UUID, params *UpdateVolumeBackupPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateVolumeBackupPolicy Update Volume Backup Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:update`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `UpdateVolumeBackupPolicy` operationId).
+	UpdateVolumeBackupPolicy(ctx context.Context, volumeBackupPolicyId core.UUID, params *UpdateVolumeBackupPolicyParams, body UpdateVolumeBackupPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListVolumeBackups List Volume Backups
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:list`
 	//
@@ -1383,7 +1933,7 @@ type ClientInterface interface {
 	//
 	// Back up one of the project's volumes.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:create`
 	//
@@ -1396,7 +1946,7 @@ type ClientInterface interface {
 	//
 	// Back up one of the project's volumes.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:create`
 	//
@@ -1407,7 +1957,7 @@ type ClientInterface interface {
 
 	// DeleteVolumeBackup Delete Volume Backup
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:delete`
 	//
@@ -1416,7 +1966,7 @@ type ClientInterface interface {
 
 	// GetVolumeBackup Get Volume Backup
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:get`
 	//
@@ -1425,7 +1975,7 @@ type ClientInterface interface {
 
 	// PartialUpdateVolumeBackupWithBody Partial Update Volume Backup
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:update`
 	//
@@ -1436,7 +1986,7 @@ type ClientInterface interface {
 
 	// PartialUpdateVolumeBackup Partial Update Volume Backup
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:update`
 	//
@@ -1447,7 +1997,7 @@ type ClientInterface interface {
 
 	// UpdateVolumeBackupWithBody Update Volume Backup
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:update`
 	//
@@ -1458,7 +2008,7 @@ type ClientInterface interface {
 
 	// UpdateVolumeBackup Update Volume Backup
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:update`
 	//
@@ -1469,7 +2019,7 @@ type ClientInterface interface {
 
 	// ListVolumeSnapshots List Volume Snapshots
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:snapshot:list`
 	//
@@ -1478,7 +2028,7 @@ type ClientInterface interface {
 
 	// CreateVolumeSnapshotWithBody Create Volume Snapshot
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:snapshot:create`
 	//
@@ -1489,7 +2039,7 @@ type ClientInterface interface {
 
 	// CreateVolumeSnapshot Create Volume Snapshot
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:snapshot:create`
 	//
@@ -1500,7 +2050,7 @@ type ClientInterface interface {
 
 	// DeleteVolumeSnapshot Delete Volume Snapshot
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:snapshot:delete`
 	//
@@ -1509,7 +2059,7 @@ type ClientInterface interface {
 
 	// GetVolumeSnapshot Get Volume Snapshot
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:snapshot:get`
 	//
@@ -1518,7 +2068,7 @@ type ClientInterface interface {
 
 	// UpdateVolumeSnapshotWithBody Update Volume Snapshot
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:snapshot:update`
 	//
@@ -1529,7 +2079,7 @@ type ClientInterface interface {
 
 	// UpdateVolumeSnapshot Update Volume Snapshot
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:snapshot:update`
 	//
@@ -1550,7 +2100,7 @@ type ClientInterface interface {
 
 	// ListVolume List Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:list`
 	//
@@ -1559,7 +2109,7 @@ type ClientInterface interface {
 
 	// CreateVolumeWithBody Create Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:create`
 	//
@@ -1570,7 +2120,7 @@ type ClientInterface interface {
 
 	// CreateVolume Create Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:create`
 	//
@@ -1581,7 +2131,7 @@ type ClientInterface interface {
 
 	// DeleteVolume Delete Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:delete`
 	//
@@ -1590,7 +2140,7 @@ type ClientInterface interface {
 
 	// GetVolume Get Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:get`
 	//
@@ -1599,7 +2149,7 @@ type ClientInterface interface {
 
 	// UpdateVolumeWithBody Update Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:update`
 	//
@@ -1610,7 +2160,7 @@ type ClientInterface interface {
 
 	// UpdateVolume Update Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:update`
 	//
@@ -1621,7 +2171,7 @@ type ClientInterface interface {
 
 	// ConfigureBackupPolicyWithBody Configure Backup Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:apply_backup_policy`
 	//
@@ -1632,7 +2182,7 @@ type ClientInterface interface {
 
 	// ConfigureBackupPolicy Configure Backup Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:apply_backup_policy`
 	//
@@ -1643,7 +2193,7 @@ type ClientInterface interface {
 
 	// ExtendVolumeWithBody Extend Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:extend`
 	//
@@ -1654,7 +2204,7 @@ type ClientInterface interface {
 
 	// ExtendVolume Extend Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:extend`
 	//
@@ -1665,7 +2215,7 @@ type ClientInterface interface {
 
 	// RetypeVolumeWithBody Retype Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:retype`
 	//
@@ -1676,7 +2226,7 @@ type ClientInterface interface {
 
 	// RetypeVolume Retype Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:retype`
 	//
@@ -1687,7 +2237,7 @@ type ClientInterface interface {
 
 	// SetVolumeSnapshotPolicyWithBody Set Volume Snapshot Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:update_snapshot_policy`
 	//
@@ -1698,7 +2248,7 @@ type ClientInterface interface {
 
 	// SetVolumeSnapshotPolicy Set Volume Snapshot Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:update_snapshot_policy`
 	//
@@ -1708,9 +2258,192 @@ type ClientInterface interface {
 	SetVolumeSnapshotPolicy(ctx context.Context, volumeId core.UUID, params *SetVolumeSnapshotPolicyParams, body SetVolumeSnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
+// ListVolumeBackupPolicies List Volume Backup Policies
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:list`
+//
+// Corresponds with GET /v2/block-storage/volume-backup-policies/ (the `ListVolumeBackupPolicies` operationId).
+func (c *Client) ListVolumeBackupPolicies(ctx context.Context, params *ListVolumeBackupPoliciesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListVolumeBackupPoliciesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateVolumeBackupPolicyWithBody Create Volume Backup Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:create`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/block-storage/volume-backup-policies/ (the `CreateVolumeBackupPolicy` operationId).
+func (c *Client) CreateVolumeBackupPolicyWithBody(ctx context.Context, params *CreateVolumeBackupPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateVolumeBackupPolicyRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateVolumeBackupPolicy Create Volume Backup Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:create`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/block-storage/volume-backup-policies/ (the `CreateVolumeBackupPolicy` operationId).
+func (c *Client) CreateVolumeBackupPolicy(ctx context.Context, params *CreateVolumeBackupPolicyParams, body CreateVolumeBackupPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateVolumeBackupPolicyRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteVolumeBackupPolicy Delete Volume Backup Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:delete`
+//
+// Corresponds with DELETE /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `DeleteVolumeBackupPolicy` operationId).
+func (c *Client) DeleteVolumeBackupPolicy(ctx context.Context, volumeBackupPolicyId core.UUID, params *DeleteVolumeBackupPolicyParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteVolumeBackupPolicyRequest(c.Server, volumeBackupPolicyId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetVolumeBackupPolicy Get Volume Backup Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:get`
+//
+// Corresponds with GET /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `GetVolumeBackupPolicy` operationId).
+func (c *Client) GetVolumeBackupPolicy(ctx context.Context, volumeBackupPolicyId core.UUID, params *GetVolumeBackupPolicyParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetVolumeBackupPolicyRequest(c.Server, volumeBackupPolicyId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PartialUpdateVolumeBackupPolicyWithBody Partial Update Volume Backup Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:update`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PATCH /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `PartialUpdateVolumeBackupPolicy` operationId).
+func (c *Client) PartialUpdateVolumeBackupPolicyWithBody(ctx context.Context, volumeBackupPolicyId core.UUID, params *PartialUpdateVolumeBackupPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPartialUpdateVolumeBackupPolicyRequestWithBody(c.Server, volumeBackupPolicyId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PartialUpdateVolumeBackupPolicy Partial Update Volume Backup Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:update`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PATCH /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `PartialUpdateVolumeBackupPolicy` operationId).
+func (c *Client) PartialUpdateVolumeBackupPolicy(ctx context.Context, volumeBackupPolicyId core.UUID, params *PartialUpdateVolumeBackupPolicyParams, body PartialUpdateVolumeBackupPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPartialUpdateVolumeBackupPolicyRequest(c.Server, volumeBackupPolicyId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateVolumeBackupPolicyWithBody Update Volume Backup Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:update`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `UpdateVolumeBackupPolicy` operationId).
+func (c *Client) UpdateVolumeBackupPolicyWithBody(ctx context.Context, volumeBackupPolicyId core.UUID, params *UpdateVolumeBackupPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateVolumeBackupPolicyRequestWithBody(c.Server, volumeBackupPolicyId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateVolumeBackupPolicy Update Volume Backup Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:update`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `UpdateVolumeBackupPolicy` operationId).
+func (c *Client) UpdateVolumeBackupPolicy(ctx context.Context, volumeBackupPolicyId core.UUID, params *UpdateVolumeBackupPolicyParams, body UpdateVolumeBackupPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateVolumeBackupPolicyRequest(c.Server, volumeBackupPolicyId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // ListVolumeBackups List Volume Backups
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:list`
 //
@@ -1731,7 +2464,7 @@ func (c *Client) ListVolumeBackups(ctx context.Context, params *ListVolumeBackup
 //
 // Back up one of the project's volumes.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:create`
 //
@@ -1754,7 +2487,7 @@ func (c *Client) CreateVolumeBackupWithBody(ctx context.Context, params *CreateV
 //
 // Back up one of the project's volumes.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:create`
 //
@@ -1775,7 +2508,7 @@ func (c *Client) CreateVolumeBackup(ctx context.Context, params *CreateVolumeBac
 
 // DeleteVolumeBackup Delete Volume Backup
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:delete`
 //
@@ -1794,7 +2527,7 @@ func (c *Client) DeleteVolumeBackup(ctx context.Context, volumeBackupId core.UUI
 
 // GetVolumeBackup Get Volume Backup
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:get`
 //
@@ -1813,7 +2546,7 @@ func (c *Client) GetVolumeBackup(ctx context.Context, volumeBackupId core.UUID, 
 
 // PartialUpdateVolumeBackupWithBody Partial Update Volume Backup
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:update`
 //
@@ -1834,7 +2567,7 @@ func (c *Client) PartialUpdateVolumeBackupWithBody(ctx context.Context, volumeBa
 
 // PartialUpdateVolumeBackup Partial Update Volume Backup
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:update`
 //
@@ -1855,7 +2588,7 @@ func (c *Client) PartialUpdateVolumeBackup(ctx context.Context, volumeBackupId c
 
 // UpdateVolumeBackupWithBody Update Volume Backup
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:update`
 //
@@ -1876,7 +2609,7 @@ func (c *Client) UpdateVolumeBackupWithBody(ctx context.Context, volumeBackupId 
 
 // UpdateVolumeBackup Update Volume Backup
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:update`
 //
@@ -1897,7 +2630,7 @@ func (c *Client) UpdateVolumeBackup(ctx context.Context, volumeBackupId core.UUI
 
 // ListVolumeSnapshots List Volume Snapshots
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:snapshot:list`
 //
@@ -1916,7 +2649,7 @@ func (c *Client) ListVolumeSnapshots(ctx context.Context, params *ListVolumeSnap
 
 // CreateVolumeSnapshotWithBody Create Volume Snapshot
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:snapshot:create`
 //
@@ -1937,7 +2670,7 @@ func (c *Client) CreateVolumeSnapshotWithBody(ctx context.Context, params *Creat
 
 // CreateVolumeSnapshot Create Volume Snapshot
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:snapshot:create`
 //
@@ -1958,7 +2691,7 @@ func (c *Client) CreateVolumeSnapshot(ctx context.Context, params *CreateVolumeS
 
 // DeleteVolumeSnapshot Delete Volume Snapshot
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:snapshot:delete`
 //
@@ -1977,7 +2710,7 @@ func (c *Client) DeleteVolumeSnapshot(ctx context.Context, volumeSnapshotId core
 
 // GetVolumeSnapshot Get Volume Snapshot
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:snapshot:get`
 //
@@ -1996,7 +2729,7 @@ func (c *Client) GetVolumeSnapshot(ctx context.Context, volumeSnapshotId core.UU
 
 // UpdateVolumeSnapshotWithBody Update Volume Snapshot
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:snapshot:update`
 //
@@ -2017,7 +2750,7 @@ func (c *Client) UpdateVolumeSnapshotWithBody(ctx context.Context, volumeSnapsho
 
 // UpdateVolumeSnapshot Update Volume Snapshot
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:snapshot:update`
 //
@@ -2068,7 +2801,7 @@ func (c *Client) GetVolumeType(ctx context.Context, volumeTypeId core.UUID, reqE
 
 // ListVolume List Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:list`
 //
@@ -2087,7 +2820,7 @@ func (c *Client) ListVolume(ctx context.Context, params *ListVolumeParams, reqEd
 
 // CreateVolumeWithBody Create Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:create`
 //
@@ -2108,7 +2841,7 @@ func (c *Client) CreateVolumeWithBody(ctx context.Context, params *CreateVolumeP
 
 // CreateVolume Create Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:create`
 //
@@ -2129,7 +2862,7 @@ func (c *Client) CreateVolume(ctx context.Context, params *CreateVolumeParams, b
 
 // DeleteVolume Delete Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:delete`
 //
@@ -2148,7 +2881,7 @@ func (c *Client) DeleteVolume(ctx context.Context, volumeId core.UUID, params *D
 
 // GetVolume Get Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:get`
 //
@@ -2167,7 +2900,7 @@ func (c *Client) GetVolume(ctx context.Context, volumeId core.UUID, params *GetV
 
 // UpdateVolumeWithBody Update Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:update`
 //
@@ -2188,7 +2921,7 @@ func (c *Client) UpdateVolumeWithBody(ctx context.Context, volumeId core.UUID, p
 
 // UpdateVolume Update Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:update`
 //
@@ -2209,7 +2942,7 @@ func (c *Client) UpdateVolume(ctx context.Context, volumeId core.UUID, params *U
 
 // ConfigureBackupPolicyWithBody Configure Backup Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:apply_backup_policy`
 //
@@ -2230,7 +2963,7 @@ func (c *Client) ConfigureBackupPolicyWithBody(ctx context.Context, volumeId cor
 
 // ConfigureBackupPolicy Configure Backup Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:apply_backup_policy`
 //
@@ -2251,7 +2984,7 @@ func (c *Client) ConfigureBackupPolicy(ctx context.Context, volumeId core.UUID, 
 
 // ExtendVolumeWithBody Extend Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:extend`
 //
@@ -2272,7 +3005,7 @@ func (c *Client) ExtendVolumeWithBody(ctx context.Context, volumeId core.UUID, p
 
 // ExtendVolume Extend Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:extend`
 //
@@ -2293,7 +3026,7 @@ func (c *Client) ExtendVolume(ctx context.Context, volumeId core.UUID, params *E
 
 // RetypeVolumeWithBody Retype Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:retype`
 //
@@ -2314,7 +3047,7 @@ func (c *Client) RetypeVolumeWithBody(ctx context.Context, volumeId core.UUID, p
 
 // RetypeVolume Retype Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:retype`
 //
@@ -2335,7 +3068,7 @@ func (c *Client) RetypeVolume(ctx context.Context, volumeId core.UUID, params *R
 
 // SetVolumeSnapshotPolicyWithBody Set Volume Snapshot Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:update_snapshot_policy`
 //
@@ -2356,7 +3089,7 @@ func (c *Client) SetVolumeSnapshotPolicyWithBody(ctx context.Context, volumeId c
 
 // SetVolumeSnapshotPolicy Set Volume Snapshot Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:update_snapshot_policy`
 //
@@ -2373,6 +3106,400 @@ func (c *Client) SetVolumeSnapshotPolicy(ctx context.Context, volumeId core.UUID
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewListVolumeBackupPoliciesRequest constructs an http.Request for the ListVolumeBackupPolicies method
+func NewListVolumeBackupPoliciesRequest(server string, params *ListVolumeBackupPoliciesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/block-storage/volume-backup-policies/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Name != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "name", *params.Name, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Status != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "status", *params.Status, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.ExecutionStrategy != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "execution_strategy", *params.ExecutionStrategy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RegionId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "region_id", *params.RegionId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewCreateVolumeBackupPolicyRequest calls the generic CreateVolumeBackupPolicy builder with application/json body
+func NewCreateVolumeBackupPolicyRequest(server string, params *CreateVolumeBackupPolicyParams, body CreateVolumeBackupPolicyJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateVolumeBackupPolicyRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCreateVolumeBackupPolicyRequestWithBody constructs an http.Request for the CreateVolumeBackupPolicy method, with any body, and a specified content type
+func NewCreateVolumeBackupPolicyRequestWithBody(server string, params *CreateVolumeBackupPolicyParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/block-storage/volume-backup-policies/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteVolumeBackupPolicyRequest constructs an http.Request for the DeleteVolumeBackupPolicy method
+func NewDeleteVolumeBackupPolicyRequest(server string, volumeBackupPolicyId core.UUID, params *DeleteVolumeBackupPolicyParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "volume_backup_policy_id", volumeBackupPolicyId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/block-storage/volume-backup-policies/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetVolumeBackupPolicyRequest constructs an http.Request for the GetVolumeBackupPolicy method
+func NewGetVolumeBackupPolicyRequest(server string, volumeBackupPolicyId core.UUID, params *GetVolumeBackupPolicyParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "volume_backup_policy_id", volumeBackupPolicyId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/block-storage/volume-backup-policies/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewPartialUpdateVolumeBackupPolicyRequest calls the generic PartialUpdateVolumeBackupPolicy builder with application/json body
+func NewPartialUpdateVolumeBackupPolicyRequest(server string, volumeBackupPolicyId core.UUID, params *PartialUpdateVolumeBackupPolicyParams, body PartialUpdateVolumeBackupPolicyJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPartialUpdateVolumeBackupPolicyRequestWithBody(server, volumeBackupPolicyId, params, "application/json", bodyReader)
+}
+
+// NewPartialUpdateVolumeBackupPolicyRequestWithBody constructs an http.Request for the PartialUpdateVolumeBackupPolicy method, with any body, and a specified content type
+func NewPartialUpdateVolumeBackupPolicyRequestWithBody(server string, volumeBackupPolicyId core.UUID, params *PartialUpdateVolumeBackupPolicyParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "volume_backup_policy_id", volumeBackupPolicyId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/block-storage/volume-backup-policies/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewUpdateVolumeBackupPolicyRequest calls the generic UpdateVolumeBackupPolicy builder with application/json body
+func NewUpdateVolumeBackupPolicyRequest(server string, volumeBackupPolicyId core.UUID, params *UpdateVolumeBackupPolicyParams, body UpdateVolumeBackupPolicyJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateVolumeBackupPolicyRequestWithBody(server, volumeBackupPolicyId, params, "application/json", bodyReader)
+}
+
+// NewUpdateVolumeBackupPolicyRequestWithBody constructs an http.Request for the UpdateVolumeBackupPolicy method, with any body, and a specified content type
+func NewUpdateVolumeBackupPolicyRequestWithBody(server string, volumeBackupPolicyId core.UUID, params *UpdateVolumeBackupPolicyParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "volume_backup_policy_id", volumeBackupPolicyId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/block-storage/volume-backup-policies/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
 }
 
 // NewListVolumeBackupsRequest constructs an http.Request for the ListVolumeBackups method
@@ -4217,9 +5344,108 @@ func WithBaseURL(baseURL string) ClientOption {
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
 
+	// ListVolumeBackupPoliciesWithResponse List Volume Backup Policies
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:list`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/block-storage/volume-backup-policies/ (the `ListVolumeBackupPolicies` operationId).
+	ListVolumeBackupPoliciesWithResponse(ctx context.Context, params *ListVolumeBackupPoliciesParams, reqEditors ...RequestEditorFn) (*ListVolumeBackupPoliciesResponse, error)
+
+	// CreateVolumeBackupPolicyWithBodyWithResponse Create Volume Backup Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:create`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/block-storage/volume-backup-policies/ (the `CreateVolumeBackupPolicy` operationId).
+	CreateVolumeBackupPolicyWithBodyWithResponse(ctx context.Context, params *CreateVolumeBackupPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateVolumeBackupPolicyResponse, error)
+
+	// CreateVolumeBackupPolicyWithResponse Create Volume Backup Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:create`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/block-storage/volume-backup-policies/ (the `CreateVolumeBackupPolicy` operationId).
+	CreateVolumeBackupPolicyWithResponse(ctx context.Context, params *CreateVolumeBackupPolicyParams, body CreateVolumeBackupPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateVolumeBackupPolicyResponse, error)
+
+	// DeleteVolumeBackupPolicyWithResponse Delete Volume Backup Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:delete`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `DeleteVolumeBackupPolicy` operationId).
+	DeleteVolumeBackupPolicyWithResponse(ctx context.Context, volumeBackupPolicyId core.UUID, params *DeleteVolumeBackupPolicyParams, reqEditors ...RequestEditorFn) (*DeleteVolumeBackupPolicyResponse, error)
+
+	// GetVolumeBackupPolicyWithResponse Get Volume Backup Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `GetVolumeBackupPolicy` operationId).
+	GetVolumeBackupPolicyWithResponse(ctx context.Context, volumeBackupPolicyId core.UUID, params *GetVolumeBackupPolicyParams, reqEditors ...RequestEditorFn) (*GetVolumeBackupPolicyResponse, error)
+
+	// PartialUpdateVolumeBackupPolicyWithBodyWithResponse Partial Update Volume Backup Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:update`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `PartialUpdateVolumeBackupPolicy` operationId).
+	PartialUpdateVolumeBackupPolicyWithBodyWithResponse(ctx context.Context, volumeBackupPolicyId core.UUID, params *PartialUpdateVolumeBackupPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PartialUpdateVolumeBackupPolicyResponse, error)
+
+	// PartialUpdateVolumeBackupPolicyWithResponse Partial Update Volume Backup Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:update`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `PartialUpdateVolumeBackupPolicy` operationId).
+	PartialUpdateVolumeBackupPolicyWithResponse(ctx context.Context, volumeBackupPolicyId core.UUID, params *PartialUpdateVolumeBackupPolicyParams, body PartialUpdateVolumeBackupPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*PartialUpdateVolumeBackupPolicyResponse, error)
+
+	// UpdateVolumeBackupPolicyWithBodyWithResponse Update Volume Backup Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:update`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `UpdateVolumeBackupPolicy` operationId).
+	UpdateVolumeBackupPolicyWithBodyWithResponse(ctx context.Context, volumeBackupPolicyId core.UUID, params *UpdateVolumeBackupPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateVolumeBackupPolicyResponse, error)
+
+	// UpdateVolumeBackupPolicyWithResponse Update Volume Backup Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup_policy:update`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `UpdateVolumeBackupPolicy` operationId).
+	UpdateVolumeBackupPolicyWithResponse(ctx context.Context, volumeBackupPolicyId core.UUID, params *UpdateVolumeBackupPolicyParams, body UpdateVolumeBackupPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateVolumeBackupPolicyResponse, error)
+
 	// ListVolumeBackupsWithResponse List Volume Backups
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:list`
 	//
@@ -4232,7 +5458,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Back up one of the project's volumes.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:create`
 	//
@@ -4245,7 +5471,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Back up one of the project's volumes.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:create`
 	//
@@ -4256,7 +5482,7 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteVolumeBackupWithResponse Delete Volume Backup
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:delete`
 	//
@@ -4267,7 +5493,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetVolumeBackupWithResponse Get Volume Backup
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:get`
 	//
@@ -4278,7 +5504,7 @@ type ClientWithResponsesInterface interface {
 
 	// PartialUpdateVolumeBackupWithBodyWithResponse Partial Update Volume Backup
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:update`
 	//
@@ -4289,7 +5515,7 @@ type ClientWithResponsesInterface interface {
 
 	// PartialUpdateVolumeBackupWithResponse Partial Update Volume Backup
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:update`
 	//
@@ -4300,7 +5526,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateVolumeBackupWithBodyWithResponse Update Volume Backup
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:update`
 	//
@@ -4311,7 +5537,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateVolumeBackupWithResponse Update Volume Backup
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:volume_backup:volume_backup:update`
 	//
@@ -4322,7 +5548,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListVolumeSnapshotsWithResponse List Volume Snapshots
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:snapshot:list`
 	//
@@ -4333,7 +5559,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateVolumeSnapshotWithBodyWithResponse Create Volume Snapshot
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:snapshot:create`
 	//
@@ -4344,7 +5570,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateVolumeSnapshotWithResponse Create Volume Snapshot
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:snapshot:create`
 	//
@@ -4355,7 +5581,7 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteVolumeSnapshotWithResponse Delete Volume Snapshot
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:snapshot:delete`
 	//
@@ -4366,7 +5592,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetVolumeSnapshotWithResponse Get Volume Snapshot
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:snapshot:get`
 	//
@@ -4377,7 +5603,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateVolumeSnapshotWithBodyWithResponse Update Volume Snapshot
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:snapshot:update`
 	//
@@ -4388,7 +5614,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateVolumeSnapshotWithResponse Update Volume Snapshot
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:snapshot:update`
 	//
@@ -4413,7 +5639,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListVolumeWithResponse List Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:list`
 	//
@@ -4424,7 +5650,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateVolumeWithBodyWithResponse Create Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:create`
 	//
@@ -4435,7 +5661,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateVolumeWithResponse Create Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:create`
 	//
@@ -4446,7 +5672,7 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteVolumeWithResponse Delete Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:delete`
 	//
@@ -4457,7 +5683,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetVolumeWithResponse Get Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:get`
 	//
@@ -4468,7 +5694,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateVolumeWithBodyWithResponse Update Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:update`
 	//
@@ -4479,7 +5705,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateVolumeWithResponse Update Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:update`
 	//
@@ -4490,7 +5716,7 @@ type ClientWithResponsesInterface interface {
 
 	// ConfigureBackupPolicyWithBodyWithResponse Configure Backup Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:apply_backup_policy`
 	//
@@ -4501,7 +5727,7 @@ type ClientWithResponsesInterface interface {
 
 	// ConfigureBackupPolicyWithResponse Configure Backup Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:apply_backup_policy`
 	//
@@ -4512,7 +5738,7 @@ type ClientWithResponsesInterface interface {
 
 	// ExtendVolumeWithBodyWithResponse Extend Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:extend`
 	//
@@ -4523,7 +5749,7 @@ type ClientWithResponsesInterface interface {
 
 	// ExtendVolumeWithResponse Extend Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:extend`
 	//
@@ -4534,7 +5760,7 @@ type ClientWithResponsesInterface interface {
 
 	// RetypeVolumeWithBodyWithResponse Retype Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:retype`
 	//
@@ -4545,7 +5771,7 @@ type ClientWithResponsesInterface interface {
 
 	// RetypeVolumeWithResponse Retype Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:retype`
 	//
@@ -4556,7 +5782,7 @@ type ClientWithResponsesInterface interface {
 
 	// SetVolumeSnapshotPolicyWithBodyWithResponse Set Volume Snapshot Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:update_snapshot_policy`
 	//
@@ -4567,7 +5793,7 @@ type ClientWithResponsesInterface interface {
 
 	// SetVolumeSnapshotPolicyWithResponse Set Volume Snapshot Policy
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:block_storage:volume:update_snapshot_policy`
 	//
@@ -4575,6 +5801,202 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with PUT /v2/block-storage/volumes/{volume_id}/snapshot-policy/ (the `SetVolumeSnapshotPolicy` operationId).
 	SetVolumeSnapshotPolicyWithResponse(ctx context.Context, volumeId core.UUID, params *SetVolumeSnapshotPolicyParams, body SetVolumeSnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*SetVolumeSnapshotPolicyResponse, error)
+}
+
+type ListVolumeBackupPoliciesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedVolumeBackupPolicySchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListVolumeBackupPoliciesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListVolumeBackupPoliciesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateVolumeBackupPolicyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *VolumeBackupPolicySchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateVolumeBackupPolicyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateVolumeBackupPolicyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteVolumeBackupPolicyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteVolumeBackupPolicyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteVolumeBackupPolicyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetVolumeBackupPolicyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *VolumeBackupPolicySchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetVolumeBackupPolicyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetVolumeBackupPolicyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PartialUpdateVolumeBackupPolicyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *VolumeBackupPolicySchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r PartialUpdateVolumeBackupPolicyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PartialUpdateVolumeBackupPolicyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateVolumeBackupPolicyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *VolumeBackupPolicySchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateVolumeBackupPolicyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateVolumeBackupPolicyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type ListVolumeBackupsResponse struct {
@@ -5039,7 +6461,7 @@ type CreateVolumeResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON201 the response for an HTTP 201 `application/json` response
-	JSON201 *VolumeDetailSchema
+	JSON201 *VolumeSchema
 	// JSON400 the response for an HTTP 400 `application/json` response
 	JSON400 *ValidationError
 	// JSON401 the response for an HTTP 401 `application/json` response
@@ -5103,7 +6525,7 @@ type GetVolumeResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *VolumeDetailSchema
+	JSON200 *VolumeSchema
 	// JSON400 the response for an HTTP 400 `application/json` response
 	JSON400 *ValidationError
 	// JSON401 the response for an HTTP 401 `application/json` response
@@ -5136,7 +6558,7 @@ type UpdateVolumeResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *VolumeDetailSchema
+	JSON200 *VolumeSchema
 	// JSON400 the response for an HTTP 400 `application/json` response
 	JSON400 *ValidationError
 	// JSON401 the response for an HTTP 401 `application/json` response
@@ -5289,9 +6711,162 @@ func (r SetVolumeSnapshotPolicyResponse) StatusCode() int {
 	return 0
 }
 
+// ListVolumeBackupPoliciesWithResponse List Volume Backup Policies
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:list`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/block-storage/volume-backup-policies/ (the `ListVolumeBackupPolicies` operationId).
+func (c *ClientWithResponses) ListVolumeBackupPoliciesWithResponse(ctx context.Context, params *ListVolumeBackupPoliciesParams, reqEditors ...RequestEditorFn) (*ListVolumeBackupPoliciesResponse, error) {
+	rsp, err := c.ListVolumeBackupPolicies(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListVolumeBackupPoliciesResponse(rsp)
+}
+
+// CreateVolumeBackupPolicyWithBodyWithResponse Create Volume Backup Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:create`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/block-storage/volume-backup-policies/ (the `CreateVolumeBackupPolicy` operationId).
+func (c *ClientWithResponses) CreateVolumeBackupPolicyWithBodyWithResponse(ctx context.Context, params *CreateVolumeBackupPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateVolumeBackupPolicyResponse, error) {
+	rsp, err := c.CreateVolumeBackupPolicyWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateVolumeBackupPolicyResponse(rsp)
+}
+
+// CreateVolumeBackupPolicyWithResponse Create Volume Backup Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:create`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/block-storage/volume-backup-policies/ (the `CreateVolumeBackupPolicy` operationId).
+func (c *ClientWithResponses) CreateVolumeBackupPolicyWithResponse(ctx context.Context, params *CreateVolumeBackupPolicyParams, body CreateVolumeBackupPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateVolumeBackupPolicyResponse, error) {
+	rsp, err := c.CreateVolumeBackupPolicy(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateVolumeBackupPolicyResponse(rsp)
+}
+
+// DeleteVolumeBackupPolicyWithResponse Delete Volume Backup Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:delete`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `DeleteVolumeBackupPolicy` operationId).
+func (c *ClientWithResponses) DeleteVolumeBackupPolicyWithResponse(ctx context.Context, volumeBackupPolicyId core.UUID, params *DeleteVolumeBackupPolicyParams, reqEditors ...RequestEditorFn) (*DeleteVolumeBackupPolicyResponse, error) {
+	rsp, err := c.DeleteVolumeBackupPolicy(ctx, volumeBackupPolicyId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteVolumeBackupPolicyResponse(rsp)
+}
+
+// GetVolumeBackupPolicyWithResponse Get Volume Backup Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `GetVolumeBackupPolicy` operationId).
+func (c *ClientWithResponses) GetVolumeBackupPolicyWithResponse(ctx context.Context, volumeBackupPolicyId core.UUID, params *GetVolumeBackupPolicyParams, reqEditors ...RequestEditorFn) (*GetVolumeBackupPolicyResponse, error) {
+	rsp, err := c.GetVolumeBackupPolicy(ctx, volumeBackupPolicyId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetVolumeBackupPolicyResponse(rsp)
+}
+
+// PartialUpdateVolumeBackupPolicyWithBodyWithResponse Partial Update Volume Backup Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:update`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `PartialUpdateVolumeBackupPolicy` operationId).
+func (c *ClientWithResponses) PartialUpdateVolumeBackupPolicyWithBodyWithResponse(ctx context.Context, volumeBackupPolicyId core.UUID, params *PartialUpdateVolumeBackupPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PartialUpdateVolumeBackupPolicyResponse, error) {
+	rsp, err := c.PartialUpdateVolumeBackupPolicyWithBody(ctx, volumeBackupPolicyId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePartialUpdateVolumeBackupPolicyResponse(rsp)
+}
+
+// PartialUpdateVolumeBackupPolicyWithResponse Partial Update Volume Backup Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:update`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `PartialUpdateVolumeBackupPolicy` operationId).
+func (c *ClientWithResponses) PartialUpdateVolumeBackupPolicyWithResponse(ctx context.Context, volumeBackupPolicyId core.UUID, params *PartialUpdateVolumeBackupPolicyParams, body PartialUpdateVolumeBackupPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*PartialUpdateVolumeBackupPolicyResponse, error) {
+	rsp, err := c.PartialUpdateVolumeBackupPolicy(ctx, volumeBackupPolicyId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePartialUpdateVolumeBackupPolicyResponse(rsp)
+}
+
+// UpdateVolumeBackupPolicyWithBodyWithResponse Update Volume Backup Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:update`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `UpdateVolumeBackupPolicy` operationId).
+func (c *ClientWithResponses) UpdateVolumeBackupPolicyWithBodyWithResponse(ctx context.Context, volumeBackupPolicyId core.UUID, params *UpdateVolumeBackupPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateVolumeBackupPolicyResponse, error) {
+	rsp, err := c.UpdateVolumeBackupPolicyWithBody(ctx, volumeBackupPolicyId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateVolumeBackupPolicyResponse(rsp)
+}
+
+// UpdateVolumeBackupPolicyWithResponse Update Volume Backup Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup_policy:update`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/ (the `UpdateVolumeBackupPolicy` operationId).
+func (c *ClientWithResponses) UpdateVolumeBackupPolicyWithResponse(ctx context.Context, volumeBackupPolicyId core.UUID, params *UpdateVolumeBackupPolicyParams, body UpdateVolumeBackupPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateVolumeBackupPolicyResponse, error) {
+	rsp, err := c.UpdateVolumeBackupPolicy(ctx, volumeBackupPolicyId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateVolumeBackupPolicyResponse(rsp)
+}
+
 // ListVolumeBackupsWithResponse List Volume Backups
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:list`
 //
@@ -5310,7 +6885,7 @@ func (c *ClientWithResponses) ListVolumeBackupsWithResponse(ctx context.Context,
 //
 // Back up one of the project's volumes.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:create`
 //
@@ -5329,7 +6904,7 @@ func (c *ClientWithResponses) CreateVolumeBackupWithBodyWithResponse(ctx context
 //
 // Back up one of the project's volumes.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:create`
 //
@@ -5346,7 +6921,7 @@ func (c *ClientWithResponses) CreateVolumeBackupWithResponse(ctx context.Context
 
 // DeleteVolumeBackupWithResponse Delete Volume Backup
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:delete`
 //
@@ -5363,7 +6938,7 @@ func (c *ClientWithResponses) DeleteVolumeBackupWithResponse(ctx context.Context
 
 // GetVolumeBackupWithResponse Get Volume Backup
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:get`
 //
@@ -5380,7 +6955,7 @@ func (c *ClientWithResponses) GetVolumeBackupWithResponse(ctx context.Context, v
 
 // PartialUpdateVolumeBackupWithBodyWithResponse Partial Update Volume Backup
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:update`
 //
@@ -5397,7 +6972,7 @@ func (c *ClientWithResponses) PartialUpdateVolumeBackupWithBodyWithResponse(ctx 
 
 // PartialUpdateVolumeBackupWithResponse Partial Update Volume Backup
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:update`
 //
@@ -5414,7 +6989,7 @@ func (c *ClientWithResponses) PartialUpdateVolumeBackupWithResponse(ctx context.
 
 // UpdateVolumeBackupWithBodyWithResponse Update Volume Backup
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:update`
 //
@@ -5431,7 +7006,7 @@ func (c *ClientWithResponses) UpdateVolumeBackupWithBodyWithResponse(ctx context
 
 // UpdateVolumeBackupWithResponse Update Volume Backup
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:volume_backup:volume_backup:update`
 //
@@ -5448,7 +7023,7 @@ func (c *ClientWithResponses) UpdateVolumeBackupWithResponse(ctx context.Context
 
 // ListVolumeSnapshotsWithResponse List Volume Snapshots
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:snapshot:list`
 //
@@ -5465,7 +7040,7 @@ func (c *ClientWithResponses) ListVolumeSnapshotsWithResponse(ctx context.Contex
 
 // CreateVolumeSnapshotWithBodyWithResponse Create Volume Snapshot
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:snapshot:create`
 //
@@ -5482,7 +7057,7 @@ func (c *ClientWithResponses) CreateVolumeSnapshotWithBodyWithResponse(ctx conte
 
 // CreateVolumeSnapshotWithResponse Create Volume Snapshot
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:snapshot:create`
 //
@@ -5499,7 +7074,7 @@ func (c *ClientWithResponses) CreateVolumeSnapshotWithResponse(ctx context.Conte
 
 // DeleteVolumeSnapshotWithResponse Delete Volume Snapshot
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:snapshot:delete`
 //
@@ -5516,7 +7091,7 @@ func (c *ClientWithResponses) DeleteVolumeSnapshotWithResponse(ctx context.Conte
 
 // GetVolumeSnapshotWithResponse Get Volume Snapshot
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:snapshot:get`
 //
@@ -5533,7 +7108,7 @@ func (c *ClientWithResponses) GetVolumeSnapshotWithResponse(ctx context.Context,
 
 // UpdateVolumeSnapshotWithBodyWithResponse Update Volume Snapshot
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:snapshot:update`
 //
@@ -5550,7 +7125,7 @@ func (c *ClientWithResponses) UpdateVolumeSnapshotWithBodyWithResponse(ctx conte
 
 // UpdateVolumeSnapshotWithResponse Update Volume Snapshot
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:snapshot:update`
 //
@@ -5593,7 +7168,7 @@ func (c *ClientWithResponses) GetVolumeTypeWithResponse(ctx context.Context, vol
 
 // ListVolumeWithResponse List Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:list`
 //
@@ -5610,7 +7185,7 @@ func (c *ClientWithResponses) ListVolumeWithResponse(ctx context.Context, params
 
 // CreateVolumeWithBodyWithResponse Create Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:create`
 //
@@ -5627,7 +7202,7 @@ func (c *ClientWithResponses) CreateVolumeWithBodyWithResponse(ctx context.Conte
 
 // CreateVolumeWithResponse Create Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:create`
 //
@@ -5644,7 +7219,7 @@ func (c *ClientWithResponses) CreateVolumeWithResponse(ctx context.Context, para
 
 // DeleteVolumeWithResponse Delete Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:delete`
 //
@@ -5661,7 +7236,7 @@ func (c *ClientWithResponses) DeleteVolumeWithResponse(ctx context.Context, volu
 
 // GetVolumeWithResponse Get Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:get`
 //
@@ -5678,7 +7253,7 @@ func (c *ClientWithResponses) GetVolumeWithResponse(ctx context.Context, volumeI
 
 // UpdateVolumeWithBodyWithResponse Update Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:update`
 //
@@ -5695,7 +7270,7 @@ func (c *ClientWithResponses) UpdateVolumeWithBodyWithResponse(ctx context.Conte
 
 // UpdateVolumeWithResponse Update Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:update`
 //
@@ -5712,7 +7287,7 @@ func (c *ClientWithResponses) UpdateVolumeWithResponse(ctx context.Context, volu
 
 // ConfigureBackupPolicyWithBodyWithResponse Configure Backup Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:apply_backup_policy`
 //
@@ -5729,7 +7304,7 @@ func (c *ClientWithResponses) ConfigureBackupPolicyWithBodyWithResponse(ctx cont
 
 // ConfigureBackupPolicyWithResponse Configure Backup Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:apply_backup_policy`
 //
@@ -5746,7 +7321,7 @@ func (c *ClientWithResponses) ConfigureBackupPolicyWithResponse(ctx context.Cont
 
 // ExtendVolumeWithBodyWithResponse Extend Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:extend`
 //
@@ -5763,7 +7338,7 @@ func (c *ClientWithResponses) ExtendVolumeWithBodyWithResponse(ctx context.Conte
 
 // ExtendVolumeWithResponse Extend Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:extend`
 //
@@ -5780,7 +7355,7 @@ func (c *ClientWithResponses) ExtendVolumeWithResponse(ctx context.Context, volu
 
 // RetypeVolumeWithBodyWithResponse Retype Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:retype`
 //
@@ -5797,7 +7372,7 @@ func (c *ClientWithResponses) RetypeVolumeWithBodyWithResponse(ctx context.Conte
 
 // RetypeVolumeWithResponse Retype Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:retype`
 //
@@ -5814,7 +7389,7 @@ func (c *ClientWithResponses) RetypeVolumeWithResponse(ctx context.Context, volu
 
 // SetVolumeSnapshotPolicyWithBodyWithResponse Set Volume Snapshot Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:update_snapshot_policy`
 //
@@ -5831,7 +7406,7 @@ func (c *ClientWithResponses) SetVolumeSnapshotPolicyWithBodyWithResponse(ctx co
 
 // SetVolumeSnapshotPolicyWithResponse Set Volume Snapshot Policy
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:block_storage:volume:update_snapshot_policy`
 //
@@ -5844,6 +7419,368 @@ func (c *ClientWithResponses) SetVolumeSnapshotPolicyWithResponse(ctx context.Co
 		return nil, err
 	}
 	return ParseSetVolumeSnapshotPolicyResponse(rsp)
+}
+
+// ParseListVolumeBackupPoliciesResponse parses an HTTP response from a ListVolumeBackupPoliciesWithResponse call
+func ParseListVolumeBackupPoliciesResponse(rsp *http.Response) (*ListVolumeBackupPoliciesResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListVolumeBackupPoliciesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedVolumeBackupPolicySchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateVolumeBackupPolicyResponse parses an HTTP response from a CreateVolumeBackupPolicyWithResponse call
+func ParseCreateVolumeBackupPolicyResponse(rsp *http.Response) (*CreateVolumeBackupPolicyResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateVolumeBackupPolicyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest VolumeBackupPolicySchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteVolumeBackupPolicyResponse parses an HTTP response from a DeleteVolumeBackupPolicyWithResponse call
+func ParseDeleteVolumeBackupPolicyResponse(rsp *http.Response) (*DeleteVolumeBackupPolicyResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteVolumeBackupPolicyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetVolumeBackupPolicyResponse parses an HTTP response from a GetVolumeBackupPolicyWithResponse call
+func ParseGetVolumeBackupPolicyResponse(rsp *http.Response) (*GetVolumeBackupPolicyResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetVolumeBackupPolicyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest VolumeBackupPolicySchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePartialUpdateVolumeBackupPolicyResponse parses an HTTP response from a PartialUpdateVolumeBackupPolicyWithResponse call
+func ParsePartialUpdateVolumeBackupPolicyResponse(rsp *http.Response) (*PartialUpdateVolumeBackupPolicyResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PartialUpdateVolumeBackupPolicyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest VolumeBackupPolicySchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateVolumeBackupPolicyResponse parses an HTTP response from a UpdateVolumeBackupPolicyWithResponse call
+func ParseUpdateVolumeBackupPolicyResponse(rsp *http.Response) (*UpdateVolumeBackupPolicyResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateVolumeBackupPolicyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest VolumeBackupPolicySchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseListVolumeBackupsResponse parses an HTTP response from a ListVolumeBackupsWithResponse call
@@ -6707,7 +8644,7 @@ func ParseCreateVolumeResponse(rsp *http.Response) (*CreateVolumeResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest VolumeDetailSchema
+		var dest VolumeSchema
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -6825,7 +8762,7 @@ func ParseGetVolumeResponse(rsp *http.Response) (*GetVolumeResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest VolumeDetailSchema
+		var dest VolumeSchema
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -6886,7 +8823,7 @@ func ParseUpdateVolumeResponse(rsp *http.Response) (*UpdateVolumeResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest VolumeDetailSchema
+		var dest VolumeSchema
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

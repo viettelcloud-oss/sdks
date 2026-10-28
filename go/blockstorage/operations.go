@@ -24,7 +24,7 @@ func (c *Client) ListVolume(ctx context.Context, params ListVolumeParams) (*Page
 // CreateVolume Create Volume
 //
 // POST /v2/block-storage/volumes/
-func (c *Client) CreateVolume(ctx context.Context, params CreateVolumeParams, body VolumeCreateSchema) (*VolumeDetailSchema, error) {
+func (c *Client) CreateVolume(ctx context.Context, params CreateVolumeParams, body VolumeCreateSchema) (*VolumeSchema, error) {
 	genParams := params
 	resp, err := c.gen.CreateVolumeWithResponse(ctx, &genParams, body)
 	if err != nil {
@@ -36,7 +36,7 @@ func (c *Client) CreateVolume(ctx context.Context, params CreateVolumeParams, bo
 // GetVolume Get Volume
 //
 // GET /v2/block-storage/volumes/{volume_id}/
-func (c *Client) GetVolume(ctx context.Context, VolumeID core.UUID, params GetVolumeParams) (*VolumeDetailSchema, error) {
+func (c *Client) GetVolume(ctx context.Context, VolumeID core.UUID, params GetVolumeParams) (*VolumeSchema, error) {
 	genParams := params
 	resp, err := c.gen.GetVolumeWithResponse(ctx, VolumeID, &genParams)
 	if err != nil {
@@ -48,7 +48,7 @@ func (c *Client) GetVolume(ctx context.Context, VolumeID core.UUID, params GetVo
 // UpdateVolume Update Volume
 //
 // PATCH /v2/block-storage/volumes/{volume_id}/
-func (c *Client) UpdateVolume(ctx context.Context, VolumeID core.UUID, params UpdateVolumeParams, body VolumePartialUpdateSchema) (*VolumeDetailSchema, error) {
+func (c *Client) UpdateVolume(ctx context.Context, VolumeID core.UUID, params UpdateVolumeParams, body VolumePartialUpdateSchema) (*VolumeSchema, error) {
 	genParams := params
 	resp, err := c.gen.UpdateVolumeWithResponse(ctx, VolumeID, &genParams, body)
 	if err != nil {
@@ -189,6 +189,78 @@ func (c *Client) DeleteVolumeBackup(ctx context.Context, VolumeBackupID core.UUI
 	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 202)
 }
 
+// ListVolumeBackupPolicies List Volume Backup Policies
+//
+// GET /v2/block-storage/volume-backup-policies/
+func (c *Client) ListVolumeBackupPolicies(ctx context.Context, params ListVolumeBackupPoliciesParams) (*PagedVolumeBackupPolicySchema, error) {
+	genParams := params
+	resp, err := c.gen.ListVolumeBackupPoliciesWithResponse(ctx, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// CreateVolumeBackupPolicy Create Volume Backup Policy
+//
+// POST /v2/block-storage/volume-backup-policies/
+func (c *Client) CreateVolumeBackupPolicy(ctx context.Context, params CreateVolumeBackupPolicyParams, body VolumeBackupPolicyCreateSchema) (*VolumeBackupPolicySchema, error) {
+	genParams := params
+	resp, err := c.gen.CreateVolumeBackupPolicyWithResponse(ctx, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON201, 201)
+}
+
+// GetVolumeBackupPolicy Get Volume Backup Policy
+//
+// GET /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/
+func (c *Client) GetVolumeBackupPolicy(ctx context.Context, VolumeBackupPolicyID core.UUID, params GetVolumeBackupPolicyParams) (*VolumeBackupPolicySchema, error) {
+	genParams := params
+	resp, err := c.gen.GetVolumeBackupPolicyWithResponse(ctx, VolumeBackupPolicyID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// UpdateVolumeBackupPolicy Update Volume Backup Policy
+//
+// PUT /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/
+func (c *Client) UpdateVolumeBackupPolicy(ctx context.Context, VolumeBackupPolicyID core.UUID, params UpdateVolumeBackupPolicyParams, body VolumeBackupPolicyUpdateSchema) (*VolumeBackupPolicySchema, error) {
+	genParams := params
+	resp, err := c.gen.UpdateVolumeBackupPolicyWithResponse(ctx, VolumeBackupPolicyID, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// PartialUpdateVolumeBackupPolicy Partial Update Volume Backup Policy
+//
+// PATCH /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/
+func (c *Client) PartialUpdateVolumeBackupPolicy(ctx context.Context, VolumeBackupPolicyID core.UUID, params PartialUpdateVolumeBackupPolicyParams, body VolumeBackupPolicyPartialUpdateSchema) (*VolumeBackupPolicySchema, error) {
+	genParams := params
+	resp, err := c.gen.PartialUpdateVolumeBackupPolicyWithResponse(ctx, VolumeBackupPolicyID, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// DeleteVolumeBackupPolicy Delete Volume Backup Policy
+//
+// DELETE /v2/block-storage/volume-backup-policies/{volume_backup_policy_id}/
+func (c *Client) DeleteVolumeBackupPolicy(ctx context.Context, VolumeBackupPolicyID core.UUID, params DeleteVolumeBackupPolicyParams) error {
+	genParams := params
+	resp, err := c.gen.DeleteVolumeBackupPolicyWithResponse(ctx, VolumeBackupPolicyID, &genParams)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
+}
+
 // ListVolumeSnapshots List Volume Snapshots
 //
 // GET /v2/block-storage/volume-snapshots/
@@ -278,7 +350,7 @@ func (c *Client) ListVolumeIter(ctx context.Context, params ListVolumeParams) it
 	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[VolumeSchema], error) {
 		p := params
 		p.PageNumber = &page
-		p.PageSize = &size
+		p.Size = &size
 		pageResult, err := c.ListVolume(ctx, p)
 		if err != nil {
 			return core.Page[VolumeSchema]{}, err
@@ -293,12 +365,27 @@ func (c *Client) ListVolumeBackupsIter(ctx context.Context, params ListVolumeBac
 	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[VolumeBackupSchema], error) {
 		p := params
 		p.PageNumber = &page
-		p.PageSize = &size
+		p.Size = &size
 		pageResult, err := c.ListVolumeBackups(ctx, p)
 		if err != nil {
 			return core.Page[VolumeBackupSchema]{}, err
 		}
 		return core.Page[VolumeBackupSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListVolumeBackupPoliciesIter returns an iterator over all VolumeBackupPolicySchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListVolumeBackupPoliciesIter(ctx context.Context, params ListVolumeBackupPoliciesParams) iter.Seq2[*VolumeBackupPolicySchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[VolumeBackupPolicySchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListVolumeBackupPolicies(ctx, p)
+		if err != nil {
+			return core.Page[VolumeBackupPolicySchema]{}, err
+		}
+		return core.Page[VolumeBackupPolicySchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
 	})
 }
 
@@ -308,7 +395,7 @@ func (c *Client) ListVolumeSnapshotsIter(ctx context.Context, params ListVolumeS
 	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[VolumeSnapshotSchema], error) {
 		p := params
 		p.PageNumber = &page
-		p.PageSize = &size
+		p.Size = &size
 		pageResult, err := c.ListVolumeSnapshots(ctx, p)
 		if err != nil {
 			return core.Page[VolumeSnapshotSchema]{}, err

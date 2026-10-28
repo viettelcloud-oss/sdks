@@ -333,6 +333,114 @@ func (c *Client) UpdatePrivateIpAllowedVips(ctx context.Context, PrivateIPID cor
 	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
 }
 
+// ListDirectConnects List Direct Connects
+//
+// GET /v2/network/direct-connects/
+func (c *Client) ListDirectConnects(ctx context.Context, params ListDirectConnectsParams) (*PagedDirectConnectSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListDirectConnectsWithResponse(ctx, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// CreateDirectConnect Create Direct Connect
+//
+// POST /v2/network/direct-connects/
+func (c *Client) CreateDirectConnect(ctx context.Context, params CreateDirectConnectParams, body DirectConnectCreateSchema) (*DirectConnectSchema, error) {
+	genParams := params
+	resp, err := c.gen.CreateDirectConnectWithResponse(ctx, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON201, 201)
+}
+
+// GetDirectConnect Get Direct Connect
+//
+// GET /v2/network/direct-connects/{direct_connect_id}/
+func (c *Client) GetDirectConnect(ctx context.Context, DirectConnectID core.UUID, params GetDirectConnectParams) (*DirectConnectSchema, error) {
+	genParams := params
+	resp, err := c.gen.GetDirectConnectWithResponse(ctx, DirectConnectID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// UpdateDirectConnect Update Direct Connect
+//
+// PUT /v2/network/direct-connects/{direct_connect_id}/
+func (c *Client) UpdateDirectConnect(ctx context.Context, DirectConnectID core.UUID, params UpdateDirectConnectParams, body DirectConnectUpdateSchema) (*DirectConnectSchema, error) {
+	genParams := params
+	resp, err := c.gen.UpdateDirectConnectWithResponse(ctx, DirectConnectID, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// DeleteDirectConnect Delete Direct Connect
+//
+// DELETE /v2/network/direct-connects/{direct_connect_id}/
+func (c *Client) DeleteDirectConnect(ctx context.Context, DirectConnectID core.UUID, params DeleteDirectConnectParams) error {
+	genParams := params
+	resp, err := c.gen.DeleteDirectConnectWithResponse(ctx, DirectConnectID, &genParams)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
+}
+
+// ListRouteTables List Route Tables
+//
+// GET /v2/network/route-tables/
+func (c *Client) ListRouteTables(ctx context.Context, params ListRouteTablesParams) (*PagedRouteTableSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListRouteTablesWithResponse(ctx, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// GetRouteTable Get Route Table
+//
+// GET /v2/network/route-tables/{route_table_id}/
+func (c *Client) GetRouteTable(ctx context.Context, RouteTableID core.UUID, params GetRouteTableParams) (*RouteTableSchema, error) {
+	genParams := params
+	resp, err := c.gen.GetRouteTableWithResponse(ctx, RouteTableID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// ListRouteTableSubnets List Route Table Subnets
+//
+// GET /v2/network/route-tables/{route_table_id}/subnets/
+func (c *Client) ListRouteTableSubnets(ctx context.Context, RouteTableID core.UUID, params ListRouteTableSubnetsParams) (*PagedRouteTableSubnetSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListRouteTableSubnetsWithResponse(ctx, RouteTableID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// UpdateRouteTableInternetAccess Update Route Table Internet Access
+//
+// PUT /v2/network/route-tables/{route_table_id}/internet-access/
+func (c *Client) UpdateRouteTableInternetAccess(ctx context.Context, RouteTableID core.UUID, params UpdateRouteTableInternetAccessParams, body RouteTableInternetAccessUpdateSchema) (*RouteTableSchema, error) {
+	genParams := params
+	resp, err := c.gen.UpdateRouteTableInternetAccessWithResponse(ctx, RouteTableID, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
 // ListSecurityGroups List Security Groups
 //
 // GET /v2/network/security-groups/
@@ -534,6 +642,51 @@ func (c *Client) ListPrivateIpsIter(ctx context.Context, params ListPrivateIpsPa
 			return core.Page[PrivateIPSchema]{}, err
 		}
 		return core.Page[PrivateIPSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListDirectConnectsIter returns an iterator over all DirectConnectSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListDirectConnectsIter(ctx context.Context, params ListDirectConnectsParams) iter.Seq2[*DirectConnectSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[DirectConnectSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListDirectConnects(ctx, p)
+		if err != nil {
+			return core.Page[DirectConnectSchema]{}, err
+		}
+		return core.Page[DirectConnectSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListRouteTablesIter returns an iterator over all RouteTableSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListRouteTablesIter(ctx context.Context, params ListRouteTablesParams) iter.Seq2[*RouteTableSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[RouteTableSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListRouteTables(ctx, p)
+		if err != nil {
+			return core.Page[RouteTableSchema]{}, err
+		}
+		return core.Page[RouteTableSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListRouteTableSubnetsIter returns an iterator over all RouteTableSubnetSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListRouteTableSubnetsIter(ctx context.Context, RouteTableID core.UUID, params ListRouteTableSubnetsParams) iter.Seq2[*RouteTableSubnetSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[RouteTableSubnetSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListRouteTableSubnets(ctx, RouteTableID, p)
+		if err != nil {
+			return core.Page[RouteTableSubnetSchema]{}, err
+		}
+		return core.Page[RouteTableSubnetSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
 	})
 }
 

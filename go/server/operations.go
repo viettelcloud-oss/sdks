@@ -33,6 +33,54 @@ func (c *Client) GetFlavor(ctx context.Context, FlavorID core.UUID, params GetFl
 	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
 }
 
+// ListVdcs List Vdcs
+//
+// GET /v2/server/vdcs/
+func (c *Client) ListVdcs(ctx context.Context, params ListVdcsParams) (*PagedVDCSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListVdcsWithResponse(ctx, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// GetVdc Get Vdc
+//
+// GET /v2/server/vdcs/{vdc_id}/
+func (c *Client) GetVdc(ctx context.Context, VdcID core.UUID, params GetVdcParams) (*VDCSchema, error) {
+	genParams := params
+	resp, err := c.gen.GetVdcWithResponse(ctx, VdcID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// ListVdcComputes List Vdc Computes
+//
+// GET /v2/server/vdcs/{vdc_id}/computes/
+func (c *Client) ListVdcComputes(ctx context.Context, VdcID core.UUID, params ListVdcComputesParams) (*PagedVDCComputeSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListVdcComputesWithResponse(ctx, VdcID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// ListVdcServers List Vdc Servers
+//
+// GET /v2/server/vdcs/{vdc_id}/servers/
+func (c *Client) ListVdcServers(ctx context.Context, VdcID core.UUID, params ListVdcServersParams) (*PagedVDCServerSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListVdcServersWithResponse(ctx, VdcID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
 // ListServers List Servers
 //
 // GET /v2/server/servers/
@@ -255,6 +303,30 @@ func (c *Client) DetachVolume(ctx context.Context, ServerID core.UUID, params De
 func (c *Client) RebuildServer(ctx context.Context, ServerID core.UUID, params RebuildServerParams, body ServerRebuildSchema) error {
 	genParams := params
 	resp, err := c.gen.RebuildServerWithResponse(ctx, ServerID, &genParams, body)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 202)
+}
+
+// RescueServer Rescue Server
+//
+// POST /v2/server/servers/{server_id}/rescue/
+func (c *Client) RescueServer(ctx context.Context, ServerID core.UUID, params RescueServerParams, body ServerRescueSchema) error {
+	genParams := params
+	resp, err := c.gen.RescueServerWithResponse(ctx, ServerID, &genParams, body)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 202)
+}
+
+// UnrescueServer Unrescue Server
+//
+// POST /v2/server/servers/{server_id}/unrescue/
+func (c *Client) UnrescueServer(ctx context.Context, ServerID core.UUID, params UnrescueServerParams) error {
+	genParams := params
+	resp, err := c.gen.UnrescueServerWithResponse(ctx, ServerID, &genParams)
 	if err != nil {
 		return err
 	}
@@ -561,6 +633,51 @@ func (c *Client) ListFlavorsIter(ctx context.Context, params ListFlavorsParams) 
 			return core.Page[FlavorSchema]{}, err
 		}
 		return core.Page[FlavorSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListVdcsIter returns an iterator over all VDCSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListVdcsIter(ctx context.Context, params ListVdcsParams) iter.Seq2[*VDCSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[VDCSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListVdcs(ctx, p)
+		if err != nil {
+			return core.Page[VDCSchema]{}, err
+		}
+		return core.Page[VDCSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListVdcComputesIter returns an iterator over all VDCComputeSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListVdcComputesIter(ctx context.Context, VdcID core.UUID, params ListVdcComputesParams) iter.Seq2[*VDCComputeSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[VDCComputeSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListVdcComputes(ctx, VdcID, p)
+		if err != nil {
+			return core.Page[VDCComputeSchema]{}, err
+		}
+		return core.Page[VDCComputeSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListVdcServersIter returns an iterator over all VDCServerSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListVdcServersIter(ctx context.Context, VdcID core.UUID, params ListVdcServersParams) iter.Seq2[*VDCServerSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[VDCServerSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListVdcServers(ctx, VdcID, p)
+		if err != nil {
+			return core.Page[VDCServerSchema]{}, err
+		}
+		return core.Page[VDCServerSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
 	})
 }
 

@@ -534,9 +534,14 @@ def gen_operations(svc, ops, module_path):
         lines.append('// Automatically advances pages until all results are exhausted.')
         lines.append('func (c *Client) ' + name + 'Iter(' + ', '.join(iter_sig) + ') iter.Seq2[*' + item + ', error] {')
         lines.append('\treturn core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[' + item + '], error) {')
-        lines.append('\t\tp := params')
-        lines.append('\t\tp.PageNumber = &page')
-        lines.append('\t\tp.PageSize = &size')
+        if o.query_params or o.header_params:
+            lines.append('\t\tp := params')
+            page_param = next((qp['go_name'] for qp in o.query_params if qp['go_name'] in ('PageNumber', 'Page')), None)
+            size_param = next((qp['go_name'] for qp in o.query_params if qp['go_name'] in ('PageSize', 'Limit', 'Size')), None)
+            if page_param:
+                lines.append(f'\t\tp.{page_param} = &page')
+            if size_param:
+                lines.append(f'\t\tp.{size_param} = &size')
         lines.append('\t\tpageResult, err := c.' + name + '(' + ', '.join(inner_call) + ')')
         lines.append('\t\tif err != nil {')
         lines.append('\t\t\treturn core.Page[' + item + ']{}, err')

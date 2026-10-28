@@ -141,6 +141,43 @@ class ParseSuccessResponsesTest(unittest.TestCase):
         self.assertEqual(op.item_type, 'Item')
         self.assertEqual(op.resp_codes, ['203'])
 
+    def test_pagination_supports_page_and_page_number(self):
+        for param_name, field_name in (('page_number', 'PageNumber'), ('page', 'Page')):
+            with self.subTest(param_name=param_name):
+                spec = {
+                    'info': {'version': '1.0.0'},
+                    'paths': {
+                        '/items': {
+                            'get': {
+                                'operationId': 'list_items',
+                                'tags': ['Example'],
+                                'parameters': [
+                                    {'name': param_name, 'in': 'query', 'schema': {'type': 'integer'}},
+                                    {'name': 'page_size', 'in': 'query', 'schema': {'type': 'integer'}},
+                                ],
+                                'responses': {'200': json_response()},
+                            },
+                        },
+                    },
+                    'components': {
+                        'schemas': {
+                            'Payload': {
+                                'type': 'object',
+                                'properties': {
+                                    'count': {'type': 'integer'},
+                                    'next': {'type': 'string'},
+                                    'results': {'type': 'array', 'items': {'$ref': '#/components/schemas/Item'}},
+                                },
+                            },
+                            'Item': {'type': 'object'},
+                        },
+                    },
+                }
+                ops = gen_facade.parse_ops(spec, 'Example')
+                code = gen_facade.gen_operations('example', ops, 'example.com/sdk')
+                self.assertIn(f'p.{field_name} = &page', code)
+                self.assertIn('p.PageSize = &size', code)
+
     def test_cli_failure_preserves_existing_facade_files(self):
         spec = spec_with_responses({'200': json_response()})
         spec['paths']['/unsupported'] = {

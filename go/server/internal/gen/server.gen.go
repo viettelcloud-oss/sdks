@@ -830,9 +830,10 @@ type NestedPlacementGroupSchema struct {
 
 // NestedPrivateIPSchema defines model for NestedPrivateIPSchema.
 type NestedPrivateIPSchema struct {
-	Id         core.UUID `json:"id"`
-	IpAddress  *string   `json:"ip_address"`
-	MacAddress *string   `json:"mac_address"`
+	Id         core.UUID          `json:"id"`
+	IpAddress  *string            `json:"ip_address"`
+	MacAddress *string            `json:"mac_address"`
+	Subnet     NestedSubnetSchema `json:"subnet"`
 }
 
 // NestedProjectSchema defines model for NestedProjectSchema.
@@ -861,10 +862,24 @@ type NestedServerVolumeSchema struct {
 	Volume  NestedVolumeSchema `json:"volume"`
 }
 
+// NestedSubnetSchema defines model for NestedSubnetSchema.
+type NestedSubnetSchema struct {
+	Cidr  string    `json:"cidr"`
+	Id    core.UUID `json:"id"`
+	Name  string    `json:"name"`
+	VpcId core.UUID `json:"vpc_id"`
+}
+
 // NestedUserSchema defines model for NestedUserSchema.
 type NestedUserSchema struct {
 	Id       core.UUID `json:"id"`
 	Username string    `json:"username"`
+}
+
+// NestedVDCComputeSchema defines model for NestedVDCComputeSchema.
+type NestedVDCComputeSchema struct {
+	Id   core.UUID `json:"id"`
+	Name string    `json:"name"`
 }
 
 // NestedVolumeSchema defines model for NestedVolumeSchema.
@@ -947,6 +962,30 @@ type PagedServerSchema struct {
 	Next     *string        `json:"next,omitempty"`
 	Previous *string        `json:"previous,omitempty"`
 	Results  []ServerSchema `json:"results"`
+}
+
+// PagedVDCComputeSchema defines model for PagedVDCComputeSchema.
+type PagedVDCComputeSchema struct {
+	Count    int                `json:"count"`
+	Next     *string            `json:"next,omitempty"`
+	Previous *string            `json:"previous,omitempty"`
+	Results  []VDCComputeSchema `json:"results"`
+}
+
+// PagedVDCSchema defines model for PagedVDCSchema.
+type PagedVDCSchema struct {
+	Count    int         `json:"count"`
+	Next     *string     `json:"next,omitempty"`
+	Previous *string     `json:"previous,omitempty"`
+	Results  []VDCSchema `json:"results"`
+}
+
+// PagedVDCServerSchema defines model for PagedVDCServerSchema.
+type PagedVDCServerSchema struct {
+	Count    int               `json:"count"`
+	Next     *string           `json:"next,omitempty"`
+	Previous *string           `json:"previous,omitempty"`
+	Results  []VDCServerSchema `json:"results"`
 }
 
 // Pagedstr defines model for Pagedstr.
@@ -1175,6 +1214,11 @@ type ServerRebuildSchema struct {
 	ProjectId     core.UUID  `json:"project_id"`
 }
 
+// ServerRescueSchema Schema for rescuing a server.
+type ServerRescueSchema struct {
+	ImageId *core.UUID `json:"image_id,omitempty"`
+}
+
 // ServerResizeSchema Schema for resizing a server.
 type ServerResizeSchema struct {
 	// Flavor ServerFlavor is exactly one of: PredefinedServerFlavor, CustomServerFlavor. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
@@ -1228,6 +1272,66 @@ type ServerVolumeAttachSchema struct {
 // ServersCreatedSchema defines model for ServersCreatedSchema.
 type ServersCreatedSchema struct {
 	ServerIds []core.UUID `json:"server_ids"`
+}
+
+// VDCComputeSchema defines model for VDCComputeSchema.
+type VDCComputeSchema struct {
+	Id    core.UUID       `json:"id"`
+	Name  string          `json:"name"`
+	Stats []VDCStatSchema `json:"stats"`
+	VdcId core.UUID       `json:"vdc_id"`
+}
+
+// VDCElasticIPSchema defines model for VDCElasticIPSchema.
+type VDCElasticIPSchema struct {
+	CreatedAt   time.Time        `json:"created_at"`
+	EnableIpv4  bool             `json:"enable_ipv4"`
+	EnableIpv6  bool             `json:"enable_ipv6"`
+	Id          core.UUID        `json:"id"`
+	IpAddress   *string          `json:"ip_address"`
+	Ipv6Address *string          `json:"ipv6_address"`
+	MacAddress  *string          `json:"mac_address"`
+	Status      *ElasticIPStatus `json:"status"`
+	UpdatedAt   time.Time        `json:"updated_at"`
+}
+
+// VDCPrivateIPSchema defines model for VDCPrivateIPSchema.
+type VDCPrivateIPSchema struct {
+	CreatedAt  time.Time `json:"created_at"`
+	Id         core.UUID `json:"id"`
+	IpAddress  *string   `json:"ip_address"`
+	MacAddress *string   `json:"mac_address"`
+	UpdatedAt  time.Time `json:"updated_at"`
+}
+
+// VDCSchema defines model for VDCSchema.
+type VDCSchema struct {
+	Description *string            `json:"description,omitempty"`
+	Id          core.UUID          `json:"id"`
+	Name        string             `json:"name"`
+	Ratio       float32            `json:"ratio"`
+	Region      NestedRegionSchema `json:"region"`
+	Stats       []VDCStatSchema    `json:"stats"`
+	Zone        NestedZoneSchema   `json:"zone"`
+}
+
+// VDCServerSchema defines model for VDCServerSchema.
+type VDCServerSchema struct {
+	Compute    *NestedVDCComputeSchema `json:"compute,omitempty"`
+	ElasticIp  []VDCElasticIPSchema    `json:"elastic_ip"`
+	Id         core.UUID               `json:"id"`
+	Name       string                  `json:"name"`
+	PowerState ServerPowerState        `json:"power_state"`
+	PrivateIp  []VDCPrivateIPSchema    `json:"private_ip"`
+}
+
+// VDCStatSchema defines model for VDCStatSchema.
+type VDCStatSchema struct {
+	Label string  `json:"label"`
+	Name  string  `json:"name"`
+	Total float32 `json:"total"`
+	Unit  *string `json:"unit,omitempty"`
+	Used  float32 `json:"used"`
 }
 
 // VolumeStatus defines model for VolumeStatus.
@@ -1516,6 +1620,11 @@ type RebuildServerParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
+// RescueServerParams defines parameters for RescueServer.
+type RescueServerParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
 // ResizeServerParams defines parameters for ResizeServer.
 type ResizeServerParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
@@ -1534,6 +1643,46 @@ type StartServerParams struct {
 // StopServerParams defines parameters for StopServer.
 type StopServerParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// UnrescueServerParams defines parameters for UnrescueServer.
+type UnrescueServerParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// ListVdcsParams defines parameters for ListVdcs.
+type ListVdcsParams struct {
+	Name       *string    `form:"name,omitempty" json:"name,omitempty"`
+	RegionId   *core.UUID `form:"region_id,omitempty" json:"region_id,omitempty"`
+	Region     *string    `form:"region,omitempty" json:"region,omitempty"`
+	ZoneId     *core.UUID `form:"zone_id,omitempty" json:"zone_id,omitempty"`
+	PageSize   *int       `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber *int       `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID  core.UUID  `json:"Project-ID"`
+}
+
+// GetVdcParams defines parameters for GetVdc.
+type GetVdcParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// ListVdcComputesParams defines parameters for ListVdcComputes.
+type ListVdcComputesParams struct {
+	ComputeName *string   `form:"compute_name,omitempty" json:"compute_name,omitempty"`
+	PageSize    *int      `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber  *int      `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID   core.UUID `json:"Project-ID"`
+}
+
+// ListVdcServersParams defines parameters for ListVdcServers.
+type ListVdcServersParams struct {
+	Name       *string   `form:"name,omitempty" json:"name,omitempty"`
+	Compute    *string   `form:"compute,omitempty" json:"compute,omitempty"`
+	ElasticIp  *string   `form:"elastic_ip,omitempty" json:"elastic_ip,omitempty"`
+	PrivateIp  *string   `form:"private_ip,omitempty" json:"private_ip,omitempty"`
+	PageSize   *int      `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber *int      `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID  core.UUID `json:"Project-ID"`
 }
 
 // CreateCustomImageJSONRequestBody defines body for CreateCustomImage for application/json ContentType.
@@ -1607,6 +1756,9 @@ type RebootServerJSONRequestBody = ServerRebootSchema
 
 // RebuildServerJSONRequestBody defines body for RebuildServer for application/json ContentType.
 type RebuildServerJSONRequestBody = ServerRebuildSchema
+
+// RescueServerJSONRequestBody defines body for RescueServer for application/json ContentType.
+type RescueServerJSONRequestBody = ServerRescueSchema
 
 // ResizeServerJSONRequestBody defines body for ResizeServer for application/json ContentType.
 type ResizeServerJSONRequestBody = ServerResizeSchema
@@ -2166,7 +2318,7 @@ type ClientInterface interface {
 
 	// ListCustomImages List Custom Images
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:list`
 	//
@@ -2175,7 +2327,7 @@ type ClientInterface interface {
 
 	// CreateCustomImageWithBody Create Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:create`
 	//
@@ -2186,7 +2338,7 @@ type ClientInterface interface {
 
 	// CreateCustomImage Create Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:create`
 	//
@@ -2197,7 +2349,7 @@ type ClientInterface interface {
 
 	// ImportCustomImageWithBody Import Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:import`
 	//
@@ -2208,7 +2360,7 @@ type ClientInterface interface {
 
 	// ImportCustomImage Import Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:import`
 	//
@@ -2219,7 +2371,7 @@ type ClientInterface interface {
 
 	// DeleteCustomImage Delete Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:delete`
 	//
@@ -2228,7 +2380,7 @@ type ClientInterface interface {
 
 	// GetCustomImage Get Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:get`
 	//
@@ -2237,7 +2389,7 @@ type ClientInterface interface {
 
 	// PartialUpdateCustomImageWithBody Partial Update Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:update`
 	//
@@ -2248,7 +2400,7 @@ type ClientInterface interface {
 
 	// PartialUpdateCustomImage Partial Update Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:update`
 	//
@@ -2259,7 +2411,7 @@ type ClientInterface interface {
 
 	// ExportCustomImageWithBody Export Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:export`
 	//
@@ -2270,7 +2422,7 @@ type ClientInterface interface {
 
 	// ExportCustomImage Export Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:export`
 	//
@@ -2287,7 +2439,7 @@ type ClientInterface interface {
 	// project's own DPC. Results are always filtered to status=ENABLED and
 	// display=True.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:flavor:list`
 	//
@@ -2301,7 +2453,7 @@ type ClientInterface interface {
 	// The flavor must be visible to the project (project-agnostic or scoped to
 	// the project's own DPC).
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:flavor:get`
 	//
@@ -2330,7 +2482,7 @@ type ClientInterface interface {
 	//
 	// List the key pairs owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:key_pair:list`
 	//
@@ -2341,7 +2493,7 @@ type ClientInterface interface {
 	//
 	// Register a key pair for the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:key_pair:create`
 	//
@@ -2354,7 +2506,7 @@ type ClientInterface interface {
 	//
 	// Register a key pair for the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:key_pair:create`
 	//
@@ -2369,7 +2521,7 @@ type ClientInterface interface {
 	//
 	// Answers 409 while another resource still references it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:key_pair:delete`
 	//
@@ -2380,7 +2532,7 @@ type ClientInterface interface {
 	//
 	// Return a single key pair owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:key_pair:get`
 	//
@@ -2391,7 +2543,7 @@ type ClientInterface interface {
 	//
 	// Update a key pair's name.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:key_pair:update`
 	//
@@ -2404,7 +2556,7 @@ type ClientInterface interface {
 	//
 	// Update a key pair's name.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:key_pair:update`
 	//
@@ -2417,7 +2569,7 @@ type ClientInterface interface {
 	//
 	// List placement groups owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:placement_group:list`
 	//
@@ -2428,7 +2580,7 @@ type ClientInterface interface {
 	//
 	// Create a placement group in one of the project's active server regions.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:placement_group:create`
 	//
@@ -2441,7 +2593,7 @@ type ClientInterface interface {
 	//
 	// Create a placement group in one of the project's active server regions.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:placement_group:create`
 	//
@@ -2454,7 +2606,7 @@ type ClientInterface interface {
 	//
 	// Delete a placement group owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:placement_group:delete`
 	//
@@ -2465,7 +2617,7 @@ type ClientInterface interface {
 	//
 	// Return a single placement group owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:placement_group:get`
 	//
@@ -2476,7 +2628,7 @@ type ClientInterface interface {
 	//
 	// Rename a placement group owned by the project, or change its description.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:placement_group:update`
 	//
@@ -2489,7 +2641,7 @@ type ClientInterface interface {
 	//
 	// Rename a placement group owned by the project, or change its description.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:placement_group:update`
 	//
@@ -2500,7 +2652,7 @@ type ClientInterface interface {
 
 	// ListServerTypes List Server Types
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server_types:list`
 	//
@@ -2509,7 +2661,7 @@ type ClientInterface interface {
 
 	// ListServers List Servers
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:list`
 	//
@@ -2520,7 +2672,7 @@ type ClientInterface interface {
 	//
 	// Create one or more server instances.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:create`
 	//
@@ -2533,7 +2685,7 @@ type ClientInterface interface {
 	//
 	// Create one or more server instances.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:create`
 	//
@@ -2544,7 +2696,7 @@ type ClientInterface interface {
 
 	// DeleteServer Delete Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:delete`
 	//
@@ -2553,7 +2705,7 @@ type ClientInterface interface {
 
 	// GetServer Get Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:get`
 	//
@@ -2562,7 +2714,7 @@ type ClientInterface interface {
 
 	// PartialUpdateServerWithBody Partial Update Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:update`
 	//
@@ -2573,7 +2725,7 @@ type ClientInterface interface {
 
 	// PartialUpdateServer Partial Update Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:update`
 	//
@@ -2584,7 +2736,7 @@ type ClientInterface interface {
 
 	// UpdateServerWithBody Update Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:update`
 	//
@@ -2595,7 +2747,7 @@ type ClientInterface interface {
 
 	// UpdateServer Update Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:update`
 	//
@@ -2606,7 +2758,7 @@ type ClientInterface interface {
 
 	// AttachServerEipWithBody Attach Elastic IP
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:attach_eip`
 	//
@@ -2617,7 +2769,7 @@ type ClientInterface interface {
 
 	// AttachServerEip Attach Elastic IP
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:attach_eip`
 	//
@@ -2628,7 +2780,7 @@ type ClientInterface interface {
 
 	// AttachPrivateIpWithBody Attach Private IP
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:attach_private_ip`
 	//
@@ -2639,7 +2791,7 @@ type ClientInterface interface {
 
 	// AttachPrivateIp Attach Private IP
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:attach_private_ip`
 	//
@@ -2650,7 +2802,7 @@ type ClientInterface interface {
 
 	// AttachServerSubnetWithBody Attach Subnet
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:attach_subnet`
 	//
@@ -2661,7 +2813,7 @@ type ClientInterface interface {
 
 	// AttachServerSubnet Attach Subnet
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:attach_subnet`
 	//
@@ -2672,7 +2824,7 @@ type ClientInterface interface {
 
 	// AttachVolumeWithBody Attach Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:attach_volume`
 	//
@@ -2683,7 +2835,7 @@ type ClientInterface interface {
 
 	// AttachVolume Attach Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:attach_volume`
 	//
@@ -2694,7 +2846,7 @@ type ClientInterface interface {
 
 	// UpdateServerBandwidthWithBody Update Server Bandwidth
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:update_bandwidth`
 	//
@@ -2705,7 +2857,7 @@ type ClientInterface interface {
 
 	// UpdateServerBandwidth Update Server Bandwidth
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:update_bandwidth`
 	//
@@ -2716,7 +2868,7 @@ type ClientInterface interface {
 
 	// CloneServerWithBody Clone Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:clone`
 	//
@@ -2727,7 +2879,7 @@ type ClientInterface interface {
 
 	// CloneServer Clone Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:clone`
 	//
@@ -2738,7 +2890,7 @@ type ClientInterface interface {
 
 	// DeleteServerCascadeWithBody Delete Server Cascade
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:delete`
 	//
@@ -2749,7 +2901,7 @@ type ClientInterface interface {
 
 	// DeleteServerCascade Delete Server Cascade
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:delete`
 	//
@@ -2760,7 +2912,7 @@ type ClientInterface interface {
 
 	// DetachServerEipWithBody Detach Elastic IP
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:detach_eip`
 	//
@@ -2771,7 +2923,7 @@ type ClientInterface interface {
 
 	// DetachServerEip Detach Elastic IP
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:detach_eip`
 	//
@@ -2782,7 +2934,7 @@ type ClientInterface interface {
 
 	// DetachPrivateIpWithBody Detach Private IP
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:detach_private_ip`
 	//
@@ -2793,7 +2945,7 @@ type ClientInterface interface {
 
 	// DetachPrivateIp Detach Private IP
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:detach_private_ip`
 	//
@@ -2804,7 +2956,7 @@ type ClientInterface interface {
 
 	// DetachVolumeWithBody Detach Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:detach_volume`
 	//
@@ -2815,7 +2967,7 @@ type ClientInterface interface {
 
 	// DetachVolume Detach Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:detach_volume`
 	//
@@ -2826,7 +2978,7 @@ type ClientInterface interface {
 
 	// UpdateServerPasswordWithBody Update Server Password
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:change_password`
 	//
@@ -2837,7 +2989,7 @@ type ClientInterface interface {
 
 	// UpdateServerPassword Update Server Password
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:change_password`
 	//
@@ -2848,7 +3000,7 @@ type ClientInterface interface {
 
 	// RebootServerWithBody Reboot Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:reboot`
 	//
@@ -2859,7 +3011,7 @@ type ClientInterface interface {
 
 	// RebootServer Reboot Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:reboot`
 	//
@@ -2870,7 +3022,7 @@ type ClientInterface interface {
 
 	// RebuildServerWithBody Rebuild Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:rebuild`
 	//
@@ -2881,7 +3033,7 @@ type ClientInterface interface {
 
 	// RebuildServer Rebuild Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:rebuild`
 	//
@@ -2890,9 +3042,31 @@ type ClientInterface interface {
 	// Corresponds with POST /v2/server/servers/{server_id}/rebuild/ (the `RebuildServer` operationId).
 	RebuildServer(ctx context.Context, serverId core.UUID, params *RebuildServerParams, body RebuildServerJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// RescueServerWithBody Rescue Server
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:server:server:rescue`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v2/server/servers/{server_id}/rescue/ (the `RescueServer` operationId).
+	RescueServerWithBody(ctx context.Context, serverId core.UUID, params *RescueServerParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RescueServer Rescue Server
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:server:server:rescue`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v2/server/servers/{server_id}/rescue/ (the `RescueServer` operationId).
+	RescueServer(ctx context.Context, serverId core.UUID, params *RescueServerParams, body RescueServerJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ResizeServerWithBody Resize Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:resize`
 	//
@@ -2903,7 +3077,7 @@ type ClientInterface interface {
 
 	// ResizeServer Resize Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:resize`
 	//
@@ -2914,7 +3088,7 @@ type ClientInterface interface {
 
 	// UpdateServerSecurityGroupWithBody Update Server Security Groups
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:update_security_group`
 	//
@@ -2925,7 +3099,7 @@ type ClientInterface interface {
 
 	// UpdateServerSecurityGroup Update Server Security Groups
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:update_security_group`
 	//
@@ -2936,7 +3110,7 @@ type ClientInterface interface {
 
 	// StartServer Start Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:start`
 	//
@@ -2945,17 +3119,62 @@ type ClientInterface interface {
 
 	// StopServer Stop Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:stop`
 	//
 	// Corresponds with POST /v2/server/servers/{server_id}/stop/ (the `StopServer` operationId).
 	StopServer(ctx context.Context, serverId core.UUID, params *StopServerParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UnrescueServer Unrescue Server
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:server:server:unrescue`
+	//
+	// Corresponds with POST /v2/server/servers/{server_id}/unrescue/ (the `UnrescueServer` operationId).
+	UnrescueServer(ctx context.Context, serverId core.UUID, params *UnrescueServerParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListVdcs List Vdcs
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dpc:dpc:list`
+	//
+	// Corresponds with GET /v2/server/vdcs/ (the `ListVdcs` operationId).
+	ListVdcs(ctx context.Context, params *ListVdcsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetVdc Get Vdc
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dpc:dpc:get`
+	//
+	// Corresponds with GET /v2/server/vdcs/{vdc_id}/ (the `GetVdc` operationId).
+	GetVdc(ctx context.Context, vdcId core.UUID, params *GetVdcParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListVdcComputes List Vdc Computes
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dpc:dpc:list_computes`
+	//
+	// Corresponds with GET /v2/server/vdcs/{vdc_id}/computes/ (the `ListVdcComputes` operationId).
+	ListVdcComputes(ctx context.Context, vdcId core.UUID, params *ListVdcComputesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListVdcServers List Vdc Servers
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dpc:dpc:list_servers`
+	//
+	// Corresponds with GET /v2/server/vdcs/{vdc_id}/servers/ (the `ListVdcServers` operationId).
+	ListVdcServers(ctx context.Context, vdcId core.UUID, params *ListVdcServersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 // ListCustomImages List Custom Images
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:list`
 //
@@ -2974,7 +3193,7 @@ func (c *Client) ListCustomImages(ctx context.Context, params *ListCustomImagesP
 
 // CreateCustomImageWithBody Create Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:create`
 //
@@ -2995,7 +3214,7 @@ func (c *Client) CreateCustomImageWithBody(ctx context.Context, params *CreateCu
 
 // CreateCustomImage Create Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:create`
 //
@@ -3016,7 +3235,7 @@ func (c *Client) CreateCustomImage(ctx context.Context, params *CreateCustomImag
 
 // ImportCustomImageWithBody Import Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:import`
 //
@@ -3037,7 +3256,7 @@ func (c *Client) ImportCustomImageWithBody(ctx context.Context, params *ImportCu
 
 // ImportCustomImage Import Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:import`
 //
@@ -3058,7 +3277,7 @@ func (c *Client) ImportCustomImage(ctx context.Context, params *ImportCustomImag
 
 // DeleteCustomImage Delete Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:delete`
 //
@@ -3077,7 +3296,7 @@ func (c *Client) DeleteCustomImage(ctx context.Context, customImageId core.UUID,
 
 // GetCustomImage Get Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:get`
 //
@@ -3096,7 +3315,7 @@ func (c *Client) GetCustomImage(ctx context.Context, customImageId core.UUID, pa
 
 // PartialUpdateCustomImageWithBody Partial Update Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:update`
 //
@@ -3117,7 +3336,7 @@ func (c *Client) PartialUpdateCustomImageWithBody(ctx context.Context, customIma
 
 // PartialUpdateCustomImage Partial Update Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:update`
 //
@@ -3138,7 +3357,7 @@ func (c *Client) PartialUpdateCustomImage(ctx context.Context, customImageId cor
 
 // ExportCustomImageWithBody Export Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:export`
 //
@@ -3159,7 +3378,7 @@ func (c *Client) ExportCustomImageWithBody(ctx context.Context, customImageId co
 
 // ExportCustomImage Export Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:export`
 //
@@ -3186,7 +3405,7 @@ func (c *Client) ExportCustomImage(ctx context.Context, customImageId core.UUID,
 // project's own DPC. Results are always filtered to status=ENABLED and
 // display=True.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:flavor:list`
 //
@@ -3210,7 +3429,7 @@ func (c *Client) ListFlavors(ctx context.Context, params *ListFlavorsParams, req
 // The flavor must be visible to the project (project-agnostic or scoped to
 // the project's own DPC).
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:flavor:get`
 //
@@ -3269,7 +3488,7 @@ func (c *Client) GetImage(ctx context.Context, imageId core.UUID, params *GetIma
 //
 // List the key pairs owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:key_pair:list`
 //
@@ -3290,7 +3509,7 @@ func (c *Client) ListKeyPairs(ctx context.Context, params *ListKeyPairsParams, r
 //
 // Register a key pair for the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:key_pair:create`
 //
@@ -3313,7 +3532,7 @@ func (c *Client) CreateKeyPairWithBody(ctx context.Context, params *CreateKeyPai
 //
 // Register a key pair for the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:key_pair:create`
 //
@@ -3338,7 +3557,7 @@ func (c *Client) CreateKeyPair(ctx context.Context, params *CreateKeyPairParams,
 //
 // Answers 409 while another resource still references it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:key_pair:delete`
 //
@@ -3359,7 +3578,7 @@ func (c *Client) DeleteKeyPair(ctx context.Context, keyPairId core.UUID, params 
 //
 // Return a single key pair owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:key_pair:get`
 //
@@ -3380,7 +3599,7 @@ func (c *Client) GetKeyPair(ctx context.Context, keyPairId core.UUID, params *Ge
 //
 // Update a key pair's name.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:key_pair:update`
 //
@@ -3403,7 +3622,7 @@ func (c *Client) PartialUpdateKeyPairWithBody(ctx context.Context, keyPairId cor
 //
 // Update a key pair's name.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:key_pair:update`
 //
@@ -3426,7 +3645,7 @@ func (c *Client) PartialUpdateKeyPair(ctx context.Context, keyPairId core.UUID, 
 //
 // List placement groups owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:placement_group:list`
 //
@@ -3447,7 +3666,7 @@ func (c *Client) ListPlacementGroups(ctx context.Context, params *ListPlacementG
 //
 // Create a placement group in one of the project's active server regions.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:placement_group:create`
 //
@@ -3470,7 +3689,7 @@ func (c *Client) CreatePlacementGroupWithBody(ctx context.Context, params *Creat
 //
 // Create a placement group in one of the project's active server regions.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:placement_group:create`
 //
@@ -3493,7 +3712,7 @@ func (c *Client) CreatePlacementGroup(ctx context.Context, params *CreatePlaceme
 //
 // Delete a placement group owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:placement_group:delete`
 //
@@ -3514,7 +3733,7 @@ func (c *Client) DeletePlacementGroup(ctx context.Context, placementGroupId core
 //
 // Return a single placement group owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:placement_group:get`
 //
@@ -3535,7 +3754,7 @@ func (c *Client) GetPlacementGroup(ctx context.Context, placementGroupId core.UU
 //
 // Rename a placement group owned by the project, or change its description.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:placement_group:update`
 //
@@ -3558,7 +3777,7 @@ func (c *Client) PartialUpdatePlacementGroupWithBody(ctx context.Context, placem
 //
 // Rename a placement group owned by the project, or change its description.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:placement_group:update`
 //
@@ -3579,7 +3798,7 @@ func (c *Client) PartialUpdatePlacementGroup(ctx context.Context, placementGroup
 
 // ListServerTypes List Server Types
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server_types:list`
 //
@@ -3598,7 +3817,7 @@ func (c *Client) ListServerTypes(ctx context.Context, params *ListServerTypesPar
 
 // ListServers List Servers
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:list`
 //
@@ -3619,7 +3838,7 @@ func (c *Client) ListServers(ctx context.Context, params *ListServersParams, req
 //
 // Create one or more server instances.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:create`
 //
@@ -3642,7 +3861,7 @@ func (c *Client) CreateServerWithBody(ctx context.Context, params *CreateServerP
 //
 // Create one or more server instances.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:create`
 //
@@ -3663,7 +3882,7 @@ func (c *Client) CreateServer(ctx context.Context, params *CreateServerParams, b
 
 // DeleteServer Delete Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:delete`
 //
@@ -3682,7 +3901,7 @@ func (c *Client) DeleteServer(ctx context.Context, serverId core.UUID, params *D
 
 // GetServer Get Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:get`
 //
@@ -3701,7 +3920,7 @@ func (c *Client) GetServer(ctx context.Context, serverId core.UUID, params *GetS
 
 // PartialUpdateServerWithBody Partial Update Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:update`
 //
@@ -3722,7 +3941,7 @@ func (c *Client) PartialUpdateServerWithBody(ctx context.Context, serverId core.
 
 // PartialUpdateServer Partial Update Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:update`
 //
@@ -3743,7 +3962,7 @@ func (c *Client) PartialUpdateServer(ctx context.Context, serverId core.UUID, pa
 
 // UpdateServerWithBody Update Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:update`
 //
@@ -3764,7 +3983,7 @@ func (c *Client) UpdateServerWithBody(ctx context.Context, serverId core.UUID, p
 
 // UpdateServer Update Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:update`
 //
@@ -3785,7 +4004,7 @@ func (c *Client) UpdateServer(ctx context.Context, serverId core.UUID, params *U
 
 // AttachServerEipWithBody Attach Elastic IP
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:attach_eip`
 //
@@ -3806,7 +4025,7 @@ func (c *Client) AttachServerEipWithBody(ctx context.Context, serverId core.UUID
 
 // AttachServerEip Attach Elastic IP
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:attach_eip`
 //
@@ -3827,7 +4046,7 @@ func (c *Client) AttachServerEip(ctx context.Context, serverId core.UUID, params
 
 // AttachPrivateIpWithBody Attach Private IP
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:attach_private_ip`
 //
@@ -3848,7 +4067,7 @@ func (c *Client) AttachPrivateIpWithBody(ctx context.Context, serverId core.UUID
 
 // AttachPrivateIp Attach Private IP
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:attach_private_ip`
 //
@@ -3869,7 +4088,7 @@ func (c *Client) AttachPrivateIp(ctx context.Context, serverId core.UUID, params
 
 // AttachServerSubnetWithBody Attach Subnet
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:attach_subnet`
 //
@@ -3890,7 +4109,7 @@ func (c *Client) AttachServerSubnetWithBody(ctx context.Context, serverId core.U
 
 // AttachServerSubnet Attach Subnet
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:attach_subnet`
 //
@@ -3911,7 +4130,7 @@ func (c *Client) AttachServerSubnet(ctx context.Context, serverId core.UUID, par
 
 // AttachVolumeWithBody Attach Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:attach_volume`
 //
@@ -3932,7 +4151,7 @@ func (c *Client) AttachVolumeWithBody(ctx context.Context, serverId core.UUID, p
 
 // AttachVolume Attach Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:attach_volume`
 //
@@ -3953,7 +4172,7 @@ func (c *Client) AttachVolume(ctx context.Context, serverId core.UUID, params *A
 
 // UpdateServerBandwidthWithBody Update Server Bandwidth
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:update_bandwidth`
 //
@@ -3974,7 +4193,7 @@ func (c *Client) UpdateServerBandwidthWithBody(ctx context.Context, serverId cor
 
 // UpdateServerBandwidth Update Server Bandwidth
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:update_bandwidth`
 //
@@ -3995,7 +4214,7 @@ func (c *Client) UpdateServerBandwidth(ctx context.Context, serverId core.UUID, 
 
 // CloneServerWithBody Clone Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:clone`
 //
@@ -4016,7 +4235,7 @@ func (c *Client) CloneServerWithBody(ctx context.Context, serverId core.UUID, pa
 
 // CloneServer Clone Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:clone`
 //
@@ -4037,7 +4256,7 @@ func (c *Client) CloneServer(ctx context.Context, serverId core.UUID, params *Cl
 
 // DeleteServerCascadeWithBody Delete Server Cascade
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:delete`
 //
@@ -4058,7 +4277,7 @@ func (c *Client) DeleteServerCascadeWithBody(ctx context.Context, serverId core.
 
 // DeleteServerCascade Delete Server Cascade
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:delete`
 //
@@ -4079,7 +4298,7 @@ func (c *Client) DeleteServerCascade(ctx context.Context, serverId core.UUID, pa
 
 // DetachServerEipWithBody Detach Elastic IP
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:detach_eip`
 //
@@ -4100,7 +4319,7 @@ func (c *Client) DetachServerEipWithBody(ctx context.Context, serverId core.UUID
 
 // DetachServerEip Detach Elastic IP
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:detach_eip`
 //
@@ -4121,7 +4340,7 @@ func (c *Client) DetachServerEip(ctx context.Context, serverId core.UUID, params
 
 // DetachPrivateIpWithBody Detach Private IP
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:detach_private_ip`
 //
@@ -4142,7 +4361,7 @@ func (c *Client) DetachPrivateIpWithBody(ctx context.Context, serverId core.UUID
 
 // DetachPrivateIp Detach Private IP
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:detach_private_ip`
 //
@@ -4163,7 +4382,7 @@ func (c *Client) DetachPrivateIp(ctx context.Context, serverId core.UUID, params
 
 // DetachVolumeWithBody Detach Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:detach_volume`
 //
@@ -4184,7 +4403,7 @@ func (c *Client) DetachVolumeWithBody(ctx context.Context, serverId core.UUID, p
 
 // DetachVolume Detach Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:detach_volume`
 //
@@ -4205,7 +4424,7 @@ func (c *Client) DetachVolume(ctx context.Context, serverId core.UUID, params *D
 
 // UpdateServerPasswordWithBody Update Server Password
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:change_password`
 //
@@ -4226,7 +4445,7 @@ func (c *Client) UpdateServerPasswordWithBody(ctx context.Context, serverId core
 
 // UpdateServerPassword Update Server Password
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:change_password`
 //
@@ -4247,7 +4466,7 @@ func (c *Client) UpdateServerPassword(ctx context.Context, serverId core.UUID, p
 
 // RebootServerWithBody Reboot Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:reboot`
 //
@@ -4268,7 +4487,7 @@ func (c *Client) RebootServerWithBody(ctx context.Context, serverId core.UUID, p
 
 // RebootServer Reboot Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:reboot`
 //
@@ -4289,7 +4508,7 @@ func (c *Client) RebootServer(ctx context.Context, serverId core.UUID, params *R
 
 // RebuildServerWithBody Rebuild Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:rebuild`
 //
@@ -4310,7 +4529,7 @@ func (c *Client) RebuildServerWithBody(ctx context.Context, serverId core.UUID, 
 
 // RebuildServer Rebuild Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:rebuild`
 //
@@ -4329,9 +4548,51 @@ func (c *Client) RebuildServer(ctx context.Context, serverId core.UUID, params *
 	return c.Client.Do(req)
 }
 
+// RescueServerWithBody Rescue Server
+//
+// **Required permissions:**
+//
+// - `urn:action:server:server:rescue`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/server/servers/{server_id}/rescue/ (the `RescueServer` operationId).
+func (c *Client) RescueServerWithBody(ctx context.Context, serverId core.UUID, params *RescueServerParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRescueServerRequestWithBody(c.Server, serverId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RescueServer Rescue Server
+//
+// **Required permissions:**
+//
+// - `urn:action:server:server:rescue`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/server/servers/{server_id}/rescue/ (the `RescueServer` operationId).
+func (c *Client) RescueServer(ctx context.Context, serverId core.UUID, params *RescueServerParams, body RescueServerJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRescueServerRequest(c.Server, serverId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // ResizeServerWithBody Resize Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:resize`
 //
@@ -4352,7 +4613,7 @@ func (c *Client) ResizeServerWithBody(ctx context.Context, serverId core.UUID, p
 
 // ResizeServer Resize Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:resize`
 //
@@ -4373,7 +4634,7 @@ func (c *Client) ResizeServer(ctx context.Context, serverId core.UUID, params *R
 
 // UpdateServerSecurityGroupWithBody Update Server Security Groups
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:update_security_group`
 //
@@ -4394,7 +4655,7 @@ func (c *Client) UpdateServerSecurityGroupWithBody(ctx context.Context, serverId
 
 // UpdateServerSecurityGroup Update Server Security Groups
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:update_security_group`
 //
@@ -4415,7 +4676,7 @@ func (c *Client) UpdateServerSecurityGroup(ctx context.Context, serverId core.UU
 
 // StartServer Start Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:start`
 //
@@ -4434,13 +4695,108 @@ func (c *Client) StartServer(ctx context.Context, serverId core.UUID, params *St
 
 // StopServer Stop Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:stop`
 //
 // Corresponds with POST /v2/server/servers/{server_id}/stop/ (the `StopServer` operationId).
 func (c *Client) StopServer(ctx context.Context, serverId core.UUID, params *StopServerParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewStopServerRequest(c.Server, serverId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UnrescueServer Unrescue Server
+//
+// **Required permissions:**
+//
+// - `urn:action:server:server:unrescue`
+//
+// Corresponds with POST /v2/server/servers/{server_id}/unrescue/ (the `UnrescueServer` operationId).
+func (c *Client) UnrescueServer(ctx context.Context, serverId core.UUID, params *UnrescueServerParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUnrescueServerRequest(c.Server, serverId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListVdcs List Vdcs
+//
+// **Required permissions:**
+//
+// - `urn:action:dpc:dpc:list`
+//
+// Corresponds with GET /v2/server/vdcs/ (the `ListVdcs` operationId).
+func (c *Client) ListVdcs(ctx context.Context, params *ListVdcsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListVdcsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetVdc Get Vdc
+//
+// **Required permissions:**
+//
+// - `urn:action:dpc:dpc:get`
+//
+// Corresponds with GET /v2/server/vdcs/{vdc_id}/ (the `GetVdc` operationId).
+func (c *Client) GetVdc(ctx context.Context, vdcId core.UUID, params *GetVdcParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetVdcRequest(c.Server, vdcId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListVdcComputes List Vdc Computes
+//
+// **Required permissions:**
+//
+// - `urn:action:dpc:dpc:list_computes`
+//
+// Corresponds with GET /v2/server/vdcs/{vdc_id}/computes/ (the `ListVdcComputes` operationId).
+func (c *Client) ListVdcComputes(ctx context.Context, vdcId core.UUID, params *ListVdcComputesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListVdcComputesRequest(c.Server, vdcId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListVdcServers List Vdc Servers
+//
+// **Required permissions:**
+//
+// - `urn:action:dpc:dpc:list_servers`
+//
+// Corresponds with GET /v2/server/vdcs/{vdc_id}/servers/ (the `ListVdcServers` operationId).
+func (c *Client) ListVdcServers(ctx context.Context, vdcId core.UUID, params *ListVdcServersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListVdcServersRequest(c.Server, vdcId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -7392,6 +7748,66 @@ func NewRebuildServerRequestWithBody(server string, serverId core.UUID, params *
 	return req, nil
 }
 
+// NewRescueServerRequest calls the generic RescueServer builder with application/json body
+func NewRescueServerRequest(server string, serverId core.UUID, params *RescueServerParams, body RescueServerJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRescueServerRequestWithBody(server, serverId, params, "application/json", bodyReader)
+}
+
+// NewRescueServerRequestWithBody constructs an http.Request for the RescueServer method, with any body, and a specified content type
+func NewRescueServerRequestWithBody(server string, serverId core.UUID, params *RescueServerParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "server_id", serverId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/servers/%s/rescue/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
 // NewResizeServerRequest calls the generic ResizeServer builder with application/json body
 func NewResizeServerRequest(server string, serverId core.UUID, params *ResizeServerParams, body ResizeServerJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -7606,6 +8022,459 @@ func NewStopServerRequest(server string, serverId core.UUID, params *StopServerP
 	return req, nil
 }
 
+// NewUnrescueServerRequest constructs an http.Request for the UnrescueServer method
+func NewUnrescueServerRequest(server string, serverId core.UUID, params *UnrescueServerParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "server_id", serverId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/servers/%s/unrescue/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListVdcsRequest constructs an http.Request for the ListVdcs method
+func NewListVdcsRequest(server string, params *ListVdcsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/vdcs/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Name != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "name", *params.Name, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RegionId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "region_id", *params.RegionId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Region != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "region", *params.Region, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.ZoneId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "zone_id", *params.ZoneId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetVdcRequest constructs an http.Request for the GetVdc method
+func NewGetVdcRequest(server string, vdcId core.UUID, params *GetVdcParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "vdc_id", vdcId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/vdcs/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListVdcComputesRequest constructs an http.Request for the ListVdcComputes method
+func NewListVdcComputesRequest(server string, vdcId core.UUID, params *ListVdcComputesParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "vdc_id", vdcId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/vdcs/%s/computes/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.ComputeName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "compute_name", *params.ComputeName, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListVdcServersRequest constructs an http.Request for the ListVdcServers method
+func NewListVdcServersRequest(server string, vdcId core.UUID, params *ListVdcServersParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "vdc_id", vdcId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/vdcs/%s/servers/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Name != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "name", *params.Name, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Compute != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "compute", *params.Compute, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.ElasticIp != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "elastic_ip", *params.ElasticIp, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PrivateIp != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "private_ip", *params.PrivateIp, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -7652,7 +8521,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListCustomImagesWithResponse List Custom Images
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:list`
 	//
@@ -7663,7 +8532,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateCustomImageWithBodyWithResponse Create Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:create`
 	//
@@ -7674,7 +8543,7 @@ type ClientWithResponsesInterface interface {
 
 	// CreateCustomImageWithResponse Create Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:create`
 	//
@@ -7685,7 +8554,7 @@ type ClientWithResponsesInterface interface {
 
 	// ImportCustomImageWithBodyWithResponse Import Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:import`
 	//
@@ -7696,7 +8565,7 @@ type ClientWithResponsesInterface interface {
 
 	// ImportCustomImageWithResponse Import Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:import`
 	//
@@ -7707,7 +8576,7 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteCustomImageWithResponse Delete Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:delete`
 	//
@@ -7718,7 +8587,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetCustomImageWithResponse Get Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:get`
 	//
@@ -7729,7 +8598,7 @@ type ClientWithResponsesInterface interface {
 
 	// PartialUpdateCustomImageWithBodyWithResponse Partial Update Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:update`
 	//
@@ -7740,7 +8609,7 @@ type ClientWithResponsesInterface interface {
 
 	// PartialUpdateCustomImageWithResponse Partial Update Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:update`
 	//
@@ -7751,7 +8620,7 @@ type ClientWithResponsesInterface interface {
 
 	// ExportCustomImageWithBodyWithResponse Export Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:export`
 	//
@@ -7762,7 +8631,7 @@ type ClientWithResponsesInterface interface {
 
 	// ExportCustomImageWithResponse Export Custom Image
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:custom_image:export`
 	//
@@ -7779,7 +8648,7 @@ type ClientWithResponsesInterface interface {
 	// project's own DPC. Results are always filtered to status=ENABLED and
 	// display=True.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:flavor:list`
 	//
@@ -7795,7 +8664,7 @@ type ClientWithResponsesInterface interface {
 	// The flavor must be visible to the project (project-agnostic or scoped to
 	// the project's own DPC).
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:flavor:get`
 	//
@@ -7830,7 +8699,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// List the key pairs owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:key_pair:list`
 	//
@@ -7843,7 +8712,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Register a key pair for the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:key_pair:create`
 	//
@@ -7856,7 +8725,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Register a key pair for the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:key_pair:create`
 	//
@@ -7871,7 +8740,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Answers 409 while another resource still references it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:key_pair:delete`
 	//
@@ -7884,7 +8753,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Return a single key pair owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:key_pair:get`
 	//
@@ -7897,7 +8766,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update a key pair's name.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:key_pair:update`
 	//
@@ -7910,7 +8779,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update a key pair's name.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:key_pair:update`
 	//
@@ -7923,7 +8792,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// List placement groups owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:placement_group:list`
 	//
@@ -7936,7 +8805,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Create a placement group in one of the project's active server regions.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:placement_group:create`
 	//
@@ -7949,7 +8818,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Create a placement group in one of the project's active server regions.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:placement_group:create`
 	//
@@ -7962,7 +8831,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Delete a placement group owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:placement_group:delete`
 	//
@@ -7975,7 +8844,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Return a single placement group owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:placement_group:get`
 	//
@@ -7988,7 +8857,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Rename a placement group owned by the project, or change its description.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:placement_group:update`
 	//
@@ -8001,7 +8870,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Rename a placement group owned by the project, or change its description.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:placement_group:update`
 	//
@@ -8012,7 +8881,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListServerTypesWithResponse List Server Types
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server_types:list`
 	//
@@ -8023,7 +8892,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListServersWithResponse List Servers
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:list`
 	//
@@ -8036,7 +8905,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Create one or more server instances.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:create`
 	//
@@ -8049,7 +8918,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Create one or more server instances.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:create`
 	//
@@ -8060,7 +8929,7 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteServerWithResponse Delete Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:delete`
 	//
@@ -8071,7 +8940,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetServerWithResponse Get Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:get`
 	//
@@ -8082,7 +8951,7 @@ type ClientWithResponsesInterface interface {
 
 	// PartialUpdateServerWithBodyWithResponse Partial Update Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:update`
 	//
@@ -8093,7 +8962,7 @@ type ClientWithResponsesInterface interface {
 
 	// PartialUpdateServerWithResponse Partial Update Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:update`
 	//
@@ -8104,7 +8973,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateServerWithBodyWithResponse Update Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:update`
 	//
@@ -8115,7 +8984,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateServerWithResponse Update Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:update`
 	//
@@ -8126,7 +8995,7 @@ type ClientWithResponsesInterface interface {
 
 	// AttachServerEipWithBodyWithResponse Attach Elastic IP
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:attach_eip`
 	//
@@ -8137,7 +9006,7 @@ type ClientWithResponsesInterface interface {
 
 	// AttachServerEipWithResponse Attach Elastic IP
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:attach_eip`
 	//
@@ -8148,7 +9017,7 @@ type ClientWithResponsesInterface interface {
 
 	// AttachPrivateIpWithBodyWithResponse Attach Private IP
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:attach_private_ip`
 	//
@@ -8159,7 +9028,7 @@ type ClientWithResponsesInterface interface {
 
 	// AttachPrivateIpWithResponse Attach Private IP
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:attach_private_ip`
 	//
@@ -8170,7 +9039,7 @@ type ClientWithResponsesInterface interface {
 
 	// AttachServerSubnetWithBodyWithResponse Attach Subnet
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:attach_subnet`
 	//
@@ -8181,7 +9050,7 @@ type ClientWithResponsesInterface interface {
 
 	// AttachServerSubnetWithResponse Attach Subnet
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:attach_subnet`
 	//
@@ -8192,7 +9061,7 @@ type ClientWithResponsesInterface interface {
 
 	// AttachVolumeWithBodyWithResponse Attach Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:attach_volume`
 	//
@@ -8203,7 +9072,7 @@ type ClientWithResponsesInterface interface {
 
 	// AttachVolumeWithResponse Attach Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:attach_volume`
 	//
@@ -8214,7 +9083,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateServerBandwidthWithBodyWithResponse Update Server Bandwidth
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:update_bandwidth`
 	//
@@ -8225,7 +9094,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateServerBandwidthWithResponse Update Server Bandwidth
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:update_bandwidth`
 	//
@@ -8236,7 +9105,7 @@ type ClientWithResponsesInterface interface {
 
 	// CloneServerWithBodyWithResponse Clone Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:clone`
 	//
@@ -8247,7 +9116,7 @@ type ClientWithResponsesInterface interface {
 
 	// CloneServerWithResponse Clone Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:clone`
 	//
@@ -8258,7 +9127,7 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteServerCascadeWithBodyWithResponse Delete Server Cascade
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:delete`
 	//
@@ -8269,7 +9138,7 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteServerCascadeWithResponse Delete Server Cascade
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:delete`
 	//
@@ -8280,7 +9149,7 @@ type ClientWithResponsesInterface interface {
 
 	// DetachServerEipWithBodyWithResponse Detach Elastic IP
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:detach_eip`
 	//
@@ -8291,7 +9160,7 @@ type ClientWithResponsesInterface interface {
 
 	// DetachServerEipWithResponse Detach Elastic IP
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:detach_eip`
 	//
@@ -8302,7 +9171,7 @@ type ClientWithResponsesInterface interface {
 
 	// DetachPrivateIpWithBodyWithResponse Detach Private IP
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:detach_private_ip`
 	//
@@ -8313,7 +9182,7 @@ type ClientWithResponsesInterface interface {
 
 	// DetachPrivateIpWithResponse Detach Private IP
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:detach_private_ip`
 	//
@@ -8324,7 +9193,7 @@ type ClientWithResponsesInterface interface {
 
 	// DetachVolumeWithBodyWithResponse Detach Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:detach_volume`
 	//
@@ -8335,7 +9204,7 @@ type ClientWithResponsesInterface interface {
 
 	// DetachVolumeWithResponse Detach Volume
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:detach_volume`
 	//
@@ -8346,7 +9215,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateServerPasswordWithBodyWithResponse Update Server Password
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:change_password`
 	//
@@ -8357,7 +9226,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateServerPasswordWithResponse Update Server Password
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:change_password`
 	//
@@ -8368,7 +9237,7 @@ type ClientWithResponsesInterface interface {
 
 	// RebootServerWithBodyWithResponse Reboot Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:reboot`
 	//
@@ -8379,7 +9248,7 @@ type ClientWithResponsesInterface interface {
 
 	// RebootServerWithResponse Reboot Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:reboot`
 	//
@@ -8390,7 +9259,7 @@ type ClientWithResponsesInterface interface {
 
 	// RebuildServerWithBodyWithResponse Rebuild Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:rebuild`
 	//
@@ -8401,7 +9270,7 @@ type ClientWithResponsesInterface interface {
 
 	// RebuildServerWithResponse Rebuild Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:rebuild`
 	//
@@ -8410,9 +9279,31 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /v2/server/servers/{server_id}/rebuild/ (the `RebuildServer` operationId).
 	RebuildServerWithResponse(ctx context.Context, serverId core.UUID, params *RebuildServerParams, body RebuildServerJSONRequestBody, reqEditors ...RequestEditorFn) (*RebuildServerResponse, error)
 
+	// RescueServerWithBodyWithResponse Rescue Server
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:server:server:rescue`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/server/servers/{server_id}/rescue/ (the `RescueServer` operationId).
+	RescueServerWithBodyWithResponse(ctx context.Context, serverId core.UUID, params *RescueServerParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RescueServerResponse, error)
+
+	// RescueServerWithResponse Rescue Server
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:server:server:rescue`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/server/servers/{server_id}/rescue/ (the `RescueServer` operationId).
+	RescueServerWithResponse(ctx context.Context, serverId core.UUID, params *RescueServerParams, body RescueServerJSONRequestBody, reqEditors ...RequestEditorFn) (*RescueServerResponse, error)
+
 	// ResizeServerWithBodyWithResponse Resize Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:resize`
 	//
@@ -8423,7 +9314,7 @@ type ClientWithResponsesInterface interface {
 
 	// ResizeServerWithResponse Resize Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:resize`
 	//
@@ -8434,7 +9325,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateServerSecurityGroupWithBodyWithResponse Update Server Security Groups
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:update_security_group`
 	//
@@ -8445,7 +9336,7 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateServerSecurityGroupWithResponse Update Server Security Groups
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:update_security_group`
 	//
@@ -8456,7 +9347,7 @@ type ClientWithResponsesInterface interface {
 
 	// StartServerWithResponse Start Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:start`
 	//
@@ -8467,7 +9358,7 @@ type ClientWithResponsesInterface interface {
 
 	// StopServerWithResponse Stop Server
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:server:server:stop`
 	//
@@ -8475,6 +9366,61 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with POST /v2/server/servers/{server_id}/stop/ (the `StopServer` operationId).
 	StopServerWithResponse(ctx context.Context, serverId core.UUID, params *StopServerParams, reqEditors ...RequestEditorFn) (*StopServerResponse, error)
+
+	// UnrescueServerWithResponse Unrescue Server
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:server:server:unrescue`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/server/servers/{server_id}/unrescue/ (the `UnrescueServer` operationId).
+	UnrescueServerWithResponse(ctx context.Context, serverId core.UUID, params *UnrescueServerParams, reqEditors ...RequestEditorFn) (*UnrescueServerResponse, error)
+
+	// ListVdcsWithResponse List Vdcs
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dpc:dpc:list`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/server/vdcs/ (the `ListVdcs` operationId).
+	ListVdcsWithResponse(ctx context.Context, params *ListVdcsParams, reqEditors ...RequestEditorFn) (*ListVdcsResponse, error)
+
+	// GetVdcWithResponse Get Vdc
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dpc:dpc:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/server/vdcs/{vdc_id}/ (the `GetVdc` operationId).
+	GetVdcWithResponse(ctx context.Context, vdcId core.UUID, params *GetVdcParams, reqEditors ...RequestEditorFn) (*GetVdcResponse, error)
+
+	// ListVdcComputesWithResponse List Vdc Computes
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dpc:dpc:list_computes`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/server/vdcs/{vdc_id}/computes/ (the `ListVdcComputes` operationId).
+	ListVdcComputesWithResponse(ctx context.Context, vdcId core.UUID, params *ListVdcComputesParams, reqEditors ...RequestEditorFn) (*ListVdcComputesResponse, error)
+
+	// ListVdcServersWithResponse List Vdc Servers
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dpc:dpc:list_servers`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/server/vdcs/{vdc_id}/servers/ (the `ListVdcServers` operationId).
+	ListVdcServersWithResponse(ctx context.Context, vdcId core.UUID, params *ListVdcServersParams, reqEditors ...RequestEditorFn) (*ListVdcServersResponse, error)
 }
 
 type ListCustomImagesResponse struct {
@@ -9796,6 +10742,37 @@ func (r RebuildServerResponse) StatusCode() int {
 	return 0
 }
 
+type RescueServerResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r RescueServerResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RescueServerResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type ResizeServerResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -9920,9 +10897,172 @@ func (r StopServerResponse) StatusCode() int {
 	return 0
 }
 
+type UnrescueServerResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r UnrescueServerResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UnrescueServerResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListVdcsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedVDCSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListVdcsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListVdcsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetVdcResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *VDCSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetVdcResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetVdcResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListVdcComputesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedVDCComputeSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListVdcComputesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListVdcComputesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListVdcServersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedVDCServerSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListVdcServersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListVdcServersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // ListCustomImagesWithResponse List Custom Images
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:list`
 //
@@ -9939,7 +11079,7 @@ func (c *ClientWithResponses) ListCustomImagesWithResponse(ctx context.Context, 
 
 // CreateCustomImageWithBodyWithResponse Create Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:create`
 //
@@ -9956,7 +11096,7 @@ func (c *ClientWithResponses) CreateCustomImageWithBodyWithResponse(ctx context.
 
 // CreateCustomImageWithResponse Create Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:create`
 //
@@ -9973,7 +11113,7 @@ func (c *ClientWithResponses) CreateCustomImageWithResponse(ctx context.Context,
 
 // ImportCustomImageWithBodyWithResponse Import Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:import`
 //
@@ -9990,7 +11130,7 @@ func (c *ClientWithResponses) ImportCustomImageWithBodyWithResponse(ctx context.
 
 // ImportCustomImageWithResponse Import Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:import`
 //
@@ -10007,7 +11147,7 @@ func (c *ClientWithResponses) ImportCustomImageWithResponse(ctx context.Context,
 
 // DeleteCustomImageWithResponse Delete Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:delete`
 //
@@ -10024,7 +11164,7 @@ func (c *ClientWithResponses) DeleteCustomImageWithResponse(ctx context.Context,
 
 // GetCustomImageWithResponse Get Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:get`
 //
@@ -10041,7 +11181,7 @@ func (c *ClientWithResponses) GetCustomImageWithResponse(ctx context.Context, cu
 
 // PartialUpdateCustomImageWithBodyWithResponse Partial Update Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:update`
 //
@@ -10058,7 +11198,7 @@ func (c *ClientWithResponses) PartialUpdateCustomImageWithBodyWithResponse(ctx c
 
 // PartialUpdateCustomImageWithResponse Partial Update Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:update`
 //
@@ -10075,7 +11215,7 @@ func (c *ClientWithResponses) PartialUpdateCustomImageWithResponse(ctx context.C
 
 // ExportCustomImageWithBodyWithResponse Export Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:export`
 //
@@ -10092,7 +11232,7 @@ func (c *ClientWithResponses) ExportCustomImageWithBodyWithResponse(ctx context.
 
 // ExportCustomImageWithResponse Export Custom Image
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:custom_image:export`
 //
@@ -10115,7 +11255,7 @@ func (c *ClientWithResponses) ExportCustomImageWithResponse(ctx context.Context,
 // project's own DPC. Results are always filtered to status=ENABLED and
 // display=True.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:flavor:list`
 //
@@ -10137,7 +11277,7 @@ func (c *ClientWithResponses) ListFlavorsWithResponse(ctx context.Context, param
 // The flavor must be visible to the project (project-agnostic or scoped to
 // the project's own DPC).
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:flavor:get`
 //
@@ -10190,7 +11330,7 @@ func (c *ClientWithResponses) GetImageWithResponse(ctx context.Context, imageId 
 //
 // List the key pairs owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:key_pair:list`
 //
@@ -10209,7 +11349,7 @@ func (c *ClientWithResponses) ListKeyPairsWithResponse(ctx context.Context, para
 //
 // Register a key pair for the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:key_pair:create`
 //
@@ -10228,7 +11368,7 @@ func (c *ClientWithResponses) CreateKeyPairWithBodyWithResponse(ctx context.Cont
 //
 // Register a key pair for the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:key_pair:create`
 //
@@ -10249,7 +11389,7 @@ func (c *ClientWithResponses) CreateKeyPairWithResponse(ctx context.Context, par
 //
 // Answers 409 while another resource still references it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:key_pair:delete`
 //
@@ -10268,7 +11408,7 @@ func (c *ClientWithResponses) DeleteKeyPairWithResponse(ctx context.Context, key
 //
 // Return a single key pair owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:key_pair:get`
 //
@@ -10287,7 +11427,7 @@ func (c *ClientWithResponses) GetKeyPairWithResponse(ctx context.Context, keyPai
 //
 // Update a key pair's name.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:key_pair:update`
 //
@@ -10306,7 +11446,7 @@ func (c *ClientWithResponses) PartialUpdateKeyPairWithBodyWithResponse(ctx conte
 //
 // Update a key pair's name.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:key_pair:update`
 //
@@ -10325,7 +11465,7 @@ func (c *ClientWithResponses) PartialUpdateKeyPairWithResponse(ctx context.Conte
 //
 // List placement groups owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:placement_group:list`
 //
@@ -10344,7 +11484,7 @@ func (c *ClientWithResponses) ListPlacementGroupsWithResponse(ctx context.Contex
 //
 // Create a placement group in one of the project's active server regions.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:placement_group:create`
 //
@@ -10363,7 +11503,7 @@ func (c *ClientWithResponses) CreatePlacementGroupWithBodyWithResponse(ctx conte
 //
 // Create a placement group in one of the project's active server regions.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:placement_group:create`
 //
@@ -10382,7 +11522,7 @@ func (c *ClientWithResponses) CreatePlacementGroupWithResponse(ctx context.Conte
 //
 // Delete a placement group owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:placement_group:delete`
 //
@@ -10401,7 +11541,7 @@ func (c *ClientWithResponses) DeletePlacementGroupWithResponse(ctx context.Conte
 //
 // Return a single placement group owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:placement_group:get`
 //
@@ -10420,7 +11560,7 @@ func (c *ClientWithResponses) GetPlacementGroupWithResponse(ctx context.Context,
 //
 // Rename a placement group owned by the project, or change its description.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:placement_group:update`
 //
@@ -10439,7 +11579,7 @@ func (c *ClientWithResponses) PartialUpdatePlacementGroupWithBodyWithResponse(ct
 //
 // Rename a placement group owned by the project, or change its description.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:placement_group:update`
 //
@@ -10456,7 +11596,7 @@ func (c *ClientWithResponses) PartialUpdatePlacementGroupWithResponse(ctx contex
 
 // ListServerTypesWithResponse List Server Types
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server_types:list`
 //
@@ -10473,7 +11613,7 @@ func (c *ClientWithResponses) ListServerTypesWithResponse(ctx context.Context, p
 
 // ListServersWithResponse List Servers
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:list`
 //
@@ -10492,7 +11632,7 @@ func (c *ClientWithResponses) ListServersWithResponse(ctx context.Context, param
 //
 // Create one or more server instances.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:create`
 //
@@ -10511,7 +11651,7 @@ func (c *ClientWithResponses) CreateServerWithBodyWithResponse(ctx context.Conte
 //
 // Create one or more server instances.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:create`
 //
@@ -10528,7 +11668,7 @@ func (c *ClientWithResponses) CreateServerWithResponse(ctx context.Context, para
 
 // DeleteServerWithResponse Delete Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:delete`
 //
@@ -10545,7 +11685,7 @@ func (c *ClientWithResponses) DeleteServerWithResponse(ctx context.Context, serv
 
 // GetServerWithResponse Get Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:get`
 //
@@ -10562,7 +11702,7 @@ func (c *ClientWithResponses) GetServerWithResponse(ctx context.Context, serverI
 
 // PartialUpdateServerWithBodyWithResponse Partial Update Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:update`
 //
@@ -10579,7 +11719,7 @@ func (c *ClientWithResponses) PartialUpdateServerWithBodyWithResponse(ctx contex
 
 // PartialUpdateServerWithResponse Partial Update Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:update`
 //
@@ -10596,7 +11736,7 @@ func (c *ClientWithResponses) PartialUpdateServerWithResponse(ctx context.Contex
 
 // UpdateServerWithBodyWithResponse Update Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:update`
 //
@@ -10613,7 +11753,7 @@ func (c *ClientWithResponses) UpdateServerWithBodyWithResponse(ctx context.Conte
 
 // UpdateServerWithResponse Update Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:update`
 //
@@ -10630,7 +11770,7 @@ func (c *ClientWithResponses) UpdateServerWithResponse(ctx context.Context, serv
 
 // AttachServerEipWithBodyWithResponse Attach Elastic IP
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:attach_eip`
 //
@@ -10647,7 +11787,7 @@ func (c *ClientWithResponses) AttachServerEipWithBodyWithResponse(ctx context.Co
 
 // AttachServerEipWithResponse Attach Elastic IP
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:attach_eip`
 //
@@ -10664,7 +11804,7 @@ func (c *ClientWithResponses) AttachServerEipWithResponse(ctx context.Context, s
 
 // AttachPrivateIpWithBodyWithResponse Attach Private IP
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:attach_private_ip`
 //
@@ -10681,7 +11821,7 @@ func (c *ClientWithResponses) AttachPrivateIpWithBodyWithResponse(ctx context.Co
 
 // AttachPrivateIpWithResponse Attach Private IP
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:attach_private_ip`
 //
@@ -10698,7 +11838,7 @@ func (c *ClientWithResponses) AttachPrivateIpWithResponse(ctx context.Context, s
 
 // AttachServerSubnetWithBodyWithResponse Attach Subnet
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:attach_subnet`
 //
@@ -10715,7 +11855,7 @@ func (c *ClientWithResponses) AttachServerSubnetWithBodyWithResponse(ctx context
 
 // AttachServerSubnetWithResponse Attach Subnet
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:attach_subnet`
 //
@@ -10732,7 +11872,7 @@ func (c *ClientWithResponses) AttachServerSubnetWithResponse(ctx context.Context
 
 // AttachVolumeWithBodyWithResponse Attach Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:attach_volume`
 //
@@ -10749,7 +11889,7 @@ func (c *ClientWithResponses) AttachVolumeWithBodyWithResponse(ctx context.Conte
 
 // AttachVolumeWithResponse Attach Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:attach_volume`
 //
@@ -10766,7 +11906,7 @@ func (c *ClientWithResponses) AttachVolumeWithResponse(ctx context.Context, serv
 
 // UpdateServerBandwidthWithBodyWithResponse Update Server Bandwidth
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:update_bandwidth`
 //
@@ -10783,7 +11923,7 @@ func (c *ClientWithResponses) UpdateServerBandwidthWithBodyWithResponse(ctx cont
 
 // UpdateServerBandwidthWithResponse Update Server Bandwidth
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:update_bandwidth`
 //
@@ -10800,7 +11940,7 @@ func (c *ClientWithResponses) UpdateServerBandwidthWithResponse(ctx context.Cont
 
 // CloneServerWithBodyWithResponse Clone Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:clone`
 //
@@ -10817,7 +11957,7 @@ func (c *ClientWithResponses) CloneServerWithBodyWithResponse(ctx context.Contex
 
 // CloneServerWithResponse Clone Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:clone`
 //
@@ -10834,7 +11974,7 @@ func (c *ClientWithResponses) CloneServerWithResponse(ctx context.Context, serve
 
 // DeleteServerCascadeWithBodyWithResponse Delete Server Cascade
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:delete`
 //
@@ -10851,7 +11991,7 @@ func (c *ClientWithResponses) DeleteServerCascadeWithBodyWithResponse(ctx contex
 
 // DeleteServerCascadeWithResponse Delete Server Cascade
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:delete`
 //
@@ -10868,7 +12008,7 @@ func (c *ClientWithResponses) DeleteServerCascadeWithResponse(ctx context.Contex
 
 // DetachServerEipWithBodyWithResponse Detach Elastic IP
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:detach_eip`
 //
@@ -10885,7 +12025,7 @@ func (c *ClientWithResponses) DetachServerEipWithBodyWithResponse(ctx context.Co
 
 // DetachServerEipWithResponse Detach Elastic IP
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:detach_eip`
 //
@@ -10902,7 +12042,7 @@ func (c *ClientWithResponses) DetachServerEipWithResponse(ctx context.Context, s
 
 // DetachPrivateIpWithBodyWithResponse Detach Private IP
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:detach_private_ip`
 //
@@ -10919,7 +12059,7 @@ func (c *ClientWithResponses) DetachPrivateIpWithBodyWithResponse(ctx context.Co
 
 // DetachPrivateIpWithResponse Detach Private IP
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:detach_private_ip`
 //
@@ -10936,7 +12076,7 @@ func (c *ClientWithResponses) DetachPrivateIpWithResponse(ctx context.Context, s
 
 // DetachVolumeWithBodyWithResponse Detach Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:detach_volume`
 //
@@ -10953,7 +12093,7 @@ func (c *ClientWithResponses) DetachVolumeWithBodyWithResponse(ctx context.Conte
 
 // DetachVolumeWithResponse Detach Volume
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:detach_volume`
 //
@@ -10970,7 +12110,7 @@ func (c *ClientWithResponses) DetachVolumeWithResponse(ctx context.Context, serv
 
 // UpdateServerPasswordWithBodyWithResponse Update Server Password
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:change_password`
 //
@@ -10987,7 +12127,7 @@ func (c *ClientWithResponses) UpdateServerPasswordWithBodyWithResponse(ctx conte
 
 // UpdateServerPasswordWithResponse Update Server Password
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:change_password`
 //
@@ -11004,7 +12144,7 @@ func (c *ClientWithResponses) UpdateServerPasswordWithResponse(ctx context.Conte
 
 // RebootServerWithBodyWithResponse Reboot Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:reboot`
 //
@@ -11021,7 +12161,7 @@ func (c *ClientWithResponses) RebootServerWithBodyWithResponse(ctx context.Conte
 
 // RebootServerWithResponse Reboot Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:reboot`
 //
@@ -11038,7 +12178,7 @@ func (c *ClientWithResponses) RebootServerWithResponse(ctx context.Context, serv
 
 // RebuildServerWithBodyWithResponse Rebuild Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:rebuild`
 //
@@ -11055,7 +12195,7 @@ func (c *ClientWithResponses) RebuildServerWithBodyWithResponse(ctx context.Cont
 
 // RebuildServerWithResponse Rebuild Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:rebuild`
 //
@@ -11070,9 +12210,43 @@ func (c *ClientWithResponses) RebuildServerWithResponse(ctx context.Context, ser
 	return ParseRebuildServerResponse(rsp)
 }
 
+// RescueServerWithBodyWithResponse Rescue Server
+//
+// **Required permissions:**
+//
+// - `urn:action:server:server:rescue`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/server/servers/{server_id}/rescue/ (the `RescueServer` operationId).
+func (c *ClientWithResponses) RescueServerWithBodyWithResponse(ctx context.Context, serverId core.UUID, params *RescueServerParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RescueServerResponse, error) {
+	rsp, err := c.RescueServerWithBody(ctx, serverId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRescueServerResponse(rsp)
+}
+
+// RescueServerWithResponse Rescue Server
+//
+// **Required permissions:**
+//
+// - `urn:action:server:server:rescue`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/server/servers/{server_id}/rescue/ (the `RescueServer` operationId).
+func (c *ClientWithResponses) RescueServerWithResponse(ctx context.Context, serverId core.UUID, params *RescueServerParams, body RescueServerJSONRequestBody, reqEditors ...RequestEditorFn) (*RescueServerResponse, error) {
+	rsp, err := c.RescueServer(ctx, serverId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRescueServerResponse(rsp)
+}
+
 // ResizeServerWithBodyWithResponse Resize Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:resize`
 //
@@ -11089,7 +12263,7 @@ func (c *ClientWithResponses) ResizeServerWithBodyWithResponse(ctx context.Conte
 
 // ResizeServerWithResponse Resize Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:resize`
 //
@@ -11106,7 +12280,7 @@ func (c *ClientWithResponses) ResizeServerWithResponse(ctx context.Context, serv
 
 // UpdateServerSecurityGroupWithBodyWithResponse Update Server Security Groups
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:update_security_group`
 //
@@ -11123,7 +12297,7 @@ func (c *ClientWithResponses) UpdateServerSecurityGroupWithBodyWithResponse(ctx 
 
 // UpdateServerSecurityGroupWithResponse Update Server Security Groups
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:update_security_group`
 //
@@ -11140,7 +12314,7 @@ func (c *ClientWithResponses) UpdateServerSecurityGroupWithResponse(ctx context.
 
 // StartServerWithResponse Start Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:start`
 //
@@ -11157,7 +12331,7 @@ func (c *ClientWithResponses) StartServerWithResponse(ctx context.Context, serve
 
 // StopServerWithResponse Stop Server
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:server:server:stop`
 //
@@ -11170,6 +12344,91 @@ func (c *ClientWithResponses) StopServerWithResponse(ctx context.Context, server
 		return nil, err
 	}
 	return ParseStopServerResponse(rsp)
+}
+
+// UnrescueServerWithResponse Unrescue Server
+//
+// **Required permissions:**
+//
+// - `urn:action:server:server:unrescue`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/server/servers/{server_id}/unrescue/ (the `UnrescueServer` operationId).
+func (c *ClientWithResponses) UnrescueServerWithResponse(ctx context.Context, serverId core.UUID, params *UnrescueServerParams, reqEditors ...RequestEditorFn) (*UnrescueServerResponse, error) {
+	rsp, err := c.UnrescueServer(ctx, serverId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUnrescueServerResponse(rsp)
+}
+
+// ListVdcsWithResponse List Vdcs
+//
+// **Required permissions:**
+//
+// - `urn:action:dpc:dpc:list`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/server/vdcs/ (the `ListVdcs` operationId).
+func (c *ClientWithResponses) ListVdcsWithResponse(ctx context.Context, params *ListVdcsParams, reqEditors ...RequestEditorFn) (*ListVdcsResponse, error) {
+	rsp, err := c.ListVdcs(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListVdcsResponse(rsp)
+}
+
+// GetVdcWithResponse Get Vdc
+//
+// **Required permissions:**
+//
+// - `urn:action:dpc:dpc:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/server/vdcs/{vdc_id}/ (the `GetVdc` operationId).
+func (c *ClientWithResponses) GetVdcWithResponse(ctx context.Context, vdcId core.UUID, params *GetVdcParams, reqEditors ...RequestEditorFn) (*GetVdcResponse, error) {
+	rsp, err := c.GetVdc(ctx, vdcId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetVdcResponse(rsp)
+}
+
+// ListVdcComputesWithResponse List Vdc Computes
+//
+// **Required permissions:**
+//
+// - `urn:action:dpc:dpc:list_computes`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/server/vdcs/{vdc_id}/computes/ (the `ListVdcComputes` operationId).
+func (c *ClientWithResponses) ListVdcComputesWithResponse(ctx context.Context, vdcId core.UUID, params *ListVdcComputesParams, reqEditors ...RequestEditorFn) (*ListVdcComputesResponse, error) {
+	rsp, err := c.ListVdcComputes(ctx, vdcId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListVdcComputesResponse(rsp)
+}
+
+// ListVdcServersWithResponse List Vdc Servers
+//
+// **Required permissions:**
+//
+// - `urn:action:dpc:dpc:list_servers`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/server/vdcs/{vdc_id}/servers/ (the `ListVdcServers` operationId).
+func (c *ClientWithResponses) ListVdcServersWithResponse(ctx context.Context, vdcId core.UUID, params *ListVdcServersParams, reqEditors ...RequestEditorFn) (*ListVdcServersResponse, error) {
+	rsp, err := c.ListVdcServers(ctx, vdcId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListVdcServersResponse(rsp)
 }
 
 // ParseListCustomImagesResponse parses an HTTP response from a ListCustomImagesWithResponse call
@@ -13605,6 +14864,63 @@ func ParseRebuildServerResponse(rsp *http.Response) (*RebuildServerResponse, err
 	return response, nil
 }
 
+// ParseRescueServerResponse parses an HTTP response from a RescueServerWithResponse call
+func ParseRescueServerResponse(rsp *http.Response) (*RescueServerResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RescueServerResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 202:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseResizeServerResponse parses an HTTP response from a ResizeServerWithResponse call
 func ParseResizeServerResponse(rsp *http.Response) (*ResizeServerResponse, error) {
 	bodyBytes, err := core.ReadResponseBody(rsp)
@@ -13792,6 +15108,307 @@ func ParseStopServerResponse(rsp *http.Response) (*StopServerResponse, error) {
 	switch {
 	case rsp.StatusCode == 202:
 		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUnrescueServerResponse parses an HTTP response from a UnrescueServerWithResponse call
+func ParseUnrescueServerResponse(rsp *http.Response) (*UnrescueServerResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UnrescueServerResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 202:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListVdcsResponse parses an HTTP response from a ListVdcsWithResponse call
+func ParseListVdcsResponse(rsp *http.Response) (*ListVdcsResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListVdcsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedVDCSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetVdcResponse parses an HTTP response from a GetVdcWithResponse call
+func ParseGetVdcResponse(rsp *http.Response) (*GetVdcResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetVdcResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest VDCSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListVdcComputesResponse parses an HTTP response from a ListVdcComputesWithResponse call
+func ParseListVdcComputesResponse(rsp *http.Response) (*ListVdcComputesResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListVdcComputesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedVDCComputeSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListVdcServersResponse parses an HTTP response from a ListVdcServersWithResponse call
+func ParseListVdcServersResponse(rsp *http.Response) (*ListVdcServersResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListVdcServersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedVDCServerSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest ValidationError
