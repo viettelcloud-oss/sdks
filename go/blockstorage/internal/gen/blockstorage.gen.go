@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/oapi-codegen/nullable"
 	core "github.com/viettelcloud-oss/sdks/go/core"
 	runtime "github.com/viettelcloud-oss/sdks/go/internal/oapi"
 )
@@ -522,8 +523,8 @@ func (e VolumeTypeStatus) Valid() bool {
 
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
-	Errors    []ErrorSchema `json:"errors"`
-	RequestId *string       `json:"request_id"`
+	Errors    []ErrorSchema             `json:"errors"`
+	RequestId nullable.Nullable[string] `json:"request_id"`
 }
 
 // ErrorSchema defines model for ErrorSchema.
@@ -631,12 +632,12 @@ type NestedVolumeBackupSchema struct {
 
 // NestedVolumeOriginSchema defines model for NestedVolumeOriginSchema.
 type NestedVolumeOriginSchema struct {
-	Backup      *NestedVolumeBackupSchema   `json:"backup,omitempty"`
-	CustomImage *NestedCustomImageSchema    `json:"custom_image,omitempty"`
-	Image       *NestedImageSchema          `json:"image,omitempty"`
-	Metadata    *map[string]interface{}     `json:"metadata,omitempty"`
-	Snapshot    *NestedVolumeSnapshotSchema `json:"snapshot,omitempty"`
-	VolumeType  *NestedVolumeTypeSchema     `json:"volume_type,omitempty"`
+	Backup      nullable.Nullable[NestedVolumeBackupSchema]   `json:"backup,omitempty"`
+	CustomImage nullable.Nullable[NestedCustomImageSchema]    `json:"custom_image,omitempty"`
+	Image       nullable.Nullable[NestedImageSchema]          `json:"image,omitempty"`
+	Metadata    nullable.Nullable[map[string]interface{}]     `json:"metadata,omitempty"`
+	Snapshot    nullable.Nullable[NestedVolumeSnapshotSchema] `json:"snapshot,omitempty"`
+	VolumeType  nullable.Nullable[NestedVolumeTypeSchema]     `json:"volume_type,omitempty"`
 }
 
 // NestedVolumeResizePolicySchema defines model for NestedVolumeResizePolicySchema.
@@ -687,41 +688,41 @@ type NestedZoneSchema struct {
 // PagedVolumeBackupPolicySchema defines model for PagedVolumeBackupPolicySchema.
 type PagedVolumeBackupPolicySchema struct {
 	Count    int                        `json:"count"`
-	Next     *string                    `json:"next,omitempty"`
-	Previous *string                    `json:"previous,omitempty"`
+	Next     nullable.Nullable[string]  `json:"next,omitempty"`
+	Previous nullable.Nullable[string]  `json:"previous,omitempty"`
 	Results  []VolumeBackupPolicySchema `json:"results"`
 }
 
 // PagedVolumeBackupSchema defines model for PagedVolumeBackupSchema.
 type PagedVolumeBackupSchema struct {
-	Count    int                  `json:"count"`
-	Next     *string              `json:"next,omitempty"`
-	Previous *string              `json:"previous,omitempty"`
-	Results  []VolumeBackupSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []VolumeBackupSchema      `json:"results"`
 }
 
 // PagedVolumeSchema defines model for PagedVolumeSchema.
 type PagedVolumeSchema struct {
-	Count    int            `json:"count"`
-	Next     *string        `json:"next,omitempty"`
-	Previous *string        `json:"previous,omitempty"`
-	Results  []VolumeSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []VolumeSchema            `json:"results"`
 }
 
 // PagedVolumeSnapshotSchema defines model for PagedVolumeSnapshotSchema.
 type PagedVolumeSnapshotSchema struct {
-	Count    int                    `json:"count"`
-	Next     *string                `json:"next,omitempty"`
-	Previous *string                `json:"previous,omitempty"`
-	Results  []VolumeSnapshotSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []VolumeSnapshotSchema    `json:"results"`
 }
 
 // PagedVolumeTypeSchema defines model for PagedVolumeTypeSchema.
 type PagedVolumeTypeSchema struct {
-	Count    int                `json:"count"`
-	Next     *string            `json:"next,omitempty"`
-	Previous *string            `json:"previous,omitempty"`
-	Results  []VolumeTypeSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []VolumeTypeSchema        `json:"results"`
 }
 
 // PolicyExecutionStrategy defines model for PolicyExecutionStrategy.
@@ -826,15 +827,15 @@ type VolumeBackupPolicyScheduleSchema struct {
 
 // VolumeBackupPolicySchema defines model for VolumeBackupPolicySchema.
 type VolumeBackupPolicySchema struct {
-	CreatedAt     time.Time           `json:"created_at"`
-	Description   *string             `json:"description"`
-	Id            core.UUID           `json:"id"`
-	LastExecution *time.Time          `json:"last_execution"`
-	Name          string              `json:"name"`
-	NextExecution *time.Time          `json:"next_execution"`
-	Project       NestedProjectSchema `json:"project"`
-	Region        NestedRegionSchema  `json:"region"`
-	Retention     int                 `json:"retention"`
+	CreatedAt     time.Time                    `json:"created_at"`
+	Description   nullable.Nullable[string]    `json:"description"`
+	Id            core.UUID                    `json:"id"`
+	LastExecution nullable.Nullable[time.Time] `json:"last_execution"`
+	Name          string                       `json:"name"`
+	NextExecution nullable.Nullable[time.Time] `json:"next_execution"`
+	Project       NestedProjectSchema          `json:"project"`
+	Region        NestedRegionSchema           `json:"region"`
+	Retention     int                          `json:"retention"`
 
 	// Schedule VolumeBackupPolicyScheduleSchema is exactly one of: VolumeBackupPolicyDaysOfMonthScheduleSchema, VolumeBackupPolicyPeriodicScheduleSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
 	Schedule    VolumeBackupPolicyScheduleSchema `json:"schedule"`
@@ -863,23 +864,23 @@ type VolumeBackupPolicyUpdateSchema struct {
 
 // VolumeBackupSchema defines model for VolumeBackupSchema.
 type VolumeBackupSchema struct {
-	CreatedAt         time.Time                `json:"created_at"`
-	Description       *string                  `json:"description,omitempty"`
-	DiskType          *VolumeTypeDiskType      `json:"disk_type,omitempty"`
-	EncryptionKeySize VolumeTypeEncryptKeySize `json:"encryption_key_size"`
+	CreatedAt         time.Time                             `json:"created_at"`
+	Description       *string                               `json:"description,omitempty"`
+	DiskType          nullable.Nullable[VolumeTypeDiskType] `json:"disk_type,omitempty"`
+	EncryptionKeySize VolumeTypeEncryptKeySize              `json:"encryption_key_size"`
 
 	// Expired An expired backup no longer counts toward the project's backup quota, so a replacement can be taken before it is deleted.
-	Expired   bool                            `json:"expired"`
-	Id        core.UUID                       `json:"id"`
-	Name      string                          `json:"name"`
-	Owner     *NestedUserSchema               `json:"owner,omitempty"`
-	Policy    *NestedVolumeBackupPolicySchema `json:"policy,omitempty"`
-	Project   NestedProjectSchema             `json:"project"`
-	Region    NestedRegionSchema              `json:"region"`
-	Size      *int                            `json:"size,omitempty"`
-	Status    *VolumeBackupStatus             `json:"status,omitempty"`
-	UpdatedAt time.Time                       `json:"updated_at"`
-	Volume    *NestedVolumeSchema             `json:"volume,omitempty"`
+	Expired   bool                                              `json:"expired"`
+	Id        core.UUID                                         `json:"id"`
+	Name      string                                            `json:"name"`
+	Owner     nullable.Nullable[NestedUserSchema]               `json:"owner,omitempty"`
+	Policy    nullable.Nullable[NestedVolumeBackupPolicySchema] `json:"policy,omitempty"`
+	Project   NestedProjectSchema                               `json:"project"`
+	Region    NestedRegionSchema                                `json:"region"`
+	Size      nullable.Nullable[int]                            `json:"size,omitempty"`
+	Status    nullable.Nullable[VolumeBackupStatus]             `json:"status,omitempty"`
+	UpdatedAt time.Time                                         `json:"updated_at"`
+	Volume    nullable.Nullable[NestedVolumeSchema]             `json:"volume,omitempty"`
 }
 
 // VolumeBackupStatus defines model for VolumeBackupStatus.
@@ -893,7 +894,7 @@ type VolumeBackupUpdateSchema struct {
 
 // VolumeConfigureBackupPolicySchema defines model for VolumeConfigureBackupPolicySchema.
 type VolumeConfigureBackupPolicySchema struct {
-	BackupPolicyId *core.UUID `json:"backup_policy_id"`
+	BackupPolicyId nullable.Nullable[core.UUID] `json:"backup_policy_id"`
 }
 
 // VolumeCreateEmptySchema defines model for VolumeCreateEmptySchema.
@@ -951,11 +952,11 @@ type VolumeCreateFromSnapshotSchemaSourceType string
 // VolumeCreateSchema defines model for VolumeCreateSchema.
 type VolumeCreateSchema struct {
 	// CreateFrom VolumeCreateSourceOptions is exactly one of: VolumeCreateFromSnapshotSchema, VolumeCreateFromImageSchema, VolumeCreateFromBackupSchema, VolumeCreateFromCustomImageSchema, VolumeCreateEmptySchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
-	CreateFrom   VolumeCreateSourceOptions       `json:"create_from"`
-	Description  *string                         `json:"description,omitempty"`
-	Iops         *int                            `json:"iops,omitempty"`
-	Name         string                          `json:"name"`
-	ResizePolicy *NestedVolumeResizePolicySchema `json:"resize_policy,omitempty"`
+	CreateFrom   VolumeCreateSourceOptions                         `json:"create_from"`
+	Description  *string                                           `json:"description,omitempty"`
+	Iops         nullable.Nullable[int]                            `json:"iops,omitempty"`
+	Name         string                                            `json:"name"`
+	ResizePolicy nullable.Nullable[NestedVolumeResizePolicySchema] `json:"resize_policy,omitempty"`
 }
 
 // VolumeCreateSourceOptions VolumeCreateSourceOptions is exactly one of: VolumeCreateFromSnapshotSchema, VolumeCreateFromImageSchema, VolumeCreateFromBackupSchema, VolumeCreateFromCustomImageSchema, VolumeCreateEmptySchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
@@ -973,7 +974,7 @@ type VolumeMount string
 
 // VolumePartialUpdateSchema defines model for VolumePartialUpdateSchema.
 type VolumePartialUpdateSchema struct {
-	Description  *string                         `json:"description,omitempty"`
+	Description  nullable.Nullable[string]       `json:"description,omitempty"`
 	Iops         *int                            `json:"iops,omitempty"`
 	Name         *string                         `json:"name,omitempty"`
 	ResizePolicy *NestedVolumeResizePolicySchema `json:"resize_policy,omitempty"`
@@ -987,25 +988,25 @@ type VolumeRetypeSchema struct {
 
 // VolumeSchema defines model for VolumeSchema.
 type VolumeSchema struct {
-	Attachable     bool                              `json:"attachable"`
-	Attachments    *[]NestedVolumeAttachmentSchema   `json:"attachments,omitempty"`
-	BackupPolicy   *NestedVolumeBackupPolicySchema   `json:"backup_policy,omitempty"`
-	Bootable       bool                              `json:"bootable"`
-	CreateFrom     NestedVolumeOriginSchema          `json:"create_from"`
-	CreatedAt      time.Time                         `json:"created_at"`
-	Description    *string                           `json:"description,omitempty"`
-	Encrypted      *bool                             `json:"encrypted,omitempty"`
-	Id             core.UUID                         `json:"id"`
-	Iops           int                               `json:"iops"`
-	Name           string                            `json:"name"`
-	OwnerId        *core.UUID                        `json:"owner_id,omitempty"`
-	ProjectId      core.UUID                         `json:"project_id"`
-	ResizePolicy   *NestedVolumeResizePolicySchema   `json:"resize_policy,omitempty"`
-	Size           int                               `json:"size"`
-	SnapshotPolicy *NestedVolumeSnapshotPolicySchema `json:"snapshot_policy,omitempty"`
-	Status         VolumeStatus                      `json:"status"`
-	UpdatedAt      time.Time                         `json:"updated_at"`
-	Zone           NestedZoneSchema                  `json:"zone"`
+	Attachable     bool                                                `json:"attachable"`
+	Attachments    nullable.Nullable[[]NestedVolumeAttachmentSchema]   `json:"attachments,omitempty"`
+	BackupPolicy   nullable.Nullable[NestedVolumeBackupPolicySchema]   `json:"backup_policy,omitempty"`
+	Bootable       bool                                                `json:"bootable"`
+	CreateFrom     NestedVolumeOriginSchema                            `json:"create_from"`
+	CreatedAt      time.Time                                           `json:"created_at"`
+	Description    nullable.Nullable[string]                           `json:"description,omitempty"`
+	Encrypted      nullable.Nullable[bool]                             `json:"encrypted,omitempty"`
+	Id             core.UUID                                           `json:"id"`
+	Iops           int                                                 `json:"iops"`
+	Name           string                                              `json:"name"`
+	OwnerId        nullable.Nullable[core.UUID]                        `json:"owner_id,omitempty"`
+	ProjectId      core.UUID                                           `json:"project_id"`
+	ResizePolicy   nullable.Nullable[NestedVolumeResizePolicySchema]   `json:"resize_policy,omitempty"`
+	Size           int                                                 `json:"size"`
+	SnapshotPolicy nullable.Nullable[NestedVolumeSnapshotPolicySchema] `json:"snapshot_policy,omitempty"`
+	Status         VolumeStatus                                        `json:"status"`
+	UpdatedAt      time.Time                                           `json:"updated_at"`
+	Zone           NestedZoneSchema                                    `json:"zone"`
 }
 
 // VolumeSnapshotCreateSchema defines model for VolumeSnapshotCreateSchema.
@@ -1023,23 +1024,23 @@ type VolumeSnapshotPartialUpdateSchema struct {
 
 // VolumeSnapshotPolicyUpdateSchema defines model for VolumeSnapshotPolicyUpdateSchema.
 type VolumeSnapshotPolicyUpdateSchema struct {
-	SnapshotPolicyId *core.UUID `json:"snapshot_policy_id"`
+	SnapshotPolicyId nullable.Nullable[core.UUID] `json:"snapshot_policy_id"`
 }
 
 // VolumeSnapshotSchema defines model for VolumeSnapshotSchema.
 type VolumeSnapshotSchema struct {
-	CreatedAt   time.Time           `json:"created_at"`
-	Description *string             `json:"description,omitempty"`
-	FromPolicy  bool                `json:"from_policy"`
-	Id          core.UUID           `json:"id"`
-	Name        string              `json:"name"`
-	Owner       *NestedUserSchema   `json:"owner,omitempty"`
-	Project     NestedProjectSchema `json:"project"`
-	Size        *int                `json:"size,omitempty"`
-	Status      *SnapshotStatus     `json:"status,omitempty"`
-	UpdatedAt   time.Time           `json:"updated_at"`
-	Volume      NestedVolumeSchema  `json:"volume"`
-	Zone        NestedZoneSchema    `json:"zone"`
+	CreatedAt   time.Time                           `json:"created_at"`
+	Description *string                             `json:"description,omitempty"`
+	FromPolicy  bool                                `json:"from_policy"`
+	Id          core.UUID                           `json:"id"`
+	Name        string                              `json:"name"`
+	Owner       nullable.Nullable[NestedUserSchema] `json:"owner,omitempty"`
+	Project     NestedProjectSchema                 `json:"project"`
+	Size        nullable.Nullable[int]              `json:"size,omitempty"`
+	Status      nullable.Nullable[SnapshotStatus]   `json:"status,omitempty"`
+	UpdatedAt   time.Time                           `json:"updated_at"`
+	Volume      NestedVolumeSchema                  `json:"volume"`
+	Zone        NestedZoneSchema                    `json:"zone"`
 }
 
 // VolumeStatus defines model for VolumeStatus.
@@ -1053,9 +1054,9 @@ type VolumeTypeEncryptKeySize string
 
 // VolumeTypeSchema defines model for VolumeTypeSchema.
 type VolumeTypeSchema struct {
-	CreatedAt      time.Time `json:"created_at"`
-	Description    *string   `json:"description,omitempty"`
-	DisabledReason *string   `json:"disabled_reason,omitempty"`
+	CreatedAt      time.Time                 `json:"created_at"`
+	Description    nullable.Nullable[string] `json:"description,omitempty"`
+	DisabledReason nullable.Nullable[string] `json:"disabled_reason,omitempty"`
 
 	// DiskType The kind of disk a volume type is backed by, with its display label.
 	DiskType LabeledVolumeTypeDiskType `json:"disk_type"`

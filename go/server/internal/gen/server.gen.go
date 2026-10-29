@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/oapi-codegen/nullable"
 	core "github.com/viettelcloud-oss/sdks/go/core"
 	runtime "github.com/viettelcloud-oss/sdks/go/internal/oapi"
 )
@@ -596,37 +597,37 @@ type CustomImageImportSchema struct {
 
 // CustomImagePartialUpdateSchema defines model for CustomImagePartialUpdateSchema.
 type CustomImagePartialUpdateSchema struct {
-	Description      *string            `json:"description,omitempty"`
-	Metadata         *map[string]string `json:"metadata,omitempty"`
-	Name             *string            `json:"name,omitempty"`
-	Os               *string            `json:"os,omitempty"`
-	SharedProjectIds *[]core.UUID       `json:"shared_project_ids,omitempty"`
-	State            *ImageState        `json:"state,omitempty"`
-	Version          *string            `json:"version,omitempty"`
+	Description      *string                   `json:"description,omitempty"`
+	Metadata         *map[string]string        `json:"metadata,omitempty"`
+	Name             *string                   `json:"name,omitempty"`
+	Os               nullable.Nullable[string] `json:"os,omitempty"`
+	SharedProjectIds *[]core.UUID              `json:"shared_project_ids,omitempty"`
+	State            *ImageState               `json:"state,omitempty"`
+	Version          nullable.Nullable[string] `json:"version,omitempty"`
 }
 
 // CustomImageSchema defines model for CustomImageSchema.
 type CustomImageSchema struct {
-	ContainerFormat ImageCustomContainerFormat `json:"container_format"`
-	CreatedAt       time.Time                  `json:"created_at"`
-	Description     string                     `json:"description"`
-	DiskFormat      ImageCustomFormat          `json:"disk_format"`
-	EncryptKeySize  VolumeTypeEncryptKeySize   `json:"encrypt_key_size"`
-	Id              core.UUID                  `json:"id"`
-	Metadata        *map[string]interface{}    `json:"metadata,omitempty"`
-	MinVolumeSize   *int                       `json:"min_volume_size,omitempty"`
-	Name            string                     `json:"name"`
-	Os              *string                    `json:"os,omitempty"`
-	Owner           *NestedUserSchema          `json:"owner,omitempty"`
-	Project         NestedProjectSchema        `json:"project"`
-	Region          NestedRegionSchema         `json:"region"`
-	SharedProjects  *[]NestedProjectSchema     `json:"shared_projects,omitempty"`
-	Size            *int                       `json:"size,omitempty"`
-	State           ImageState                 `json:"state"`
-	Status          ImageStatus                `json:"status"`
-	UpdatedAt       time.Time                  `json:"updated_at"`
-	Version         *string                    `json:"version,omitempty"`
-	Volume          *NestedVolumeSchema        `json:"volume,omitempty"`
+	ContainerFormat ImageCustomContainerFormat                `json:"container_format"`
+	CreatedAt       time.Time                                 `json:"created_at"`
+	Description     string                                    `json:"description"`
+	DiskFormat      ImageCustomFormat                         `json:"disk_format"`
+	EncryptKeySize  VolumeTypeEncryptKeySize                  `json:"encrypt_key_size"`
+	Id              core.UUID                                 `json:"id"`
+	Metadata        nullable.Nullable[map[string]interface{}] `json:"metadata,omitempty"`
+	MinVolumeSize   nullable.Nullable[int]                    `json:"min_volume_size,omitempty"`
+	Name            string                                    `json:"name"`
+	Os              *string                                   `json:"os,omitempty"`
+	Owner           nullable.Nullable[NestedUserSchema]       `json:"owner,omitempty"`
+	Project         NestedProjectSchema                       `json:"project"`
+	Region          NestedRegionSchema                        `json:"region"`
+	SharedProjects  *[]NestedProjectSchema                    `json:"shared_projects,omitempty"`
+	Size            nullable.Nullable[int]                    `json:"size,omitempty"`
+	State           ImageState                                `json:"state"`
+	Status          ImageStatus                               `json:"status"`
+	UpdatedAt       time.Time                                 `json:"updated_at"`
+	Version         *string                                   `json:"version,omitempty"`
+	Volume          nullable.Nullable[NestedVolumeSchema]     `json:"volume,omitempty"`
 }
 
 // CustomServerFlavor defines model for CustomServerFlavor.
@@ -645,8 +646,8 @@ type ElasticIPStatus string
 
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
-	Errors    []ErrorSchema `json:"errors"`
-	RequestId *string       `json:"request_id"`
+	Errors    []ErrorSchema             `json:"errors"`
+	RequestId nullable.Nullable[string] `json:"request_id"`
 }
 
 // ErrorSchema defines model for ErrorSchema.
@@ -676,23 +677,23 @@ type ExistingServerPrivateIPKind string
 
 // FlavorDetailSchema defines model for FlavorDetailSchema.
 type FlavorDetailSchema struct {
-	CreatedAt   time.Time               `json:"created_at"`
-	Description string                  `json:"description"`
-	Display     bool                    `json:"display"`
-	DpcId       *core.UUID              `json:"dpc_id,omitempty"`
-	Family      string                  `json:"family"`
-	GpuModel    string                  `json:"gpu_model"`
-	GpuRam      int                     `json:"gpu_ram"`
-	Gpus        int                     `json:"gpus"`
-	Id          core.UUID               `json:"id"`
-	Metadata    *map[string]interface{} `json:"metadata,omitempty"`
-	Name        string                  `json:"name"`
-	Ram         int                     `json:"ram"`
-	RegionId    core.UUID               `json:"region_id"`
-	Status      string                  `json:"status"`
-	UpdatedAt   time.Time               `json:"updated_at"`
-	Vcpus       int                     `json:"vcpus"`
-	Zone        NestedZoneSchema        `json:"zone"`
+	CreatedAt   time.Time                                 `json:"created_at"`
+	Description string                                    `json:"description"`
+	Display     bool                                      `json:"display"`
+	DpcId       nullable.Nullable[core.UUID]              `json:"dpc_id,omitempty"`
+	Family      string                                    `json:"family"`
+	GpuModel    string                                    `json:"gpu_model"`
+	GpuRam      int                                       `json:"gpu_ram"`
+	Gpus        int                                       `json:"gpus"`
+	Id          core.UUID                                 `json:"id"`
+	Metadata    nullable.Nullable[map[string]interface{}] `json:"metadata,omitempty"`
+	Name        string                                    `json:"name"`
+	Ram         int                                       `json:"ram"`
+	RegionId    core.UUID                                 `json:"region_id"`
+	Status      string                                    `json:"status"`
+	UpdatedAt   time.Time                                 `json:"updated_at"`
+	Vcpus       int                                       `json:"vcpus"`
+	Zone        NestedZoneSchema                          `json:"zone"`
 }
 
 // FlavorFamily defines model for FlavorFamily.
@@ -720,12 +721,12 @@ type ImageCustomFormat string
 
 // ImageSchema defines model for ImageSchema.
 type ImageSchema struct {
-	Id            core.UUID  `json:"id"`
-	MinVolumeSize *int       `json:"min_volume_size,omitempty"`
-	Name          string     `json:"name"`
-	Os            *string    `json:"os,omitempty"`
-	Type          *ImageType `json:"type,omitempty"`
-	Version       *string    `json:"version,omitempty"`
+	Id            core.UUID                    `json:"id"`
+	MinVolumeSize *int                         `json:"min_volume_size,omitempty"`
+	Name          string                       `json:"name"`
+	Os            *string                      `json:"os,omitempty"`
+	Type          nullable.Nullable[ImageType] `json:"type,omitempty"`
+	Version       *string                      `json:"version,omitempty"`
 }
 
 // ImageState defines model for ImageState.
@@ -747,11 +748,11 @@ type KeyPairCreateSchema struct {
 
 // KeyPairCreatedSchema Returned once at key pair creation — the private key is shown only here.
 type KeyPairCreatedSchema struct {
-	CreatedAt   time.Time         `json:"created_at"`
-	Fingerprint string            `json:"fingerprint"`
-	Id          core.UUID         `json:"id"`
-	Name        string            `json:"name"`
-	Owner       *NestedUserSchema `json:"owner,omitempty"`
+	CreatedAt   time.Time                           `json:"created_at"`
+	Fingerprint string                              `json:"fingerprint"`
+	Id          core.UUID                           `json:"id"`
+	Name        string                              `json:"name"`
+	Owner       nullable.Nullable[NestedUserSchema] `json:"owner,omitempty"`
 
 	// PrivateKey Private key of a generated pair. It is not stored. Empty for an imported public key.
 	PrivateKey string              `json:"private_key"`
@@ -768,15 +769,15 @@ type KeyPairPartialUpdateSchema struct {
 
 // KeyPairSchema defines model for KeyPairSchema.
 type KeyPairSchema struct {
-	CreatedAt   time.Time           `json:"created_at"`
-	Fingerprint string              `json:"fingerprint"`
-	Id          core.UUID           `json:"id"`
-	Name        string              `json:"name"`
-	Owner       *NestedUserSchema   `json:"owner,omitempty"`
-	Project     NestedProjectSchema `json:"project"`
-	PublicKey   string              `json:"public_key"`
-	Type        KeyPairType         `json:"type"`
-	UpdatedAt   time.Time           `json:"updated_at"`
+	CreatedAt   time.Time                           `json:"created_at"`
+	Fingerprint string                              `json:"fingerprint"`
+	Id          core.UUID                           `json:"id"`
+	Name        string                              `json:"name"`
+	Owner       nullable.Nullable[NestedUserSchema] `json:"owner,omitempty"`
+	Project     NestedProjectSchema                 `json:"project"`
+	PublicKey   string                              `json:"public_key"`
+	Type        KeyPairType                         `json:"type"`
+	UpdatedAt   time.Time                           `json:"updated_at"`
 }
 
 // KeyPairType defines model for KeyPairType.
@@ -790,10 +791,10 @@ type NestedDPCSchema struct {
 
 // NestedElasticIPSchema defines model for NestedElasticIPSchema.
 type NestedElasticIPSchema struct {
-	Id          core.UUID       `json:"id"`
-	IpAddress   *string         `json:"ip_address"`
-	Ipv6Address *string         `json:"ipv6_address"`
-	Status      ElasticIPStatus `json:"status"`
+	Id          core.UUID                 `json:"id"`
+	IpAddress   nullable.Nullable[string] `json:"ip_address"`
+	Ipv6Address nullable.Nullable[string] `json:"ipv6_address"`
+	Status      ElasticIPStatus           `json:"status"`
 }
 
 // NestedFlavorSchema defines model for NestedFlavorSchema.
@@ -830,10 +831,10 @@ type NestedPlacementGroupSchema struct {
 
 // NestedPrivateIPSchema defines model for NestedPrivateIPSchema.
 type NestedPrivateIPSchema struct {
-	Id         core.UUID          `json:"id"`
-	IpAddress  *string            `json:"ip_address"`
-	MacAddress *string            `json:"mac_address"`
-	Subnet     NestedSubnetSchema `json:"subnet"`
+	Id         core.UUID                 `json:"id"`
+	IpAddress  nullable.Nullable[string] `json:"ip_address"`
+	MacAddress nullable.Nullable[string] `json:"mac_address"`
+	Subnet     NestedSubnetSchema        `json:"subnet"`
 }
 
 // NestedProjectSchema defines model for NestedProjectSchema.
@@ -918,74 +919,74 @@ type NewServerPrivateIPKind string
 
 // PagedCustomImageSchema defines model for PagedCustomImageSchema.
 type PagedCustomImageSchema struct {
-	Count    int                 `json:"count"`
-	Next     *string             `json:"next,omitempty"`
-	Previous *string             `json:"previous,omitempty"`
-	Results  []CustomImageSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []CustomImageSchema       `json:"results"`
 }
 
 // PagedFlavorSchema defines model for PagedFlavorSchema.
 type PagedFlavorSchema struct {
-	Count    int            `json:"count"`
-	Next     *string        `json:"next,omitempty"`
-	Previous *string        `json:"previous,omitempty"`
-	Results  []FlavorSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []FlavorSchema            `json:"results"`
 }
 
 // PagedImageSchema defines model for PagedImageSchema.
 type PagedImageSchema struct {
-	Count    int           `json:"count"`
-	Next     *string       `json:"next,omitempty"`
-	Previous *string       `json:"previous,omitempty"`
-	Results  []ImageSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []ImageSchema             `json:"results"`
 }
 
 // PagedKeyPairSchema defines model for PagedKeyPairSchema.
 type PagedKeyPairSchema struct {
-	Count    int             `json:"count"`
-	Next     *string         `json:"next,omitempty"`
-	Previous *string         `json:"previous,omitempty"`
-	Results  []KeyPairSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []KeyPairSchema           `json:"results"`
 }
 
 // PagedPlacementGroupSchema defines model for PagedPlacementGroupSchema.
 type PagedPlacementGroupSchema struct {
-	Count    int                    `json:"count"`
-	Next     *string                `json:"next,omitempty"`
-	Previous *string                `json:"previous,omitempty"`
-	Results  []PlacementGroupSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []PlacementGroupSchema    `json:"results"`
 }
 
 // PagedServerSchema defines model for PagedServerSchema.
 type PagedServerSchema struct {
-	Count    int            `json:"count"`
-	Next     *string        `json:"next,omitempty"`
-	Previous *string        `json:"previous,omitempty"`
-	Results  []ServerSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []ServerSchema            `json:"results"`
 }
 
 // PagedVDCComputeSchema defines model for PagedVDCComputeSchema.
 type PagedVDCComputeSchema struct {
-	Count    int                `json:"count"`
-	Next     *string            `json:"next,omitempty"`
-	Previous *string            `json:"previous,omitempty"`
-	Results  []VDCComputeSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []VDCComputeSchema        `json:"results"`
 }
 
 // PagedVDCSchema defines model for PagedVDCSchema.
 type PagedVDCSchema struct {
-	Count    int         `json:"count"`
-	Next     *string     `json:"next,omitempty"`
-	Previous *string     `json:"previous,omitempty"`
-	Results  []VDCSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []VDCSchema               `json:"results"`
 }
 
 // PagedVDCServerSchema defines model for PagedVDCServerSchema.
 type PagedVDCServerSchema struct {
-	Count    int               `json:"count"`
-	Next     *string           `json:"next,omitempty"`
-	Previous *string           `json:"previous,omitempty"`
-	Results  []VDCServerSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []VDCServerSchema         `json:"results"`
 }
 
 // Pagedstr defines model for Pagedstr.
@@ -1013,16 +1014,16 @@ type PlacementGroupPolicy string
 
 // PlacementGroupSchema defines model for PlacementGroupSchema.
 type PlacementGroupSchema struct {
-	CreatedAt   time.Time             `json:"created_at"`
-	Description string                `json:"description"`
-	Id          core.UUID             `json:"id"`
-	Name        string                `json:"name"`
-	Owner       *NestedUserSchema     `json:"owner,omitempty"`
-	Policy      *PlacementGroupPolicy `json:"policy,omitempty"`
-	Project     NestedProjectSchema   `json:"project"`
-	Region      NestedRegionSchema    `json:"region"`
-	ServerCount *int                  `json:"server_count,omitempty"`
-	UpdatedAt   time.Time             `json:"updated_at"`
+	CreatedAt   time.Time                               `json:"created_at"`
+	Description string                                  `json:"description"`
+	Id          core.UUID                               `json:"id"`
+	Name        string                                  `json:"name"`
+	Owner       nullable.Nullable[NestedUserSchema]     `json:"owner,omitempty"`
+	Policy      nullable.Nullable[PlacementGroupPolicy] `json:"policy,omitempty"`
+	Project     NestedProjectSchema                     `json:"project"`
+	Region      NestedRegionSchema                      `json:"region"`
+	ServerCount *int                                    `json:"server_count,omitempty"`
+	UpdatedAt   time.Time                               `json:"updated_at"`
 }
 
 // PredefinedServerFlavor defines model for PredefinedServerFlavor.
@@ -1048,7 +1049,7 @@ type ServerAttachSubnetSchema struct {
 type ServerBootFromCustomImage struct {
 	BootType      *ServerBootFromCustomImageBootType `json:"boot_type,omitempty"`
 	CustomImageId core.UUID                          `json:"custom_image_id"`
-	Iops          *int                               `json:"iops,omitempty"`
+	Iops          nullable.Nullable[int]             `json:"iops,omitempty"`
 	VolumeSize    int                                `json:"volume_size"`
 	VolumeTypeId  core.UUID                          `json:"volume_type_id"`
 }
@@ -1060,7 +1061,7 @@ type ServerBootFromCustomImageBootType string
 type ServerBootFromImage struct {
 	BootType     *ServerBootFromImageBootType `json:"boot_type,omitempty"`
 	ImageId      core.UUID                    `json:"image_id"`
-	Iops         *int                         `json:"iops,omitempty"`
+	Iops         nullable.Nullable[int]       `json:"iops,omitempty"`
 	VolumeSize   int                          `json:"volume_size"`
 	VolumeTypeId core.UUID                    `json:"volume_type_id"`
 }
@@ -1108,29 +1109,29 @@ type ServerCreateSchema struct {
 	Bandwidth *int `json:"bandwidth,omitempty"`
 
 	// Boot ServerBootOptions is exactly one of: ServerBootFromVolume, ServerBootFromImage, ServerBootFromLocalDisk, ServerBootFromCustomImage. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
-	Boot        ServerBootOptions   `json:"boot"`
-	DataVolumes *[]ServerDataVolume `json:"data_volumes,omitempty"`
-	Description *string             `json:"description,omitempty"`
-	DpcId       *core.UUID          `json:"dpc_id,omitempty"`
-	ElasticIps  *[]ServerElasticIP  `json:"elastic_ips,omitempty"`
+	Boot        ServerBootOptions            `json:"boot"`
+	DataVolumes *[]ServerDataVolume          `json:"data_volumes,omitempty"`
+	Description *string                      `json:"description,omitempty"`
+	DpcId       nullable.Nullable[core.UUID] `json:"dpc_id,omitempty"`
+	ElasticIps  *[]ServerElasticIP           `json:"elastic_ips,omitempty"`
 
 	// Flavor ServerFlavor is exactly one of: PredefinedServerFlavor, CustomServerFlavor. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
-	Flavor           ServerFlavor           `json:"flavor"`
-	KeyPairId        *core.UUID             `json:"key_pair_id,omitempty"`
-	Name             string                 `json:"name"`
-	PlacementGroupId *core.UUID             `json:"placement_group_id,omitempty"`
-	PrivateIps       *[]ServerPrivateIP     `json:"private_ips,omitempty"`
-	Quantity         *int                   `json:"quantity,omitempty"`
-	SecurityGroups   *[]ServerSecurityGroup `json:"security_groups,omitempty"`
-	UserData         *string                `json:"user_data,omitempty"`
-	ZoneId           *core.UUID             `json:"zone_id,omitempty"`
+	Flavor           ServerFlavor                 `json:"flavor"`
+	KeyPairId        nullable.Nullable[core.UUID] `json:"key_pair_id,omitempty"`
+	Name             string                       `json:"name"`
+	PlacementGroupId nullable.Nullable[core.UUID] `json:"placement_group_id,omitempty"`
+	PrivateIps       *[]ServerPrivateIP           `json:"private_ips,omitempty"`
+	Quantity         *int                         `json:"quantity,omitempty"`
+	SecurityGroups   *[]ServerSecurityGroup       `json:"security_groups,omitempty"`
+	UserData         *string                      `json:"user_data,omitempty"`
+	ZoneId           nullable.Nullable[core.UUID] `json:"zone_id,omitempty"`
 }
 
 // ServerDataVolume defines model for ServerDataVolume.
 type ServerDataVolume struct {
-	Iops         *int      `json:"iops,omitempty"`
-	VolumeSize   int       `json:"volume_size"`
-	VolumeTypeId core.UUID `json:"volume_type_id"`
+	Iops         nullable.Nullable[int] `json:"iops,omitempty"`
+	VolumeSize   int                    `json:"volume_size"`
+	VolumeTypeId core.UUID              `json:"volume_type_id"`
 }
 
 // ServerDeleteSchema defines model for ServerDeleteSchema.
@@ -1147,27 +1148,27 @@ type ServerDetachPrivateIPSchema struct {
 
 // ServerDetailSchema defines model for ServerDetailSchema.
 type ServerDetailSchema struct {
-	Bandwidth      *int                        `json:"bandwidth"`
-	CreatedAt      time.Time                   `json:"created_at"`
-	Description    string                      `json:"description"`
-	Dpc            *NestedDPCSchema            `json:"dpc,omitempty"`
-	ElasticIps     []NestedElasticIPSchema     `json:"elastic_ips"`
-	Flavor         NestedFlavorSchema          `json:"flavor"`
-	Id             core.UUID                   `json:"id"`
-	Image          *NestedImageSchema          `json:"image,omitempty"`
-	KeyPair        *NestedKeyPairSchema        `json:"key_pair,omitempty"`
-	Name           string                      `json:"name"`
-	Owner          NestedUserSchema            `json:"owner"`
-	PlacementGroup *NestedPlacementGroupSchema `json:"placement_group,omitempty"`
-	PowerState     ServerPowerState            `json:"power_state"`
-	PrivateIps     []NestedPrivateIPSchema     `json:"private_ips"`
-	Project        NestedProjectSchema         `json:"project"`
-	SecurityGroups []NestedSecurityGroupSchema `json:"security_groups"`
-	ServerType     string                      `json:"server_type"`
-	Status         ServerStatus                `json:"status"`
-	UserData       string                      `json:"user_data"`
-	Volumes        []NestedServerVolumeSchema  `json:"volumes"`
-	Zone           NestedZoneSchema            `json:"zone"`
+	Bandwidth      nullable.Nullable[int]                        `json:"bandwidth"`
+	CreatedAt      time.Time                                     `json:"created_at"`
+	Description    string                                        `json:"description"`
+	Dpc            nullable.Nullable[NestedDPCSchema]            `json:"dpc,omitempty"`
+	ElasticIps     []NestedElasticIPSchema                       `json:"elastic_ips"`
+	Flavor         NestedFlavorSchema                            `json:"flavor"`
+	Id             core.UUID                                     `json:"id"`
+	Image          nullable.Nullable[NestedImageSchema]          `json:"image,omitempty"`
+	KeyPair        nullable.Nullable[NestedKeyPairSchema]        `json:"key_pair,omitempty"`
+	Name           string                                        `json:"name"`
+	Owner          NestedUserSchema                              `json:"owner"`
+	PlacementGroup nullable.Nullable[NestedPlacementGroupSchema] `json:"placement_group,omitempty"`
+	PowerState     ServerPowerState                              `json:"power_state"`
+	PrivateIps     []NestedPrivateIPSchema                       `json:"private_ips"`
+	Project        NestedProjectSchema                           `json:"project"`
+	SecurityGroups []NestedSecurityGroupSchema                   `json:"security_groups"`
+	ServerType     string                                        `json:"server_type"`
+	Status         ServerStatus                                  `json:"status"`
+	UserData       string                                        `json:"user_data"`
+	Volumes        []NestedServerVolumeSchema                    `json:"volumes"`
+	Zone           NestedZoneSchema                              `json:"zone"`
 }
 
 // ServerElasticIP ServerElasticIP is exactly one of: ExistingServerElasticIP, NewServerElasticIP. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
@@ -1209,14 +1210,14 @@ type ServerRebootSchemaType string
 
 // ServerRebuildSchema Schema for rebuilding a server.
 type ServerRebuildSchema struct {
-	CustomImageId *core.UUID `json:"custom_image_id,omitempty"`
-	ImageId       *core.UUID `json:"image_id,omitempty"`
-	ProjectId     core.UUID  `json:"project_id"`
+	CustomImageId nullable.Nullable[core.UUID] `json:"custom_image_id,omitempty"`
+	ImageId       nullable.Nullable[core.UUID] `json:"image_id,omitempty"`
+	ProjectId     core.UUID                    `json:"project_id"`
 }
 
 // ServerRescueSchema Schema for rescuing a server.
 type ServerRescueSchema struct {
-	ImageId *core.UUID `json:"image_id,omitempty"`
+	ImageId nullable.Nullable[core.UUID] `json:"image_id,omitempty"`
 }
 
 // ServerResizeSchema Schema for resizing a server.
@@ -1228,16 +1229,16 @@ type ServerResizeSchema struct {
 
 // ServerSchema defines model for ServerSchema.
 type ServerSchema struct {
-	Bandwidth  *int                    `json:"bandwidth"`
-	ElasticIps []NestedElasticIPSchema `json:"elastic_ips"`
-	Id         core.UUID               `json:"id"`
-	Name       string                  `json:"name"`
-	Owner      *NestedUserSchema       `json:"owner,omitempty"`
-	PowerState ServerPowerState        `json:"power_state"`
-	PrivateIps []NestedPrivateIPSchema `json:"private_ips"`
-	Project    *NestedProjectSchema    `json:"project,omitempty"`
-	ServerType string                  `json:"server_type"`
-	Zone       *NestedZoneSchema       `json:"zone,omitempty"`
+	Bandwidth  nullable.Nullable[int]                 `json:"bandwidth"`
+	ElasticIps []NestedElasticIPSchema                `json:"elastic_ips"`
+	Id         core.UUID                              `json:"id"`
+	Name       string                                 `json:"name"`
+	Owner      nullable.Nullable[NestedUserSchema]    `json:"owner,omitempty"`
+	PowerState ServerPowerState                       `json:"power_state"`
+	PrivateIps []NestedPrivateIPSchema                `json:"private_ips"`
+	Project    nullable.Nullable[NestedProjectSchema] `json:"project,omitempty"`
+	ServerType string                                 `json:"server_type"`
+	Zone       nullable.Nullable[NestedZoneSchema]    `json:"zone,omitempty"`
 }
 
 // ServerSecurityGroup defines model for ServerSecurityGroup.
@@ -1284,54 +1285,54 @@ type VDCComputeSchema struct {
 
 // VDCElasticIPSchema defines model for VDCElasticIPSchema.
 type VDCElasticIPSchema struct {
-	CreatedAt   time.Time        `json:"created_at"`
-	EnableIpv4  bool             `json:"enable_ipv4"`
-	EnableIpv6  bool             `json:"enable_ipv6"`
-	Id          core.UUID        `json:"id"`
-	IpAddress   *string          `json:"ip_address"`
-	Ipv6Address *string          `json:"ipv6_address"`
-	MacAddress  *string          `json:"mac_address"`
-	Status      *ElasticIPStatus `json:"status"`
-	UpdatedAt   time.Time        `json:"updated_at"`
+	CreatedAt   time.Time                          `json:"created_at"`
+	EnableIpv4  bool                               `json:"enable_ipv4"`
+	EnableIpv6  bool                               `json:"enable_ipv6"`
+	Id          core.UUID                          `json:"id"`
+	IpAddress   nullable.Nullable[string]          `json:"ip_address"`
+	Ipv6Address nullable.Nullable[string]          `json:"ipv6_address"`
+	MacAddress  nullable.Nullable[string]          `json:"mac_address"`
+	Status      nullable.Nullable[ElasticIPStatus] `json:"status"`
+	UpdatedAt   time.Time                          `json:"updated_at"`
 }
 
 // VDCPrivateIPSchema defines model for VDCPrivateIPSchema.
 type VDCPrivateIPSchema struct {
-	CreatedAt  time.Time `json:"created_at"`
-	Id         core.UUID `json:"id"`
-	IpAddress  *string   `json:"ip_address"`
-	MacAddress *string   `json:"mac_address"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	CreatedAt  time.Time                 `json:"created_at"`
+	Id         core.UUID                 `json:"id"`
+	IpAddress  nullable.Nullable[string] `json:"ip_address"`
+	MacAddress nullable.Nullable[string] `json:"mac_address"`
+	UpdatedAt  time.Time                 `json:"updated_at"`
 }
 
 // VDCSchema defines model for VDCSchema.
 type VDCSchema struct {
-	Description *string            `json:"description,omitempty"`
-	Id          core.UUID          `json:"id"`
-	Name        string             `json:"name"`
-	Ratio       float32            `json:"ratio"`
-	Region      NestedRegionSchema `json:"region"`
-	Stats       []VDCStatSchema    `json:"stats"`
-	Zone        NestedZoneSchema   `json:"zone"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Id          core.UUID                 `json:"id"`
+	Name        string                    `json:"name"`
+	Ratio       float32                   `json:"ratio"`
+	Region      NestedRegionSchema        `json:"region"`
+	Stats       []VDCStatSchema           `json:"stats"`
+	Zone        NestedZoneSchema          `json:"zone"`
 }
 
 // VDCServerSchema defines model for VDCServerSchema.
 type VDCServerSchema struct {
-	Compute    *NestedVDCComputeSchema `json:"compute,omitempty"`
-	ElasticIp  []VDCElasticIPSchema    `json:"elastic_ip"`
-	Id         core.UUID               `json:"id"`
-	Name       string                  `json:"name"`
-	PowerState ServerPowerState        `json:"power_state"`
-	PrivateIp  []VDCPrivateIPSchema    `json:"private_ip"`
+	Compute    nullable.Nullable[NestedVDCComputeSchema] `json:"compute,omitempty"`
+	ElasticIp  []VDCElasticIPSchema                      `json:"elastic_ip"`
+	Id         core.UUID                                 `json:"id"`
+	Name       string                                    `json:"name"`
+	PowerState ServerPowerState                          `json:"power_state"`
+	PrivateIp  []VDCPrivateIPSchema                      `json:"private_ip"`
 }
 
 // VDCStatSchema defines model for VDCStatSchema.
 type VDCStatSchema struct {
-	Label string  `json:"label"`
-	Name  string  `json:"name"`
-	Total float32 `json:"total"`
-	Unit  *string `json:"unit,omitempty"`
-	Used  float32 `json:"used"`
+	Label string                    `json:"label"`
+	Name  string                    `json:"name"`
+	Total float32                   `json:"total"`
+	Unit  nullable.Nullable[string] `json:"unit,omitempty"`
+	Used  float32                   `json:"used"`
 }
 
 // VolumeStatus defines model for VolumeStatus.

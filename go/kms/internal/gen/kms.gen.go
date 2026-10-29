@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/oapi-codegen/nullable"
 	core "github.com/viettelcloud-oss/sdks/go/core"
 	runtime "github.com/viettelcloud-oss/sdks/go/internal/oapi"
 )
@@ -53,33 +54,33 @@ func (e KeyType) Valid() bool {
 
 // CertificateCreateSchema defines model for CertificateCreateSchema.
 type CertificateCreateSchema struct {
-	Certificate          string    `json:"certificate"`
-	Intermediates        *string   `json:"intermediates,omitempty"`
-	Name                 string    `json:"name"`
-	PrivateKey           *string   `json:"private_key,omitempty"`
-	PrivateKeyPassphrase *string   `json:"private_key_passphrase,omitempty"`
-	RegionId             core.UUID `json:"region_id"`
+	Certificate          string                    `json:"certificate"`
+	Intermediates        nullable.Nullable[string] `json:"intermediates,omitempty"`
+	Name                 string                    `json:"name"`
+	PrivateKey           *string                   `json:"private_key,omitempty"`
+	PrivateKeyPassphrase nullable.Nullable[string] `json:"private_key_passphrase,omitempty"`
+	RegionId             core.UUID                 `json:"region_id"`
 }
 
 // CertificateSchema defines model for CertificateSchema.
 type CertificateSchema struct {
-	CommonName         *string             `json:"common_name,omitempty"`
-	CreatedAt          time.Time           `json:"created_at"`
-	ExpiresOn          *time.Time          `json:"expires_on,omitempty"`
-	Id                 core.UUID           `json:"id"`
-	IssuedOn           *time.Time          `json:"issued_on,omitempty"`
-	Name               string              `json:"name"`
-	Project            NestedProjectSchema `json:"project"`
-	PublicKey          *string             `json:"public_key,omitempty"`
-	Region             NestedRegionSchema  `json:"region"`
-	SerialNumber       *string             `json:"serial_number,omitempty"`
-	SignatureAlgorithm *string             `json:"signature_algorithm,omitempty"`
+	CommonName         nullable.Nullable[string]    `json:"common_name,omitempty"`
+	CreatedAt          time.Time                    `json:"created_at"`
+	ExpiresOn          nullable.Nullable[time.Time] `json:"expires_on,omitempty"`
+	Id                 core.UUID                    `json:"id"`
+	IssuedOn           nullable.Nullable[time.Time] `json:"issued_on,omitempty"`
+	Name               string                       `json:"name"`
+	Project            NestedProjectSchema          `json:"project"`
+	PublicKey          nullable.Nullable[string]    `json:"public_key,omitempty"`
+	Region             NestedRegionSchema           `json:"region"`
+	SerialNumber       nullable.Nullable[string]    `json:"serial_number,omitempty"`
+	SignatureAlgorithm nullable.Nullable[string]    `json:"signature_algorithm,omitempty"`
 }
 
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
-	Errors    []ErrorSchema `json:"errors"`
-	RequestId *string       `json:"request_id"`
+	Errors    []ErrorSchema             `json:"errors"`
+	RequestId nullable.Nullable[string] `json:"request_id"`
 }
 
 // ErrorSchema defines model for ErrorSchema.
@@ -123,26 +124,26 @@ type NestedRegionSchema struct {
 
 // PagedCertificateSchema defines model for PagedCertificateSchema.
 type PagedCertificateSchema struct {
-	Count    int                 `json:"count"`
-	Next     *string             `json:"next,omitempty"`
-	Previous *string             `json:"previous,omitempty"`
-	Results  []CertificateSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []CertificateSchema       `json:"results"`
 }
 
 // PagedKeySchema defines model for PagedKeySchema.
 type PagedKeySchema struct {
-	Count    int         `json:"count"`
-	Next     *string     `json:"next,omitempty"`
-	Previous *string     `json:"previous,omitempty"`
-	Results  []KeySchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []KeySchema               `json:"results"`
 }
 
 // PagedSecretListSchema defines model for PagedSecretListSchema.
 type PagedSecretListSchema struct {
-	Count    int                `json:"count"`
-	Next     *string            `json:"next,omitempty"`
-	Previous *string            `json:"previous,omitempty"`
-	Results  []SecretListSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []SecretListSchema        `json:"results"`
 }
 
 // SecretCreateSchema defines model for SecretCreateSchema.
@@ -160,11 +161,11 @@ type SecretListSchema struct {
 
 // SecretRetrieveSchema defines model for SecretRetrieveSchema.
 type SecretRetrieveSchema struct {
-	CreatedAt time.Time               `json:"created_at"`
-	Id        core.UUID               `json:"id"`
-	Metadata  *map[string]string      `json:"metadata,omitempty"`
-	Name      string                  `json:"name"`
-	Secret    *map[string]interface{} `json:"secret,omitempty"`
+	CreatedAt time.Time                                 `json:"created_at"`
+	Id        core.UUID                                 `json:"id"`
+	Metadata  nullable.Nullable[map[string]string]      `json:"metadata,omitempty"`
+	Name      string                                    `json:"name"`
+	Secret    nullable.Nullable[map[string]interface{}] `json:"secret,omitempty"`
 }
 
 // SecretUpdateSchema defines model for SecretUpdateSchema.

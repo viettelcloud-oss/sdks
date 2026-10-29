@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/oapi-codegen/nullable"
 	core "github.com/viettelcloud-oss/sdks/go/core"
 	runtime "github.com/viettelcloud-oss/sdks/go/internal/oapi"
 )
@@ -242,8 +243,8 @@ func (e SnapshotPolicyStatus) Valid() bool {
 
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
-	Errors    []ErrorSchema `json:"errors"`
-	RequestId *string       `json:"request_id"`
+	Errors    []ErrorSchema             `json:"errors"`
+	RequestId nullable.Nullable[string] `json:"request_id"`
 }
 
 // ErrorSchema defines model for ErrorSchema.
@@ -265,15 +266,15 @@ type FilesystemAccessRuleLevel string
 
 // FilesystemAccessRuleSchema defines model for FilesystemAccessRuleSchema.
 type FilesystemAccessRuleSchema struct {
-	AccessLevel  FilesystemAccessRuleLevel `json:"access_level"`
-	AccessTo     string                    `json:"access_to"`
-	CreatedAt    time.Time                 `json:"created_at"`
-	FilesystemId core.UUID                 `json:"filesystem_id"`
-	Id           core.UUID                 `json:"id"`
-	OwnerId      *core.UUID                `json:"owner_id,omitempty"`
-	ProjectId    core.UUID                 `json:"project_id"`
-	State        FilesystemAccessRuleState `json:"state"`
-	UpdatedAt    time.Time                 `json:"updated_at"`
+	AccessLevel  FilesystemAccessRuleLevel    `json:"access_level"`
+	AccessTo     string                       `json:"access_to"`
+	CreatedAt    time.Time                    `json:"created_at"`
+	FilesystemId core.UUID                    `json:"filesystem_id"`
+	Id           core.UUID                    `json:"id"`
+	OwnerId      nullable.Nullable[core.UUID] `json:"owner_id,omitempty"`
+	ProjectId    core.UUID                    `json:"project_id"`
+	State        FilesystemAccessRuleState    `json:"state"`
+	UpdatedAt    time.Time                    `json:"updated_at"`
 }
 
 // FilesystemAccessRuleState defines model for FilesystemAccessRuleState.
@@ -286,13 +287,13 @@ type FilesystemApplyPolicySchema struct {
 
 // FilesystemCreateSchema defines model for FilesystemCreateSchema.
 type FilesystemCreateSchema struct {
-	Description      *string             `json:"description,omitempty"`
-	FilesystemTypeId *core.UUID          `json:"filesystem_type_id,omitempty"`
-	Name             string              `json:"name"`
-	Protocol         *FilesystemProtocol `json:"protocol,omitempty"`
-	Size             *int                `json:"size,omitempty"`
-	SnapshotId       *core.UUID          `json:"snapshot_id,omitempty"`
-	SubnetId         *core.UUID          `json:"subnet_id,omitempty"`
+	Description      *string                               `json:"description,omitempty"`
+	FilesystemTypeId nullable.Nullable[core.UUID]          `json:"filesystem_type_id,omitempty"`
+	Name             string                                `json:"name"`
+	Protocol         nullable.Nullable[FilesystemProtocol] `json:"protocol,omitempty"`
+	Size             nullable.Nullable[int]                `json:"size,omitempty"`
+	SnapshotId       nullable.Nullable[core.UUID]          `json:"snapshot_id,omitempty"`
+	SubnetId         nullable.Nullable[core.UUID]          `json:"subnet_id,omitempty"`
 }
 
 // FilesystemProtocol defines model for FilesystemProtocol.
@@ -305,87 +306,87 @@ type FilesystemResizeSchema struct {
 
 // FilesystemSchema defines model for FilesystemSchema.
 type FilesystemSchema struct {
-	CreateFrom          NestedFilesystemOriginSchema          `json:"create_from"`
-	CreatedAt           time.Time                             `json:"created_at"`
-	Description         *string                               `json:"description,omitempty"`
-	HasSnapshot         *bool                                 `json:"has_snapshot,omitempty"`
-	Id                  core.UUID                             `json:"id"`
-	MigrationPercentage *int                                  `json:"migration_percentage"`
-	MountTargetAddress  string                                `json:"mount_target_address"`
-	Name                string                                `json:"name"`
-	OwnerId             *core.UUID                            `json:"owner_id,omitempty"`
-	ProjectId           core.UUID                             `json:"project_id"`
-	Protocol            FilesystemProtocol                    `json:"protocol"`
-	Region              NestedRegionSchema                    `json:"region"`
-	Size                int                                   `json:"size"`
-	SnapshotPolicy      *NestedFilesystemSnapshotPolicySchema `json:"snapshot_policy,omitempty"`
-	Status              FilesystemStatus                      `json:"status"`
-	Subnet              NestedSubnetSchema                    `json:"subnet"`
-	UpdatedAt           time.Time                             `json:"updated_at"`
-	Vpc                 NestedVPCSchema                       `json:"vpc"`
-	Zone                NestedZoneSchema                      `json:"zone"`
+	CreateFrom          NestedFilesystemOriginSchema                            `json:"create_from"`
+	CreatedAt           time.Time                                               `json:"created_at"`
+	Description         nullable.Nullable[string]                               `json:"description,omitempty"`
+	HasSnapshot         *bool                                                   `json:"has_snapshot,omitempty"`
+	Id                  core.UUID                                               `json:"id"`
+	MigrationPercentage nullable.Nullable[int]                                  `json:"migration_percentage"`
+	MountTargetAddress  string                                                  `json:"mount_target_address"`
+	Name                string                                                  `json:"name"`
+	OwnerId             nullable.Nullable[core.UUID]                            `json:"owner_id,omitempty"`
+	ProjectId           core.UUID                                               `json:"project_id"`
+	Protocol            FilesystemProtocol                                      `json:"protocol"`
+	Region              NestedRegionSchema                                      `json:"region"`
+	Size                int                                                     `json:"size"`
+	SnapshotPolicy      nullable.Nullable[NestedFilesystemSnapshotPolicySchema] `json:"snapshot_policy,omitempty"`
+	Status              FilesystemStatus                                        `json:"status"`
+	Subnet              NestedSubnetSchema                                      `json:"subnet"`
+	UpdatedAt           time.Time                                               `json:"updated_at"`
+	Vpc                 NestedVPCSchema                                         `json:"vpc"`
+	Zone                NestedZoneSchema                                        `json:"zone"`
 }
 
 // FilesystemSnapshotCreateSchema defines model for FilesystemSnapshotCreateSchema.
 type FilesystemSnapshotCreateSchema struct {
-	Description  *string   `json:"description,omitempty"`
-	FilesystemId core.UUID `json:"filesystem_id"`
-	FromPolicy   *bool     `json:"from_policy,omitempty"`
-	Name         string    `json:"name"`
+	Description  nullable.Nullable[string] `json:"description,omitempty"`
+	FilesystemId core.UUID                 `json:"filesystem_id"`
+	FromPolicy   nullable.Nullable[bool]   `json:"from_policy,omitempty"`
+	Name         string                    `json:"name"`
 }
 
 // FilesystemSnapshotPolicyCreateSchema defines model for FilesystemSnapshotPolicyCreateSchema.
 type FilesystemSnapshotPolicyCreateSchema struct {
-	DaysOfWeek  []SnapshotDayOfWeek  `json:"days_of_week"`
-	Description *string              `json:"description,omitempty"`
-	Name        string               `json:"name"`
-	RegionId    core.UUID            `json:"region_id"`
-	Retention   *int                 `json:"retention,omitempty"`
-	Status      SnapshotPolicyStatus `json:"status"`
-	Time        string               `json:"time"`
+	DaysOfWeek  []SnapshotDayOfWeek    `json:"days_of_week"`
+	Description *string                `json:"description,omitempty"`
+	Name        string                 `json:"name"`
+	RegionId    core.UUID              `json:"region_id"`
+	Retention   nullable.Nullable[int] `json:"retention,omitempty"`
+	Status      SnapshotPolicyStatus   `json:"status"`
+	Time        string                 `json:"time"`
 }
 
 // FilesystemSnapshotPolicySchema defines model for FilesystemSnapshotPolicySchema.
 type FilesystemSnapshotPolicySchema struct {
-	CreatedAt       time.Time            `json:"created_at"`
-	DaysOfWeek      []string             `json:"days_of_week"`
-	Description     *string              `json:"description,omitempty"`
-	FilesystemCount int                  `json:"filesystem_count"`
-	Id              core.UUID            `json:"id"`
-	Name            string               `json:"name"`
-	OwnerId         *core.UUID           `json:"owner_id,omitempty"`
-	ProjectId       core.UUID            `json:"project_id"`
-	Region          NestedRegionSchema   `json:"region"`
-	Retention       int                  `json:"retention"`
-	State           SnapshotPolicyState  `json:"state"`
-	Status          SnapshotPolicyStatus `json:"status"`
-	Time            string               `json:"time"`
-	UpdatedAt       time.Time            `json:"updated_at"`
+	CreatedAt       time.Time                    `json:"created_at"`
+	DaysOfWeek      []string                     `json:"days_of_week"`
+	Description     nullable.Nullable[string]    `json:"description,omitempty"`
+	FilesystemCount int                          `json:"filesystem_count"`
+	Id              core.UUID                    `json:"id"`
+	Name            string                       `json:"name"`
+	OwnerId         nullable.Nullable[core.UUID] `json:"owner_id,omitempty"`
+	ProjectId       core.UUID                    `json:"project_id"`
+	Region          NestedRegionSchema           `json:"region"`
+	Retention       int                          `json:"retention"`
+	State           SnapshotPolicyState          `json:"state"`
+	Status          SnapshotPolicyStatus         `json:"status"`
+	Time            string                       `json:"time"`
+	UpdatedAt       time.Time                    `json:"updated_at"`
 }
 
 // FilesystemSnapshotPolicyUpdateSchema defines model for FilesystemSnapshotPolicyUpdateSchema.
 type FilesystemSnapshotPolicyUpdateSchema struct {
-	DaysOfWeek  []SnapshotDayOfWeek  `json:"days_of_week"`
-	Description *string              `json:"description,omitempty"`
-	Name        string               `json:"name"`
-	Retention   *int                 `json:"retention,omitempty"`
-	Status      SnapshotPolicyStatus `json:"status"`
-	Time        string               `json:"time"`
+	DaysOfWeek  []SnapshotDayOfWeek       `json:"days_of_week"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Name        string                    `json:"name"`
+	Retention   nullable.Nullable[int]    `json:"retention,omitempty"`
+	Status      SnapshotPolicyStatus      `json:"status"`
+	Time        string                    `json:"time"`
 }
 
 // FilesystemSnapshotSchema defines model for FilesystemSnapshotSchema.
 type FilesystemSnapshotSchema struct {
-	CreatedAt   time.Time                `json:"created_at"`
-	Description *string                  `json:"description,omitempty"`
-	Filesystem  FilesystemSchema         `json:"filesystem"`
-	FromPolicy  bool                     `json:"from_policy"`
-	Id          core.UUID                `json:"id"`
-	Name        string                   `json:"name"`
-	OwnerId     core.UUID                `json:"owner_id"`
-	ProjectId   core.UUID                `json:"project_id"`
-	Size        int                      `json:"size"`
-	Status      FilesystemSnapshotStatus `json:"status"`
-	UpdatedAt   time.Time                `json:"updated_at"`
+	CreatedAt   time.Time                 `json:"created_at"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Filesystem  FilesystemSchema          `json:"filesystem"`
+	FromPolicy  bool                      `json:"from_policy"`
+	Id          core.UUID                 `json:"id"`
+	Name        string                    `json:"name"`
+	OwnerId     core.UUID                 `json:"owner_id"`
+	ProjectId   core.UUID                 `json:"project_id"`
+	Size        int                       `json:"size"`
+	Status      FilesystemSnapshotStatus  `json:"status"`
+	UpdatedAt   time.Time                 `json:"updated_at"`
 }
 
 // FilesystemSnapshotStatus defines model for FilesystemSnapshotStatus.
@@ -393,8 +394,8 @@ type FilesystemSnapshotStatus string
 
 // FilesystemSnapshotUpdateSchema defines model for FilesystemSnapshotUpdateSchema.
 type FilesystemSnapshotUpdateSchema struct {
-	Description *string `json:"description,omitempty"`
-	Name        *string `json:"name,omitempty"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Name        nullable.Nullable[string] `json:"name,omitempty"`
 }
 
 // FilesystemStatus defines model for FilesystemStatus.
@@ -402,14 +403,14 @@ type FilesystemStatus string
 
 // FilesystemTypeSchema defines model for FilesystemTypeSchema.
 type FilesystemTypeSchema struct {
-	CreatedAt         time.Time             `json:"created_at"`
-	Description       *string               `json:"description,omitempty"`
-	Id                core.UUID             `json:"id"`
-	MaxFilesystemSize int                   `json:"max_filesystem_size"`
-	Name              string                `json:"name"`
-	Status            *FilesystemTypeStatus `json:"status,omitempty"`
-	UpdatedAt         time.Time             `json:"updated_at"`
-	Zone              NestedZoneSchema      `json:"zone"`
+	CreatedAt         time.Time                               `json:"created_at"`
+	Description       nullable.Nullable[string]               `json:"description,omitempty"`
+	Id                core.UUID                               `json:"id"`
+	MaxFilesystemSize int                                     `json:"max_filesystem_size"`
+	Name              string                                  `json:"name"`
+	Status            nullable.Nullable[FilesystemTypeStatus] `json:"status,omitempty"`
+	UpdatedAt         time.Time                               `json:"updated_at"`
+	Zone              NestedZoneSchema                        `json:"zone"`
 }
 
 // FilesystemTypeStatus defines model for FilesystemTypeStatus.
@@ -417,14 +418,14 @@ type FilesystemTypeStatus string
 
 // FilesystemUpdateSchema defines model for FilesystemUpdateSchema.
 type FilesystemUpdateSchema struct {
-	Description *string `json:"description,omitempty"`
-	Name        *string `json:"name,omitempty"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Name        nullable.Nullable[string] `json:"name,omitempty"`
 }
 
 // NestedFilesystemOriginSchema defines model for NestedFilesystemOriginSchema.
 type NestedFilesystemOriginSchema struct {
-	FilesystemType *NestedFilesystemTypeSchema     `json:"filesystem_type,omitempty"`
-	Snapshot       *NestedFilesystemSnapshotSchema `json:"snapshot,omitempty"`
+	FilesystemType nullable.Nullable[NestedFilesystemTypeSchema]     `json:"filesystem_type,omitempty"`
+	Snapshot       nullable.Nullable[NestedFilesystemSnapshotSchema] `json:"snapshot,omitempty"`
 }
 
 // NestedFilesystemSnapshotPolicySchema defines model for NestedFilesystemSnapshotPolicySchema.
@@ -479,41 +480,41 @@ type NestedZoneSchema struct {
 // PagedFilesystemAccessRuleSchema defines model for PagedFilesystemAccessRuleSchema.
 type PagedFilesystemAccessRuleSchema struct {
 	Count    int                          `json:"count"`
-	Next     *string                      `json:"next,omitempty"`
-	Previous *string                      `json:"previous,omitempty"`
+	Next     nullable.Nullable[string]    `json:"next,omitempty"`
+	Previous nullable.Nullable[string]    `json:"previous,omitempty"`
 	Results  []FilesystemAccessRuleSchema `json:"results"`
 }
 
 // PagedFilesystemSchema defines model for PagedFilesystemSchema.
 type PagedFilesystemSchema struct {
-	Count    int                `json:"count"`
-	Next     *string            `json:"next,omitempty"`
-	Previous *string            `json:"previous,omitempty"`
-	Results  []FilesystemSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []FilesystemSchema        `json:"results"`
 }
 
 // PagedFilesystemSnapshotPolicySchema defines model for PagedFilesystemSnapshotPolicySchema.
 type PagedFilesystemSnapshotPolicySchema struct {
 	Count    int                              `json:"count"`
-	Next     *string                          `json:"next,omitempty"`
-	Previous *string                          `json:"previous,omitempty"`
+	Next     nullable.Nullable[string]        `json:"next,omitempty"`
+	Previous nullable.Nullable[string]        `json:"previous,omitempty"`
 	Results  []FilesystemSnapshotPolicySchema `json:"results"`
 }
 
 // PagedFilesystemSnapshotSchema defines model for PagedFilesystemSnapshotSchema.
 type PagedFilesystemSnapshotSchema struct {
 	Count    int                        `json:"count"`
-	Next     *string                    `json:"next,omitempty"`
-	Previous *string                    `json:"previous,omitempty"`
+	Next     nullable.Nullable[string]  `json:"next,omitempty"`
+	Previous nullable.Nullable[string]  `json:"previous,omitempty"`
 	Results  []FilesystemSnapshotSchema `json:"results"`
 }
 
 // PagedFilesystemTypeSchema defines model for PagedFilesystemTypeSchema.
 type PagedFilesystemTypeSchema struct {
-	Count    int                    `json:"count"`
-	Next     *string                `json:"next,omitempty"`
-	Previous *string                `json:"previous,omitempty"`
-	Results  []FilesystemTypeSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []FilesystemTypeSchema    `json:"results"`
 }
 
 // SnapshotDayOfWeek defines model for SnapshotDayOfWeek.

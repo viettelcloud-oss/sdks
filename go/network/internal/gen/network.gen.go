@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/oapi-codegen/nullable"
 	core "github.com/viettelcloud-oss/sdks/go/core"
 	runtime "github.com/viettelcloud-oss/sdks/go/internal/oapi"
 )
@@ -288,25 +289,25 @@ type ElasticIPCreateSchema struct {
 
 // ElasticIPDetailSchema Elastic IP detail for the console API.
 type ElasticIPDetailSchema struct {
-	AllowedCidrs *[]string                          `json:"allowed_cidrs,omitempty"`
-	AllowedVips  *[]NestedElasticIPAllowedVIPSchema `json:"allowed_vips,omitempty"`
-	CreatedAt    time.Time                          `json:"created_at"`
-	Description  *string                            `json:"description,omitempty"`
-	DisplayName  string                             `json:"display_name"`
-	EnableIpv4   bool                               `json:"enable_ipv4"`
-	EnableIpv6   bool                               `json:"enable_ipv6"`
-	Id           core.UUID                          `json:"id"`
-	IpAddress    *string                            `json:"ip_address,omitempty"`
-	Ipv6Address  *string                            `json:"ipv6_address,omitempty"`
-	MacAddress   *string                            `json:"mac_address,omitempty"`
-	Owner        *NestedUserSchema                  `json:"owner,omitempty"`
-	PortSecurity *bool                              `json:"port_security,omitempty"`
-	Project      NestedProjectSchema                `json:"project"`
-	Region       NestedRegionSchema                 `json:"region"`
-	Server       *NestedServerSchema                `json:"server,omitempty"`
-	Status       *ElasticIPStatus                   `json:"status,omitempty"`
-	UpdatedAt    time.Time                          `json:"updated_at"`
-	Zone         *NestedZoneSchema                  `json:"zone,omitempty"`
+	AllowedCidrs *[]string                             `json:"allowed_cidrs,omitempty"`
+	AllowedVips  *[]NestedElasticIPAllowedVIPSchema    `json:"allowed_vips,omitempty"`
+	CreatedAt    time.Time                             `json:"created_at"`
+	Description  *string                               `json:"description,omitempty"`
+	DisplayName  string                                `json:"display_name"`
+	EnableIpv4   bool                                  `json:"enable_ipv4"`
+	EnableIpv6   bool                                  `json:"enable_ipv6"`
+	Id           core.UUID                             `json:"id"`
+	IpAddress    nullable.Nullable[string]             `json:"ip_address,omitempty"`
+	Ipv6Address  nullable.Nullable[string]             `json:"ipv6_address,omitempty"`
+	MacAddress   nullable.Nullable[string]             `json:"mac_address,omitempty"`
+	Owner        nullable.Nullable[NestedUserSchema]   `json:"owner,omitempty"`
+	PortSecurity *bool                                 `json:"port_security,omitempty"`
+	Project      NestedProjectSchema                   `json:"project"`
+	Region       NestedRegionSchema                    `json:"region"`
+	Server       nullable.Nullable[NestedServerSchema] `json:"server,omitempty"`
+	Status       nullable.Nullable[ElasticIPStatus]    `json:"status,omitempty"`
+	UpdatedAt    time.Time                             `json:"updated_at"`
+	Zone         nullable.Nullable[NestedZoneSchema]   `json:"zone,omitempty"`
 }
 
 // ElasticIPPartialUpdateSchema defines model for ElasticIPPartialUpdateSchema.
@@ -316,21 +317,21 @@ type ElasticIPPartialUpdateSchema struct {
 
 // ElasticIPSchema defines model for ElasticIPSchema.
 type ElasticIPSchema struct {
-	CreatedAt   time.Time           `json:"created_at"`
-	Description *string             `json:"description,omitempty"`
-	DisplayName string              `json:"display_name"`
-	EnableIpv4  bool                `json:"enable_ipv4"`
-	EnableIpv6  bool                `json:"enable_ipv6"`
-	Id          core.UUID           `json:"id"`
-	IpAddress   *string             `json:"ip_address,omitempty"`
-	Ipv6Address *string             `json:"ipv6_address,omitempty"`
-	MacAddress  *string             `json:"mac_address,omitempty"`
-	Project     NestedProjectSchema `json:"project"`
-	Region      NestedRegionSchema  `json:"region"`
-	Server      *NestedServerSchema `json:"server,omitempty"`
-	Status      *ElasticIPStatus    `json:"status,omitempty"`
-	UpdatedAt   time.Time           `json:"updated_at"`
-	Zone        *NestedZoneSchema   `json:"zone,omitempty"`
+	CreatedAt   time.Time                             `json:"created_at"`
+	Description *string                               `json:"description,omitempty"`
+	DisplayName string                                `json:"display_name"`
+	EnableIpv4  bool                                  `json:"enable_ipv4"`
+	EnableIpv6  bool                                  `json:"enable_ipv6"`
+	Id          core.UUID                             `json:"id"`
+	IpAddress   nullable.Nullable[string]             `json:"ip_address,omitempty"`
+	Ipv6Address nullable.Nullable[string]             `json:"ipv6_address,omitempty"`
+	MacAddress  nullable.Nullable[string]             `json:"mac_address,omitempty"`
+	Project     NestedProjectSchema                   `json:"project"`
+	Region      NestedRegionSchema                    `json:"region"`
+	Server      nullable.Nullable[NestedServerSchema] `json:"server,omitempty"`
+	Status      nullable.Nullable[ElasticIPStatus]    `json:"status,omitempty"`
+	UpdatedAt   time.Time                             `json:"updated_at"`
+	Zone        nullable.Nullable[NestedZoneSchema]   `json:"zone,omitempty"`
 }
 
 // ElasticIPStatus defines model for ElasticIPStatus.
@@ -343,8 +344,8 @@ type ElasticIPUpdateSchema struct {
 
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
-	Errors    []ErrorSchema `json:"errors"`
-	RequestId *string       `json:"request_id"`
+	Errors    []ErrorSchema             `json:"errors"`
+	RequestId nullable.Nullable[string] `json:"request_id"`
 }
 
 // ErrorSchema defines model for ErrorSchema.
@@ -356,14 +357,14 @@ type ErrorSchema struct {
 
 // EstimatedCostComponentSchema defines model for EstimatedCostComponentSchema.
 type EstimatedCostComponentSchema struct {
-	AdjustedPrice  core.Decimal  `json:"adjusted_price"`
-	DiscountAmount core.Decimal  `json:"discount_amount"`
-	Granularity    *string       `json:"granularity"`
-	Label          string        `json:"label"`
-	OriginalPrice  core.Decimal  `json:"original_price"`
-	Quantity       *core.Decimal `json:"quantity"`
-	TaxAmount      core.Decimal  `json:"tax_amount"`
-	Unit           *string       `json:"unit"`
+	AdjustedPrice  core.Decimal                    `json:"adjusted_price"`
+	DiscountAmount core.Decimal                    `json:"discount_amount"`
+	Granularity    nullable.Nullable[string]       `json:"granularity"`
+	Label          string                          `json:"label"`
+	OriginalPrice  core.Decimal                    `json:"original_price"`
+	Quantity       nullable.Nullable[core.Decimal] `json:"quantity"`
+	TaxAmount      core.Decimal                    `json:"tax_amount"`
+	Unit           nullable.Nullable[string]       `json:"unit"`
 }
 
 // EstimatedPaygCostSchema defines model for EstimatedPaygCostSchema.
@@ -377,14 +378,14 @@ type EstimatedPaygCostSchema struct {
 
 // NestedElasticIPAllowedVIPSchema defines model for NestedElasticIPAllowedVIPSchema.
 type NestedElasticIPAllowedVIPSchema struct {
-	Id        core.UUID `json:"id"`
-	IpAddress *string   `json:"ip_address,omitempty"`
+	Id        core.UUID                 `json:"id"`
+	IpAddress nullable.Nullable[string] `json:"ip_address,omitempty"`
 }
 
 // NestedPrivateIPAllowedVIPSchema defines model for NestedPrivateIPAllowedVIPSchema.
 type NestedPrivateIPAllowedVIPSchema struct {
-	Id        core.UUID `json:"id"`
-	IpAddress *string   `json:"ip_address,omitempty"`
+	Id        core.UUID                 `json:"id"`
+	IpAddress nullable.Nullable[string] `json:"ip_address,omitempty"`
 }
 
 // NestedProjectSchema defines model for NestedProjectSchema.
@@ -443,74 +444,74 @@ type NestedZoneSchema struct {
 
 // PagedDirectConnectSchema defines model for PagedDirectConnectSchema.
 type PagedDirectConnectSchema struct {
-	Count    int                   `json:"count"`
-	Next     *string               `json:"next,omitempty"`
-	Previous *string               `json:"previous,omitempty"`
-	Results  []DirectConnectSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []DirectConnectSchema     `json:"results"`
 }
 
 // PagedElasticIPSchema defines model for PagedElasticIPSchema.
 type PagedElasticIPSchema struct {
-	Count    int               `json:"count"`
-	Next     *string           `json:"next,omitempty"`
-	Previous *string           `json:"previous,omitempty"`
-	Results  []ElasticIPSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []ElasticIPSchema         `json:"results"`
 }
 
 // PagedPrivateIPSchema defines model for PagedPrivateIPSchema.
 type PagedPrivateIPSchema struct {
-	Count    int               `json:"count"`
-	Next     *string           `json:"next,omitempty"`
-	Previous *string           `json:"previous,omitempty"`
-	Results  []PrivateIPSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []PrivateIPSchema         `json:"results"`
 }
 
 // PagedRouteTableSchema defines model for PagedRouteTableSchema.
 type PagedRouteTableSchema struct {
-	Count    int                `json:"count"`
-	Next     *string            `json:"next,omitempty"`
-	Previous *string            `json:"previous,omitempty"`
-	Results  []RouteTableSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []RouteTableSchema        `json:"results"`
 }
 
 // PagedRouteTableSubnetSchema defines model for PagedRouteTableSubnetSchema.
 type PagedRouteTableSubnetSchema struct {
-	Count    int                      `json:"count"`
-	Next     *string                  `json:"next,omitempty"`
-	Previous *string                  `json:"previous,omitempty"`
-	Results  []RouteTableSubnetSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []RouteTableSubnetSchema  `json:"results"`
 }
 
 // PagedSecurityGroupRuleSchema defines model for PagedSecurityGroupRuleSchema.
 type PagedSecurityGroupRuleSchema struct {
 	Count    int                       `json:"count"`
-	Next     *string                   `json:"next,omitempty"`
-	Previous *string                   `json:"previous,omitempty"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
 	Results  []SecurityGroupRuleSchema `json:"results"`
 }
 
 // PagedSecurityGroupSchema defines model for PagedSecurityGroupSchema.
 type PagedSecurityGroupSchema struct {
-	Count    int                   `json:"count"`
-	Next     *string               `json:"next,omitempty"`
-	Previous *string               `json:"previous,omitempty"`
-	Results  []SecurityGroupSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []SecurityGroupSchema     `json:"results"`
 }
 
 // PagedSubnetSchema defines model for PagedSubnetSchema.
 type PagedSubnetSchema struct {
-	Count    int            `json:"count"`
-	Next     *string        `json:"next,omitempty"`
-	Previous *string        `json:"previous,omitempty"`
-	Results  []SubnetSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []SubnetSchema            `json:"results"`
 }
 
 // PagedVPCSchema defines model for PagedVPCSchema.
 type PagedVPCSchema struct {
-	Count    int         `json:"count"`
-	Next     *string     `json:"next,omitempty"`
-	Previous *string     `json:"previous,omitempty"`
-	Results  []VPCSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []VPCSchema               `json:"results"`
 }
 
 // PrivateIPAllowedVIPsUpdateSchema defines model for PrivateIPAllowedVIPsUpdateSchema.
@@ -521,10 +522,10 @@ type PrivateIPAllowedVIPsUpdateSchema struct {
 
 // PrivateIPCreateSchema defines model for PrivateIPCreateSchema.
 type PrivateIPCreateSchema struct {
-	Description *string   `json:"description,omitempty"`
-	IpAddress   *string   `json:"ip_address,omitempty"`
-	MacAddress  *string   `json:"mac_address,omitempty"`
-	SubnetId    core.UUID `json:"subnet_id"`
+	Description *string                   `json:"description,omitempty"`
+	IpAddress   nullable.Nullable[string] `json:"ip_address,omitempty"`
+	MacAddress  nullable.Nullable[string] `json:"mac_address,omitempty"`
+	SubnetId    core.UUID                 `json:"subnet_id"`
 }
 
 // PrivateIPDeviceOwner defines model for PrivateIPDeviceOwner.
@@ -532,27 +533,27 @@ type PrivateIPDeviceOwner string
 
 // PrivateIPPartialUpdateSchema defines model for PrivateIPPartialUpdateSchema.
 type PrivateIPPartialUpdateSchema struct {
-	Description *string `json:"description,omitempty"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
 }
 
 // PrivateIPSchema defines model for PrivateIPSchema.
 type PrivateIPSchema struct {
-	AllowedCidrs *[]string                          `json:"allowed_cidrs,omitempty"`
-	AttachedVips *[]NestedPrivateIPAllowedVIPSchema `json:"attached_vips,omitempty"`
-	CreatedAt    time.Time                          `json:"created_at"`
-	Description  *string                            `json:"description,omitempty"`
-	DeviceOwner  PrivateIPDeviceOwner               `json:"device_owner"`
-	DisplayName  string                             `json:"display_name"`
-	Id           core.UUID                          `json:"id"`
-	IpAddress    *string                            `json:"ip_address,omitempty"`
-	MacAddress   *string                            `json:"mac_address,omitempty"`
-	PortSecurity bool                               `json:"port_security"`
-	Project      NestedProjectSchema                `json:"project"`
-	Region       NestedRegionSchema                 `json:"region"`
-	Server       *NestedServerSchema                `json:"server,omitempty"`
-	Subnet       NestedSubnetSchema                 `json:"subnet"`
-	UpdatedAt    time.Time                          `json:"updated_at"`
-	Vpc          NestedVPCSchema                    `json:"vpc"`
+	AllowedCidrs *[]string                             `json:"allowed_cidrs,omitempty"`
+	AttachedVips *[]NestedPrivateIPAllowedVIPSchema    `json:"attached_vips,omitempty"`
+	CreatedAt    time.Time                             `json:"created_at"`
+	Description  nullable.Nullable[string]             `json:"description,omitempty"`
+	DeviceOwner  PrivateIPDeviceOwner                  `json:"device_owner"`
+	DisplayName  string                                `json:"display_name"`
+	Id           core.UUID                             `json:"id"`
+	IpAddress    nullable.Nullable[string]             `json:"ip_address,omitempty"`
+	MacAddress   nullable.Nullable[string]             `json:"mac_address,omitempty"`
+	PortSecurity bool                                  `json:"port_security"`
+	Project      NestedProjectSchema                   `json:"project"`
+	Region       NestedRegionSchema                    `json:"region"`
+	Server       nullable.Nullable[NestedServerSchema] `json:"server,omitempty"`
+	Subnet       NestedSubnetSchema                    `json:"subnet"`
+	UpdatedAt    time.Time                             `json:"updated_at"`
+	Vpc          NestedVPCSchema                       `json:"vpc"`
 }
 
 // PrivateIPUpdateSchema defines model for PrivateIPUpdateSchema.
@@ -567,17 +568,17 @@ type RouteTableInternetAccessUpdateSchema struct {
 
 // RouteTableSchema defines model for RouteTableSchema.
 type RouteTableSchema struct {
-	CreatedAt      time.Time           `json:"created_at"`
-	Description    *string             `json:"description,omitempty"`
-	Id             core.UUID           `json:"id"`
-	InternetAccess bool                `json:"internet_access"`
-	IsDefault      bool                `json:"is_default"`
-	Name           string              `json:"name"`
-	Owner          *NestedUserSchema   `json:"owner,omitempty"`
-	Project        NestedProjectSchema `json:"project"`
-	Region         NestedRegionSchema  `json:"region"`
-	UpdatedAt      time.Time           `json:"updated_at"`
-	Vpc            NestedVPCSchema     `json:"vpc"`
+	CreatedAt      time.Time                           `json:"created_at"`
+	Description    nullable.Nullable[string]           `json:"description,omitempty"`
+	Id             core.UUID                           `json:"id"`
+	InternetAccess bool                                `json:"internet_access"`
+	IsDefault      bool                                `json:"is_default"`
+	Name           string                              `json:"name"`
+	Owner          nullable.Nullable[NestedUserSchema] `json:"owner,omitempty"`
+	Project        NestedProjectSchema                 `json:"project"`
+	Region         NestedRegionSchema                  `json:"region"`
+	UpdatedAt      time.Time                           `json:"updated_at"`
+	Vpc            NestedVPCSchema                     `json:"vpc"`
 }
 
 // RouteTableSubnetSchema defines model for RouteTableSubnetSchema.
@@ -612,13 +613,13 @@ type SecurityGroupPartialUpdateSchema struct {
 
 // SecurityGroupRuleCreateSchema defines model for SecurityGroupRuleCreateSchema.
 type SecurityGroupRuleCreateSchema struct {
-	Description     *string      `json:"description,omitempty"`
-	Direction       SGRDirection `json:"direction"`
-	PortRangeMax    *int         `json:"port_range_max,omitempty"`
-	PortRangeMin    *int         `json:"port_range_min,omitempty"`
-	Protocol        *SGRProtocol `json:"protocol,omitempty"`
-	RemoteIpPrefix  *string      `json:"remote_ip_prefix,omitempty"`
-	SecurityGroupId core.UUID    `json:"security_group_id"`
+	Description     *string                        `json:"description,omitempty"`
+	Direction       SGRDirection                   `json:"direction"`
+	PortRangeMax    nullable.Nullable[int]         `json:"port_range_max,omitempty"`
+	PortRangeMin    nullable.Nullable[int]         `json:"port_range_min,omitempty"`
+	Protocol        nullable.Nullable[SGRProtocol] `json:"protocol,omitempty"`
+	RemoteIpPrefix  *string                        `json:"remote_ip_prefix,omitempty"`
+	SecurityGroupId core.UUID                      `json:"security_group_id"`
 }
 
 // SecurityGroupRulePartialUpdateSchema defines model for SecurityGroupRulePartialUpdateSchema.
@@ -628,20 +629,20 @@ type SecurityGroupRulePartialUpdateSchema struct {
 
 // SecurityGroupRuleSchema defines model for SecurityGroupRuleSchema.
 type SecurityGroupRuleSchema struct {
-	CreatedAt      time.Time                 `json:"created_at"`
-	Description    *string                   `json:"description,omitempty"`
-	Direction      SGRDirection              `json:"direction"`
-	Ethertype      *SGREtherType             `json:"ethertype,omitempty"`
-	Id             core.UUID                 `json:"id"`
-	Owner          *NestedUserSchema         `json:"owner,omitempty"`
-	PortRangeMax   *int                      `json:"port_range_max,omitempty"`
-	PortRangeMin   *int                      `json:"port_range_min,omitempty"`
-	Project        NestedProjectSchema       `json:"project"`
-	Protocol       *SGRProtocol              `json:"protocol,omitempty"`
-	Region         NestedRegionSchema        `json:"region"`
-	RemoteIpPrefix string                    `json:"remote_ip_prefix"`
-	SecurityGroup  NestedSecurityGroupSchema `json:"security_group"`
-	UpdatedAt      time.Time                 `json:"updated_at"`
+	CreatedAt      time.Time                           `json:"created_at"`
+	Description    *string                             `json:"description,omitempty"`
+	Direction      SGRDirection                        `json:"direction"`
+	Ethertype      nullable.Nullable[SGREtherType]     `json:"ethertype,omitempty"`
+	Id             core.UUID                           `json:"id"`
+	Owner          nullable.Nullable[NestedUserSchema] `json:"owner,omitempty"`
+	PortRangeMax   nullable.Nullable[int]              `json:"port_range_max,omitempty"`
+	PortRangeMin   nullable.Nullable[int]              `json:"port_range_min,omitempty"`
+	Project        NestedProjectSchema                 `json:"project"`
+	Protocol       nullable.Nullable[SGRProtocol]      `json:"protocol,omitempty"`
+	Region         NestedRegionSchema                  `json:"region"`
+	RemoteIpPrefix string                              `json:"remote_ip_prefix"`
+	SecurityGroup  NestedSecurityGroupSchema           `json:"security_group"`
+	UpdatedAt      time.Time                           `json:"updated_at"`
 }
 
 // SecurityGroupRuleUpdateSchema defines model for SecurityGroupRuleUpdateSchema.
@@ -651,16 +652,16 @@ type SecurityGroupRuleUpdateSchema struct {
 
 // SecurityGroupSchema defines model for SecurityGroupSchema.
 type SecurityGroupSchema struct {
-	CreatedAt   time.Time           `json:"created_at"`
-	Description *string             `json:"description,omitempty"`
-	DisplayName string              `json:"display_name"`
-	Id          core.UUID           `json:"id"`
-	IsDefault   bool                `json:"is_default"`
-	Name        string              `json:"name"`
-	Owner       *NestedUserSchema   `json:"owner,omitempty"`
-	Project     NestedProjectSchema `json:"project"`
-	Region      NestedRegionSchema  `json:"region"`
-	UpdatedAt   time.Time           `json:"updated_at"`
+	CreatedAt   time.Time                           `json:"created_at"`
+	Description *string                             `json:"description,omitempty"`
+	DisplayName string                              `json:"display_name"`
+	Id          core.UUID                           `json:"id"`
+	IsDefault   bool                                `json:"is_default"`
+	Name        string                              `json:"name"`
+	Owner       nullable.Nullable[NestedUserSchema] `json:"owner,omitempty"`
+	Project     NestedProjectSchema                 `json:"project"`
+	Region      NestedRegionSchema                  `json:"region"`
+	UpdatedAt   time.Time                           `json:"updated_at"`
 }
 
 // SecurityGroupUpdateSchema defines model for SecurityGroupUpdateSchema.
@@ -679,22 +680,22 @@ type SubnetCreateSchema struct {
 
 // SubnetPartialUpdateSchema defines model for SubnetPartialUpdateSchema.
 type SubnetPartialUpdateSchema struct {
-	Description *string `json:"description,omitempty"`
-	Name        *string `json:"name,omitempty"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Name        *string                   `json:"name,omitempty"`
 }
 
 // SubnetSchema defines model for SubnetSchema.
 type SubnetSchema struct {
-	Cidr        string              `json:"cidr"`
-	CreatedAt   time.Time           `json:"created_at"`
-	Description *string             `json:"description,omitempty"`
-	DisplayName string              `json:"display_name"`
-	Id          core.UUID           `json:"id"`
-	Name        string              `json:"name"`
-	Project     NestedProjectSchema `json:"project"`
-	Region      NestedRegionSchema  `json:"region"`
-	UpdatedAt   time.Time           `json:"updated_at"`
-	Vpc         NestedVPCSchema     `json:"vpc"`
+	Cidr        string                    `json:"cidr"`
+	CreatedAt   time.Time                 `json:"created_at"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	DisplayName string                    `json:"display_name"`
+	Id          core.UUID                 `json:"id"`
+	Name        string                    `json:"name"`
+	Project     NestedProjectSchema       `json:"project"`
+	Region      NestedRegionSchema        `json:"region"`
+	UpdatedAt   time.Time                 `json:"updated_at"`
+	Vpc         NestedVPCSchema           `json:"vpc"`
 }
 
 // SubnetUpdateSchema defines model for SubnetUpdateSchema.
@@ -705,24 +706,24 @@ type SubnetUpdateSchema struct {
 
 // VPCCreateSchema defines model for VPCCreateSchema.
 type VPCCreateSchema struct {
-	Cidr        string    `json:"cidr"`
-	Description *string   `json:"description,omitempty"`
-	Name        string    `json:"name"`
-	RegionId    core.UUID `json:"region_id"`
+	Cidr        string                    `json:"cidr"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Name        string                    `json:"name"`
+	RegionId    core.UUID                 `json:"region_id"`
 }
 
 // VPCSchema defines model for VPCSchema.
 type VPCSchema struct {
-	Cidr        string              `json:"cidr"`
-	CreatedAt   time.Time           `json:"created_at"`
-	Description *string             `json:"description,omitempty"`
-	DisplayName string              `json:"display_name"`
-	Id          core.UUID           `json:"id"`
-	Name        string              `json:"name"`
-	Project     NestedProjectSchema `json:"project"`
-	Region      NestedRegionSchema  `json:"region"`
-	UpdatedAt   time.Time           `json:"updated_at"`
-	Zone        *NestedZoneSchema   `json:"zone,omitempty"`
+	Cidr        string                              `json:"cidr"`
+	CreatedAt   time.Time                           `json:"created_at"`
+	Description nullable.Nullable[string]           `json:"description,omitempty"`
+	DisplayName string                              `json:"display_name"`
+	Id          core.UUID                           `json:"id"`
+	Name        string                              `json:"name"`
+	Project     NestedProjectSchema                 `json:"project"`
+	Region      NestedRegionSchema                  `json:"region"`
+	UpdatedAt   time.Time                           `json:"updated_at"`
+	Zone        nullable.Nullable[NestedZoneSchema] `json:"zone,omitempty"`
 }
 
 // VPCShareSchema defines model for VPCShareSchema.
@@ -737,8 +738,8 @@ type VPCUnshareSchema struct {
 
 // VPCUpdateSchema defines model for VPCUpdateSchema.
 type VPCUpdateSchema struct {
-	Description *string `json:"description,omitempty"`
-	Name        string  `json:"name"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Name        string                    `json:"name"`
 }
 
 // AuthenticationError defines model for AuthenticationError.
