@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/oapi-codegen/nullable"
 	core "github.com/viettelcloud-oss/sdks/go/core"
 	runtime "github.com/viettelcloud-oss/sdks/go/internal/oapi"
 )
@@ -360,24 +361,24 @@ type CaaSExistingVolumeSchemaKind string
 
 // CaaSFlavorSchema defines model for CaaSFlavorSchema.
 type CaaSFlavorSchema struct {
-	Cpu                      int                `json:"cpu"`
-	CreatedAt                time.Time          `json:"created_at"`
-	Default                  bool               `json:"default"`
-	Description              string             `json:"description"`
-	GpuCount                 int                `json:"gpu_count"`
-	GpuMemory                int                `json:"gpu_memory"`
-	GpuModel                 *string            `json:"gpu_model,omitempty"`
-	Id                       core.UUID          `json:"id"`
-	MaxEphemeralVolumeSize   int                `json:"max_ephemeral_volume_size"`
-	MaxPersistentVolumeSize  *int               `json:"max_persistent_volume_size,omitempty"`
-	Memory                   int                `json:"memory"`
-	MinEphemeralVolumeSize   int                `json:"min_ephemeral_volume_size"`
-	MinPersistentVolumeSize  *int               `json:"min_persistent_volume_size,omitempty"`
-	Name                     string             `json:"name"`
-	PersistentVolumesEnabled bool               `json:"persistent_volumes_enabled"`
-	Region                   NestedRegionSchema `json:"region"`
-	Status                   CaaSFlavorStatus   `json:"status"`
-	UpdatedAt                time.Time          `json:"updated_at"`
+	Cpu                      int                       `json:"cpu"`
+	CreatedAt                time.Time                 `json:"created_at"`
+	Default                  bool                      `json:"default"`
+	Description              string                    `json:"description"`
+	GpuCount                 int                       `json:"gpu_count"`
+	GpuMemory                int                       `json:"gpu_memory"`
+	GpuModel                 nullable.Nullable[string] `json:"gpu_model,omitempty"`
+	Id                       core.UUID                 `json:"id"`
+	MaxEphemeralVolumeSize   int                       `json:"max_ephemeral_volume_size"`
+	MaxPersistentVolumeSize  nullable.Nullable[int]    `json:"max_persistent_volume_size,omitempty"`
+	Memory                   int                       `json:"memory"`
+	MinEphemeralVolumeSize   int                       `json:"min_ephemeral_volume_size"`
+	MinPersistentVolumeSize  nullable.Nullable[int]    `json:"min_persistent_volume_size,omitempty"`
+	Name                     string                    `json:"name"`
+	PersistentVolumesEnabled bool                      `json:"persistent_volumes_enabled"`
+	Region                   NestedRegionSchema        `json:"region"`
+	Status                   CaaSFlavorStatus          `json:"status"`
+	UpdatedAt                time.Time                 `json:"updated_at"`
 }
 
 // CaaSFlavorStatus defines model for CaaSFlavorStatus.
@@ -418,11 +419,11 @@ type ContainerCreateSchema struct {
 	Cpu          int                                 `json:"cpu"`
 	Entrypoint   *[]string                           `json:"entrypoint,omitempty"`
 	EnvVars      *[]EnvVar                           `json:"env_vars,omitempty"`
-	GpuAttached  *bool                               `json:"gpu_attached,omitempty"`
+	GpuAttached  nullable.Nullable[bool]             `json:"gpu_attached,omitempty"`
 	Image        string                              `json:"image"`
 	Memory       int                                 `json:"memory"`
 	Name         string                              `json:"name"`
-	Port         *int                                `json:"port,omitempty"`
+	Port         nullable.Nullable[int]              `json:"port,omitempty"`
 	Probes       *[]ProbeCreateSchema                `json:"probes,omitempty"`
 	VolumeMounts *[]ContainerVolumeMountCreateSchema `json:"volume_mounts,omitempty"`
 }
@@ -441,10 +442,10 @@ type ContainerGroupAutoScalingSchemaAutoScaling bool
 
 // ContainerGroupCreateSchema defines model for ContainerGroupCreateSchema.
 type ContainerGroupCreateSchema struct {
-	Containers []ContainerCreateSchema `json:"containers"`
-	FlavorId   *core.UUID              `json:"flavor_id,omitempty"`
-	Name       string                  `json:"name"`
-	RegionId   core.UUID               `json:"region_id"`
+	Containers []ContainerCreateSchema      `json:"containers"`
+	FlavorId   nullable.Nullable[core.UUID] `json:"flavor_id,omitempty"`
+	Name       string                       `json:"name"`
+	RegionId   core.UUID                    `json:"region_id"`
 
 	// Scaling ContainerGroupScalingSchema is exactly one of: ContainerGroupAutoScalingSchema, ContainerGroupManualScalingSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
 	Scaling  ContainerGroupScalingSchema `json:"scaling"`
@@ -469,24 +470,24 @@ type ContainerGroupOperationalStatus string
 
 // ContainerGroupRevisionDetailSchema defines model for ContainerGroupRevisionDetailSchema.
 type ContainerGroupRevisionDetailSchema struct {
-	ActualReplicas       int                          `json:"actual_replicas"`
-	AutoScaling          bool                         `json:"auto_scaling"`
-	ContainerConcurrency int                          `json:"container_concurrency"`
-	Containers           *[]ContainerSchema           `json:"containers,omitempty"`
-	CreatedAt            time.Time                    `json:"created_at"`
-	DesiredReplicas      int                          `json:"desired_replicas"`
-	Id                   core.UUID                    `json:"id"`
-	MaxReplicas          *int                         `json:"max_replicas,omitempty"`
-	Message              string                       `json:"message"`
-	MinReplicas          *int                         `json:"min_replicas,omitempty"`
-	Name                 string                       `json:"name"`
-	Replicas             *int                         `json:"replicas,omitempty"`
-	ScalingMetric        *ScalingMetricType           `json:"scaling_metric,omitempty"`
-	ScalingTarget        *int                         `json:"scaling_target,omitempty"`
-	Status               ContainerGroupRevisionStatus `json:"status"`
-	UpdatedAt            time.Time                    `json:"updated_at"`
-	Url                  string                       `json:"url"`
-	Volumes              *[]CaaSVolumeSchema          `json:"volumes,omitempty"`
+	ActualReplicas       int                                  `json:"actual_replicas"`
+	AutoScaling          bool                                 `json:"auto_scaling"`
+	ContainerConcurrency int                                  `json:"container_concurrency"`
+	Containers           *[]ContainerSchema                   `json:"containers,omitempty"`
+	CreatedAt            time.Time                            `json:"created_at"`
+	DesiredReplicas      int                                  `json:"desired_replicas"`
+	Id                   core.UUID                            `json:"id"`
+	MaxReplicas          nullable.Nullable[int]               `json:"max_replicas,omitempty"`
+	Message              string                               `json:"message"`
+	MinReplicas          nullable.Nullable[int]               `json:"min_replicas,omitempty"`
+	Name                 string                               `json:"name"`
+	Replicas             nullable.Nullable[int]               `json:"replicas,omitempty"`
+	ScalingMetric        nullable.Nullable[ScalingMetricType] `json:"scaling_metric,omitempty"`
+	ScalingTarget        nullable.Nullable[int]               `json:"scaling_target,omitempty"`
+	Status               ContainerGroupRevisionStatus         `json:"status"`
+	UpdatedAt            time.Time                            `json:"updated_at"`
+	Url                  string                               `json:"url"`
+	Volumes              *[]CaaSVolumeSchema                  `json:"volumes,omitempty"`
 }
 
 // ContainerGroupRevisionSchema defines model for ContainerGroupRevisionSchema.
@@ -496,10 +497,10 @@ type ContainerGroupRevisionSchema struct {
 	CreatedAt       time.Time                    `json:"created_at"`
 	DesiredReplicas int                          `json:"desired_replicas"`
 	Id              core.UUID                    `json:"id"`
-	MaxReplicas     *int                         `json:"max_replicas,omitempty"`
-	MinReplicas     *int                         `json:"min_replicas,omitempty"`
+	MaxReplicas     nullable.Nullable[int]       `json:"max_replicas,omitempty"`
+	MinReplicas     nullable.Nullable[int]       `json:"min_replicas,omitempty"`
 	Name            string                       `json:"name"`
-	Replicas        *int                         `json:"replicas,omitempty"`
+	Replicas        nullable.Nullable[int]       `json:"replicas,omitempty"`
 	Status          ContainerGroupRevisionStatus `json:"status"`
 	UpdatedAt       time.Time                    `json:"updated_at"`
 }
@@ -519,12 +520,12 @@ type ContainerGroupScalingSchema struct {
 
 // ContainerGroupSchema defines model for ContainerGroupSchema.
 type ContainerGroupSchema struct {
-	CreatedAt      time.Time                           `json:"created_at"`
-	Flavor         NestedCaaSFlavorSchema              `json:"flavor"`
-	Id             core.UUID                           `json:"id"`
-	LatestRevision *ContainerGroupRevisionDetailSchema `json:"latest_revision,omitempty"`
-	Message        string                              `json:"message"`
-	Name           string                              `json:"name"`
+	CreatedAt      time.Time                                             `json:"created_at"`
+	Flavor         NestedCaaSFlavorSchema                                `json:"flavor"`
+	Id             core.UUID                                             `json:"id"`
+	LatestRevision nullable.Nullable[ContainerGroupRevisionDetailSchema] `json:"latest_revision,omitempty"`
+	Message        string                                                `json:"message"`
+	Name           string                                                `json:"name"`
 
 	// OperationalStatus What CMP is doing to the group right now. Claimed through a
 	// compare-and-swap so a second concurrent operation is rejected, and released
@@ -568,7 +569,7 @@ type ContainerSchema struct {
 	Image        string                        `json:"image"`
 	Memory       int                           `json:"memory"`
 	Name         string                        `json:"name"`
-	Port         *int                          `json:"port,omitempty"`
+	Port         nullable.Nullable[int]        `json:"port,omitempty"`
 	Probes       *[]ProbeSchema                `json:"probes,omitempty"`
 	UpdatedAt    time.Time                     `json:"updated_at"`
 	VolumeMounts *[]ContainerVolumeMountSchema `json:"volume_mounts,omitempty"`
@@ -596,8 +597,8 @@ type EnvVar struct {
 
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
-	Errors    []ErrorSchema `json:"errors"`
-	RequestId *string       `json:"request_id"`
+	Errors    []ErrorSchema             `json:"errors"`
+	RequestId nullable.Nullable[string] `json:"request_id"`
 }
 
 // ErrorSchema defines model for ErrorSchema.
@@ -632,20 +633,20 @@ type MetricSchema struct {
 
 // NestedCaaSFlavorSchema defines model for NestedCaaSFlavorSchema.
 type NestedCaaSFlavorSchema struct {
-	Cpu                      int              `json:"cpu"`
-	Default                  bool             `json:"default"`
-	GpuCount                 int              `json:"gpu_count"`
-	GpuMemory                int              `json:"gpu_memory"`
-	GpuModel                 *string          `json:"gpu_model,omitempty"`
-	Id                       core.UUID        `json:"id"`
-	MaxEphemeralVolumeSize   int              `json:"max_ephemeral_volume_size"`
-	MaxPersistentVolumeSize  *int             `json:"max_persistent_volume_size,omitempty"`
-	Memory                   int              `json:"memory"`
-	MinEphemeralVolumeSize   int              `json:"min_ephemeral_volume_size"`
-	MinPersistentVolumeSize  *int             `json:"min_persistent_volume_size,omitempty"`
-	Name                     string           `json:"name"`
-	PersistentVolumesEnabled bool             `json:"persistent_volumes_enabled"`
-	Status                   CaaSFlavorStatus `json:"status"`
+	Cpu                      int                       `json:"cpu"`
+	Default                  bool                      `json:"default"`
+	GpuCount                 int                       `json:"gpu_count"`
+	GpuMemory                int                       `json:"gpu_memory"`
+	GpuModel                 nullable.Nullable[string] `json:"gpu_model,omitempty"`
+	Id                       core.UUID                 `json:"id"`
+	MaxEphemeralVolumeSize   int                       `json:"max_ephemeral_volume_size"`
+	MaxPersistentVolumeSize  nullable.Nullable[int]    `json:"max_persistent_volume_size,omitempty"`
+	Memory                   int                       `json:"memory"`
+	MinEphemeralVolumeSize   int                       `json:"min_ephemeral_volume_size"`
+	MinPersistentVolumeSize  nullable.Nullable[int]    `json:"min_persistent_volume_size,omitempty"`
+	Name                     string                    `json:"name"`
+	PersistentVolumesEnabled bool                      `json:"persistent_volumes_enabled"`
+	Status                   CaaSFlavorStatus          `json:"status"`
 }
 
 // NestedProjectSchema defines model for NestedProjectSchema.
@@ -686,17 +687,17 @@ type PagedCaaSFlavorSchema struct {
 // PagedContainerGroupRevisionSchema defines model for PagedContainerGroupRevisionSchema.
 type PagedContainerGroupRevisionSchema struct {
 	Count    int                            `json:"count"`
-	Next     *string                        `json:"next,omitempty"`
-	Previous *string                        `json:"previous,omitempty"`
+	Next     nullable.Nullable[string]      `json:"next,omitempty"`
+	Previous nullable.Nullable[string]      `json:"previous,omitempty"`
 	Results  []ContainerGroupRevisionSchema `json:"results"`
 }
 
 // PagedContainerGroupSchema defines model for PagedContainerGroupSchema.
 type PagedContainerGroupSchema struct {
-	Count    int                    `json:"count"`
-	Next     *string                `json:"next,omitempty"`
-	Previous *string                `json:"previous,omitempty"`
-	Results  []ContainerGroupSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []ContainerGroupSchema    `json:"results"`
 }
 
 // PagedMetricResultSchema defines model for PagedMetricResultSchema.
@@ -710,28 +711,28 @@ type ProbeCheckType string
 
 // ProbeCreateSchema defines model for ProbeCreateSchema.
 type ProbeCreateSchema struct {
-	CheckType        ProbeCheckType `json:"check_type"`
-	FailureThreshold *int           `json:"failure_threshold,omitempty"`
-	HttpPath         *string        `json:"http_path,omitempty"`
-	InitialDelay     *int           `json:"initial_delay,omitempty"`
-	Period           *int           `json:"period,omitempty"`
-	Port             int            `json:"port"`
-	ProbeType        ProbeType      `json:"probe_type"`
-	SuccessThreshold *int           `json:"success_threshold,omitempty"`
-	Timeout          *int           `json:"timeout,omitempty"`
+	CheckType        ProbeCheckType            `json:"check_type"`
+	FailureThreshold *int                      `json:"failure_threshold,omitempty"`
+	HttpPath         nullable.Nullable[string] `json:"http_path,omitempty"`
+	InitialDelay     *int                      `json:"initial_delay,omitempty"`
+	Period           *int                      `json:"period,omitempty"`
+	Port             int                       `json:"port"`
+	ProbeType        ProbeType                 `json:"probe_type"`
+	SuccessThreshold *int                      `json:"success_threshold,omitempty"`
+	Timeout          *int                      `json:"timeout,omitempty"`
 }
 
 // ProbeSchema defines model for ProbeSchema.
 type ProbeSchema struct {
-	CheckType        ProbeCheckType `json:"check_type"`
-	FailureThreshold int            `json:"failure_threshold"`
-	HttpPath         *string        `json:"http_path,omitempty"`
-	InitialDelay     int            `json:"initial_delay"`
-	Period           int            `json:"period"`
-	Port             int            `json:"port"`
-	ProbeType        ProbeType      `json:"probe_type"`
-	SuccessThreshold int            `json:"success_threshold"`
-	Timeout          int            `json:"timeout"`
+	CheckType        ProbeCheckType            `json:"check_type"`
+	FailureThreshold int                       `json:"failure_threshold"`
+	HttpPath         nullable.Nullable[string] `json:"http_path,omitempty"`
+	InitialDelay     int                       `json:"initial_delay"`
+	Period           int                       `json:"period"`
+	Port             int                       `json:"port"`
+	ProbeType        ProbeType                 `json:"probe_type"`
+	SuccessThreshold int                       `json:"success_threshold"`
+	Timeout          int                       `json:"timeout"`
 }
 
 // ProbeType defines model for ProbeType.
@@ -739,10 +740,10 @@ type ProbeType string
 
 // RunningContainerSchema defines model for RunningContainerSchema.
 type RunningContainerSchema struct {
-	Image     string                 `json:"image"`
-	Name      string                 `json:"name"`
-	StartedAt *time.Time             `json:"started_at,omitempty"`
-	Status    RunningContainerStatus `json:"status"`
+	Image     string                       `json:"image"`
+	Name      string                       `json:"name"`
+	StartedAt nullable.Nullable[time.Time] `json:"started_at,omitempty"`
+	Status    RunningContainerStatus       `json:"status"`
 }
 
 // RunningContainerStatus defines model for RunningContainerStatus.
@@ -756,11 +757,11 @@ type RunningInstanceListSchema struct {
 
 // RunningInstanceSchema defines model for RunningInstanceSchema.
 type RunningInstanceSchema struct {
-	Containers   []RunningContainerSchema `json:"containers"`
-	Id           string                   `json:"id"`
-	RevisionName string                   `json:"revision_name"`
-	StartedAt    *time.Time               `json:"started_at,omitempty"`
-	Status       RunningInstanceStatus    `json:"status"`
+	Containers   []RunningContainerSchema     `json:"containers"`
+	Id           string                       `json:"id"`
+	RevisionName string                       `json:"revision_name"`
+	StartedAt    nullable.Nullable[time.Time] `json:"started_at,omitempty"`
+	Status       RunningInstanceStatus        `json:"status"`
 }
 
 // RunningInstanceStatus defines model for RunningInstanceStatus.

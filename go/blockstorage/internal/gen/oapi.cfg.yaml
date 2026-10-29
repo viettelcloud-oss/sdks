@@ -5,6 +5,7 @@ generate:
 compatibility:
   always-prefix-enum-values: true
 output-options:
+  nullable-type: true
   skip-client-response-content-type: true
   skip-response-body-getters: true
   include-tags:

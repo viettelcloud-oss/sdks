@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/oapi-codegen/nullable"
 	core "github.com/viettelcloud-oss/sdks/go/core"
 	runtime "github.com/viettelcloud-oss/sdks/go/internal/oapi"
 )
@@ -681,8 +682,8 @@ func (e GetLoadBalancerMetricsParamsMetrics) Valid() bool {
 
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
-	Errors    []ErrorSchema `json:"errors"`
-	RequestId *string       `json:"request_id"`
+	Errors    []ErrorSchema             `json:"errors"`
+	RequestId nullable.Nullable[string] `json:"request_id"`
 }
 
 // ErrorSchema defines model for ErrorSchema.
@@ -697,10 +698,10 @@ type L7PolicyAction string
 
 // L7PolicyCreateSchema defines model for L7PolicyCreateSchema.
 type L7PolicyCreateSchema struct {
-	Description *string   `json:"description,omitempty"`
-	ListenerId  core.UUID `json:"listener_id"`
-	Name        *string   `json:"name,omitempty"`
-	Position    *int      `json:"position,omitempty"`
+	Description *string                `json:"description,omitempty"`
+	ListenerId  core.UUID              `json:"listener_id"`
+	Name        *string                `json:"name,omitempty"`
+	Position    nullable.Nullable[int] `json:"position,omitempty"`
 
 	// Redirect L7PolicyRedirect is exactly one of: L7PolicyRedirectReject, L7PolicyRedirectServerGroup, L7PolicyRedirectPrefix, L7PolicyRedirectURL. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
 	Redirect L7PolicyRedirect `json:"redirect"`
@@ -708,29 +709,29 @@ type L7PolicyCreateSchema struct {
 
 // L7PolicyDetailSchema defines model for L7PolicyDetailSchema.
 type L7PolicyDetailSchema struct {
-	Action              L7PolicyAction                  `json:"action"`
-	CreatedAt           time.Time                       `json:"created_at"`
-	Description         *string                         `json:"description"`
-	Id                  core.UUID                       `json:"id"`
-	ListenerId          core.UUID                       `json:"listener_id"`
-	Name                *string                         `json:"name"`
-	Position            int                             `json:"position"`
-	ProvisioningStatus  LoadBalancingProvisioningStatus `json:"provisioning_status"`
-	RedirectHttpCode    *int                            `json:"redirect_http_code"`
-	RedirectPrefix      *string                         `json:"redirect_prefix"`
-	RedirectServerGroup *NestedServerGroupSchema        `json:"redirect_server_group"`
-	RedirectUrl         *string                         `json:"redirect_url"`
-	RuleCount           int                             `json:"rule_count"`
-	Rules               *[]NestedL7RuleSchema           `json:"rules,omitempty"`
-	Status              LoadBalancingStatus             `json:"status"`
-	UpdatedAt           time.Time                       `json:"updated_at"`
+	Action              L7PolicyAction                             `json:"action"`
+	CreatedAt           time.Time                                  `json:"created_at"`
+	Description         nullable.Nullable[string]                  `json:"description"`
+	Id                  core.UUID                                  `json:"id"`
+	ListenerId          core.UUID                                  `json:"listener_id"`
+	Name                nullable.Nullable[string]                  `json:"name"`
+	Position            int                                        `json:"position"`
+	ProvisioningStatus  LoadBalancingProvisioningStatus            `json:"provisioning_status"`
+	RedirectHttpCode    nullable.Nullable[int]                     `json:"redirect_http_code"`
+	RedirectPrefix      nullable.Nullable[string]                  `json:"redirect_prefix"`
+	RedirectServerGroup nullable.Nullable[NestedServerGroupSchema] `json:"redirect_server_group"`
+	RedirectUrl         nullable.Nullable[string]                  `json:"redirect_url"`
+	RuleCount           int                                        `json:"rule_count"`
+	Rules               *[]NestedL7RuleSchema                      `json:"rules,omitempty"`
+	Status              LoadBalancingStatus                        `json:"status"`
+	UpdatedAt           time.Time                                  `json:"updated_at"`
 }
 
 // L7PolicyPartialUpdateSchema defines model for L7PolicyPartialUpdateSchema.
 type L7PolicyPartialUpdateSchema struct {
-	Description *string `json:"description,omitempty"`
-	Name        *string `json:"name,omitempty"`
-	Position    *int    `json:"position,omitempty"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Name        nullable.Nullable[string] `json:"name,omitempty"`
+	Position    *int                      `json:"position,omitempty"`
 
 	// Redirect L7PolicyRedirect is exactly one of: L7PolicyRedirectReject, L7PolicyRedirectServerGroup, L7PolicyRedirectPrefix, L7PolicyRedirectURL. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
 	Redirect *L7PolicyRedirect `json:"redirect,omitempty"`
@@ -780,28 +781,28 @@ type L7PolicyRedirectURLAction string
 
 // L7PolicySchema defines model for L7PolicySchema.
 type L7PolicySchema struct {
-	Action              L7PolicyAction                  `json:"action"`
-	CreatedAt           time.Time                       `json:"created_at"`
-	Description         *string                         `json:"description"`
-	Id                  core.UUID                       `json:"id"`
-	ListenerId          core.UUID                       `json:"listener_id"`
-	Name                *string                         `json:"name"`
-	Position            int                             `json:"position"`
-	ProvisioningStatus  LoadBalancingProvisioningStatus `json:"provisioning_status"`
-	RedirectHttpCode    *int                            `json:"redirect_http_code"`
-	RedirectPrefix      *string                         `json:"redirect_prefix"`
-	RedirectServerGroup *NestedServerGroupSchema        `json:"redirect_server_group"`
-	RedirectUrl         *string                         `json:"redirect_url"`
-	RuleCount           int                             `json:"rule_count"`
-	Status              LoadBalancingStatus             `json:"status"`
-	UpdatedAt           time.Time                       `json:"updated_at"`
+	Action              L7PolicyAction                             `json:"action"`
+	CreatedAt           time.Time                                  `json:"created_at"`
+	Description         nullable.Nullable[string]                  `json:"description"`
+	Id                  core.UUID                                  `json:"id"`
+	ListenerId          core.UUID                                  `json:"listener_id"`
+	Name                nullable.Nullable[string]                  `json:"name"`
+	Position            int                                        `json:"position"`
+	ProvisioningStatus  LoadBalancingProvisioningStatus            `json:"provisioning_status"`
+	RedirectHttpCode    nullable.Nullable[int]                     `json:"redirect_http_code"`
+	RedirectPrefix      nullable.Nullable[string]                  `json:"redirect_prefix"`
+	RedirectServerGroup nullable.Nullable[NestedServerGroupSchema] `json:"redirect_server_group"`
+	RedirectUrl         nullable.Nullable[string]                  `json:"redirect_url"`
+	RuleCount           int                                        `json:"rule_count"`
+	Status              LoadBalancingStatus                        `json:"status"`
+	UpdatedAt           time.Time                                  `json:"updated_at"`
 }
 
 // L7PolicyUpdateSchema defines model for L7PolicyUpdateSchema.
 type L7PolicyUpdateSchema struct {
-	Description string `json:"description"`
-	Name        string `json:"name"`
-	Position    *int   `json:"position"`
+	Description string                 `json:"description"`
+	Name        string                 `json:"name"`
+	Position    nullable.Nullable[int] `json:"position"`
 
 	// Redirect L7PolicyRedirect is exactly one of: L7PolicyRedirectReject, L7PolicyRedirectServerGroup, L7PolicyRedirectPrefix, L7PolicyRedirectURL. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
 	Redirect L7PolicyRedirect `json:"redirect"`
@@ -812,20 +813,20 @@ type L7RuleCompareType string
 
 // L7RuleCreateSchema defines model for L7RuleCreateSchema.
 type L7RuleCreateSchema struct {
-	CompareType L7RuleCompareType `json:"compare_type"`
-	Invert      *bool             `json:"invert,omitempty"`
-	Key         *string           `json:"key,omitempty"`
-	Type        L7RuleType        `json:"type"`
-	Value       string            `json:"value"`
+	CompareType L7RuleCompareType         `json:"compare_type"`
+	Invert      *bool                     `json:"invert,omitempty"`
+	Key         nullable.Nullable[string] `json:"key,omitempty"`
+	Type        L7RuleType                `json:"type"`
+	Value       string                    `json:"value"`
 }
 
 // L7RulePartialUpdateSchema defines model for L7RulePartialUpdateSchema.
 type L7RulePartialUpdateSchema struct {
-	CompareType *L7RuleCompareType `json:"compare_type,omitempty"`
-	Invert      *bool              `json:"invert,omitempty"`
-	Key         *string            `json:"key,omitempty"`
-	Type        *L7RuleType        `json:"type,omitempty"`
-	Value       *string            `json:"value,omitempty"`
+	CompareType *L7RuleCompareType        `json:"compare_type,omitempty"`
+	Invert      *bool                     `json:"invert,omitempty"`
+	Key         nullable.Nullable[string] `json:"key,omitempty"`
+	Type        *L7RuleType               `json:"type,omitempty"`
+	Value       *string                   `json:"value,omitempty"`
 }
 
 // L7RuleSchema defines model for L7RuleSchema.
@@ -834,7 +835,7 @@ type L7RuleSchema struct {
 	CreatedAt          time.Time                       `json:"created_at"`
 	Id                 core.UUID                       `json:"id"`
 	Invert             bool                            `json:"invert"`
-	Key                *string                         `json:"key"`
+	Key                nullable.Nullable[string]       `json:"key"`
 	L7policyId         core.UUID                       `json:"l7policy_id"`
 	ProvisioningStatus LoadBalancingProvisioningStatus `json:"provisioning_status"`
 	Status             LoadBalancingStatus             `json:"status"`
@@ -848,42 +849,42 @@ type L7RuleType string
 
 // L7RuleUpdateSchema defines model for L7RuleUpdateSchema.
 type L7RuleUpdateSchema struct {
-	CompareType L7RuleCompareType `json:"compare_type"`
-	Invert      bool              `json:"invert"`
-	Key         *string           `json:"key"`
-	Type        L7RuleType        `json:"type"`
-	Value       string            `json:"value"`
+	CompareType L7RuleCompareType         `json:"compare_type"`
+	Invert      bool                      `json:"invert"`
+	Key         nullable.Nullable[string] `json:"key"`
+	Type        L7RuleType                `json:"type"`
+	Value       string                    `json:"value"`
 }
 
 // LBListenerCreateSchema defines model for LBListenerCreateSchema.
 type LBListenerCreateSchema struct {
-	AllowedCidrs            *[]string                  `json:"allowed_cidrs,omitempty"`
-	DefaultTlsCertId        *core.UUID                 `json:"default_tls_cert_id,omitempty"`
-	Description             *string                    `json:"description,omitempty"`
-	EnableH2                *bool                      `json:"enable_h2,omitempty"`
-	ListenerTimeout         *int                       `json:"listener_timeout,omitempty"`
-	Name                    string                     `json:"name"`
-	Protocol                ListenerProtocolType       `json:"protocol"`
-	ProtocolPort            int                        `json:"protocol_port"`
-	ServerConnectingTimeout *int                       `json:"server_connecting_timeout,omitempty"`
-	ServerGroup             *LBServerGroupCreateSchema `json:"server_group"`
-	ServerTimeout           *int                       `json:"server_timeout,omitempty"`
-	SetXForwardedFor        *bool                      `json:"set_x_forwarded_for,omitempty"`
-	SetXForwardedPort       *bool                      `json:"set_x_forwarded_port,omitempty"`
-	SetXForwardedProto      *bool                      `json:"set_x_forwarded_proto,omitempty"`
-	SniTlsCertIds           *[]core.UUID               `json:"sni_tls_cert_ids,omitempty"`
+	AllowedCidrs            nullable.Nullable[[]string]                  `json:"allowed_cidrs,omitempty"`
+	DefaultTlsCertId        nullable.Nullable[core.UUID]                 `json:"default_tls_cert_id,omitempty"`
+	Description             *string                                      `json:"description,omitempty"`
+	EnableH2                nullable.Nullable[bool]                      `json:"enable_h2,omitempty"`
+	ListenerTimeout         nullable.Nullable[int]                       `json:"listener_timeout,omitempty"`
+	Name                    string                                       `json:"name"`
+	Protocol                ListenerProtocolType                         `json:"protocol"`
+	ProtocolPort            int                                          `json:"protocol_port"`
+	ServerConnectingTimeout nullable.Nullable[int]                       `json:"server_connecting_timeout,omitempty"`
+	ServerGroup             nullable.Nullable[LBServerGroupCreateSchema] `json:"server_group"`
+	ServerTimeout           nullable.Nullable[int]                       `json:"server_timeout,omitempty"`
+	SetXForwardedFor        nullable.Nullable[bool]                      `json:"set_x_forwarded_for,omitempty"`
+	SetXForwardedPort       nullable.Nullable[bool]                      `json:"set_x_forwarded_port,omitempty"`
+	SetXForwardedProto      nullable.Nullable[bool]                      `json:"set_x_forwarded_proto,omitempty"`
+	SniTlsCertIds           nullable.Nullable[[]core.UUID]               `json:"sni_tls_cert_ids,omitempty"`
 }
 
 // LBServerGroupCreateSchema defines model for LBServerGroupCreateSchema.
 type LBServerGroupCreateSchema struct {
-	Algorithm     ServerGroupAlgorithm               `json:"algorithm"`
-	Description   *string                            `json:"description,omitempty"`
-	EnableH2      *bool                              `json:"enable_h2,omitempty"`
-	EncryptCertId *core.UUID                         `json:"encrypt_cert_id,omitempty"`
-	HealthCheck   *ServerGroupHealthCheckConfig      `json:"health_check"`
-	Members       *[]LBServerGroupMemberCreateSchema `json:"members,omitempty"`
-	Name          string                             `json:"name"`
-	Protocol      ServerGroupProtocolType            `json:"protocol"`
+	Algorithm     ServerGroupAlgorithm                            `json:"algorithm"`
+	Description   *string                                         `json:"description,omitempty"`
+	EnableH2      nullable.Nullable[bool]                         `json:"enable_h2,omitempty"`
+	EncryptCertId nullable.Nullable[core.UUID]                    `json:"encrypt_cert_id,omitempty"`
+	HealthCheck   nullable.Nullable[ServerGroupHealthCheckConfig] `json:"health_check"`
+	Members       *[]LBServerGroupMemberCreateSchema              `json:"members,omitempty"`
+	Name          string                                          `json:"name"`
+	Protocol      ServerGroupProtocolType                         `json:"protocol"`
 
 	// SessionPersistence ServerGroupSessionPersistenceKind is exactly one of: ServerGroupSessionPersistenceBasic, ServerGroupSessionPersistenceAppCookie. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
 	SessionPersistence ServerGroupSessionPersistenceKind `json:"session_persistence"`
@@ -920,62 +921,62 @@ type ListenerAuthUserSchema struct {
 
 // ListenerCreateSchema defines model for ListenerCreateSchema.
 type ListenerCreateSchema struct {
-	AllowedCidrs            *[]string            `json:"allowed_cidrs,omitempty"`
-	DefaultTlsCertId        *core.UUID           `json:"default_tls_cert_id,omitempty"`
-	Description             *string              `json:"description,omitempty"`
-	EnableH2                *bool                `json:"enable_h2,omitempty"`
-	ListenerTimeout         *int                 `json:"listener_timeout"`
-	Name                    string               `json:"name"`
-	Protocol                ListenerProtocolType `json:"protocol"`
-	ProtocolPort            int                  `json:"protocol_port"`
-	ServerConnectingTimeout *int                 `json:"server_connecting_timeout"`
-	ServerGroupId           *core.UUID           `json:"server_group_id"`
-	ServerTimeout           *int                 `json:"server_timeout"`
-	SetXForwardedFor        *bool                `json:"set_x_forwarded_for,omitempty"`
-	SetXForwardedPort       *bool                `json:"set_x_forwarded_port,omitempty"`
-	SetXForwardedProto      *bool                `json:"set_x_forwarded_proto,omitempty"`
-	SniTlsCertIds           *[]core.UUID         `json:"sni_tls_cert_ids,omitempty"`
+	AllowedCidrs            *[]string                    `json:"allowed_cidrs,omitempty"`
+	DefaultTlsCertId        nullable.Nullable[core.UUID] `json:"default_tls_cert_id,omitempty"`
+	Description             *string                      `json:"description,omitempty"`
+	EnableH2                nullable.Nullable[bool]      `json:"enable_h2,omitempty"`
+	ListenerTimeout         nullable.Nullable[int]       `json:"listener_timeout"`
+	Name                    string                       `json:"name"`
+	Protocol                ListenerProtocolType         `json:"protocol"`
+	ProtocolPort            int                          `json:"protocol_port"`
+	ServerConnectingTimeout nullable.Nullable[int]       `json:"server_connecting_timeout"`
+	ServerGroupId           nullable.Nullable[core.UUID] `json:"server_group_id"`
+	ServerTimeout           nullable.Nullable[int]       `json:"server_timeout"`
+	SetXForwardedFor        nullable.Nullable[bool]      `json:"set_x_forwarded_for,omitempty"`
+	SetXForwardedPort       nullable.Nullable[bool]      `json:"set_x_forwarded_port,omitempty"`
+	SetXForwardedProto      nullable.Nullable[bool]      `json:"set_x_forwarded_proto,omitempty"`
+	SniTlsCertIds           *[]core.UUID                 `json:"sni_tls_cert_ids,omitempty"`
 }
 
 // ListenerDetailSchema defines model for ListenerDetailSchema.
 type ListenerDetailSchema struct {
-	AllowedCidrs            []string                        `json:"allowed_cidrs"`
-	CreatedAt               time.Time                       `json:"created_at"`
-	DefaultTlsCertId        *core.UUID                      `json:"default_tls_cert_id,omitempty"`
-	EnableH2                *bool                           `json:"enable_h2"`
-	Id                      core.UUID                       `json:"id"`
-	ListenerTimeout         *int                            `json:"listener_timeout"`
-	LoadBalancer            NestedLoadBalancerSchema        `json:"load_balancer"`
-	Name                    string                          `json:"name"`
-	Protocol                ListenerProtocolType            `json:"protocol"`
-	ProtocolPort            int                             `json:"protocol_port"`
-	ProvisioningStatus      LoadBalancingProvisioningStatus `json:"provisioning_status"`
-	ServerConnectingTimeout *int                            `json:"server_connecting_timeout"`
-	ServerGroup             *NestedServerGroupSchema        `json:"server_group"`
-	ServerTimeout           *int                            `json:"server_timeout"`
-	SetXForwardedFor        *bool                           `json:"set_x_forwarded_for"`
-	SetXForwardedPort       *bool                           `json:"set_x_forwarded_port"`
-	SetXForwardedProto      *bool                           `json:"set_x_forwarded_proto"`
-	SniTlsCerts             []NestedCertificateSchema       `json:"sni_tls_certs"`
-	Status                  LoadBalancingStatus             `json:"status"`
-	UpdatedAt               time.Time                       `json:"updated_at"`
+	AllowedCidrs            []string                                   `json:"allowed_cidrs"`
+	CreatedAt               time.Time                                  `json:"created_at"`
+	DefaultTlsCertId        nullable.Nullable[core.UUID]               `json:"default_tls_cert_id,omitempty"`
+	EnableH2                nullable.Nullable[bool]                    `json:"enable_h2"`
+	Id                      core.UUID                                  `json:"id"`
+	ListenerTimeout         nullable.Nullable[int]                     `json:"listener_timeout"`
+	LoadBalancer            NestedLoadBalancerSchema                   `json:"load_balancer"`
+	Name                    string                                     `json:"name"`
+	Protocol                ListenerProtocolType                       `json:"protocol"`
+	ProtocolPort            int                                        `json:"protocol_port"`
+	ProvisioningStatus      LoadBalancingProvisioningStatus            `json:"provisioning_status"`
+	ServerConnectingTimeout nullable.Nullable[int]                     `json:"server_connecting_timeout"`
+	ServerGroup             nullable.Nullable[NestedServerGroupSchema] `json:"server_group"`
+	ServerTimeout           nullable.Nullable[int]                     `json:"server_timeout"`
+	SetXForwardedFor        nullable.Nullable[bool]                    `json:"set_x_forwarded_for"`
+	SetXForwardedPort       nullable.Nullable[bool]                    `json:"set_x_forwarded_port"`
+	SetXForwardedProto      nullable.Nullable[bool]                    `json:"set_x_forwarded_proto"`
+	SniTlsCerts             []NestedCertificateSchema                  `json:"sni_tls_certs"`
+	Status                  LoadBalancingStatus                        `json:"status"`
+	UpdatedAt               time.Time                                  `json:"updated_at"`
 }
 
 // ListenerPartialUpdateSchema defines model for ListenerPartialUpdateSchema.
 type ListenerPartialUpdateSchema struct {
-	AllowedCidrs            *[]string    `json:"allowed_cidrs,omitempty"`
-	DefaultTlsCertId        *core.UUID   `json:"default_tls_cert_id,omitempty"`
-	Description             *string      `json:"description,omitempty"`
-	EnableH2                *bool        `json:"enable_h2,omitempty"`
-	ListenerTimeout         *int         `json:"listener_timeout,omitempty"`
-	Name                    *string      `json:"name,omitempty"`
-	ServerConnectingTimeout *int         `json:"server_connecting_timeout,omitempty"`
-	ServerGroupId           *core.UUID   `json:"server_group_id,omitempty"`
-	ServerTimeout           *int         `json:"server_timeout,omitempty"`
-	SetXForwardedFor        *bool        `json:"set_x_forwarded_for,omitempty"`
-	SetXForwardedPort       *bool        `json:"set_x_forwarded_port,omitempty"`
-	SetXForwardedProto      *bool        `json:"set_x_forwarded_proto,omitempty"`
-	SniTlsCertIds           *[]core.UUID `json:"sni_tls_cert_ids,omitempty"`
+	AllowedCidrs            *[]string                    `json:"allowed_cidrs,omitempty"`
+	DefaultTlsCertId        nullable.Nullable[core.UUID] `json:"default_tls_cert_id,omitempty"`
+	Description             nullable.Nullable[string]    `json:"description,omitempty"`
+	EnableH2                nullable.Nullable[bool]      `json:"enable_h2,omitempty"`
+	ListenerTimeout         *int                         `json:"listener_timeout,omitempty"`
+	Name                    *string                      `json:"name,omitempty"`
+	ServerConnectingTimeout *int                         `json:"server_connecting_timeout,omitempty"`
+	ServerGroupId           nullable.Nullable[core.UUID] `json:"server_group_id,omitempty"`
+	ServerTimeout           *int                         `json:"server_timeout,omitempty"`
+	SetXForwardedFor        nullable.Nullable[bool]      `json:"set_x_forwarded_for,omitempty"`
+	SetXForwardedPort       nullable.Nullable[bool]      `json:"set_x_forwarded_port,omitempty"`
+	SetXForwardedProto      nullable.Nullable[bool]      `json:"set_x_forwarded_proto,omitempty"`
+	SniTlsCertIds           *[]core.UUID                 `json:"sni_tls_cert_ids,omitempty"`
 }
 
 // ListenerProtocolType defines model for ListenerProtocolType.
@@ -1004,34 +1005,34 @@ type ListenerRateLimitSchema struct {
 
 // ListenerSchema defines model for ListenerSchema.
 type ListenerSchema struct {
-	CreatedAt          time.Time                       `json:"created_at"`
-	EnableH2           *bool                           `json:"enable_h2"`
-	Id                 core.UUID                       `json:"id"`
-	LoadBalancer       NestedLoadBalancerSchema        `json:"load_balancer"`
-	Name               string                          `json:"name"`
-	Protocol           ListenerProtocolType            `json:"protocol"`
-	ProtocolPort       int                             `json:"protocol_port"`
-	ProvisioningStatus LoadBalancingProvisioningStatus `json:"provisioning_status"`
-	ServerGroup        *NestedServerGroupSchema        `json:"server_group"`
-	Status             LoadBalancingStatus             `json:"status"`
-	UpdatedAt          time.Time                       `json:"updated_at"`
+	CreatedAt          time.Time                                  `json:"created_at"`
+	EnableH2           nullable.Nullable[bool]                    `json:"enable_h2"`
+	Id                 core.UUID                                  `json:"id"`
+	LoadBalancer       NestedLoadBalancerSchema                   `json:"load_balancer"`
+	Name               string                                     `json:"name"`
+	Protocol           ListenerProtocolType                       `json:"protocol"`
+	ProtocolPort       int                                        `json:"protocol_port"`
+	ProvisioningStatus LoadBalancingProvisioningStatus            `json:"provisioning_status"`
+	ServerGroup        nullable.Nullable[NestedServerGroupSchema] `json:"server_group"`
+	Status             LoadBalancingStatus                        `json:"status"`
+	UpdatedAt          time.Time                                  `json:"updated_at"`
 }
 
 // ListenerUpdateSchema defines model for ListenerUpdateSchema.
 type ListenerUpdateSchema struct {
-	AllowedCidrs            *[]string    `json:"allowed_cidrs"`
-	DefaultTlsCertId        *core.UUID   `json:"default_tls_cert_id"`
-	Description             string       `json:"description"`
-	EnableH2                *bool        `json:"enable_h2"`
-	ListenerTimeout         *int         `json:"listener_timeout"`
-	Name                    string       `json:"name"`
-	ServerConnectingTimeout *int         `json:"server_connecting_timeout"`
-	ServerGroupId           *core.UUID   `json:"server_group_id"`
-	ServerTimeout           *int         `json:"server_timeout"`
-	SetXForwardedFor        *bool        `json:"set_x_forwarded_for"`
-	SetXForwardedPort       *bool        `json:"set_x_forwarded_port"`
-	SetXForwardedProto      *bool        `json:"set_x_forwarded_proto"`
-	SniTlsCertIds           *[]core.UUID `json:"sni_tls_cert_ids"`
+	AllowedCidrs            nullable.Nullable[[]string]    `json:"allowed_cidrs"`
+	DefaultTlsCertId        nullable.Nullable[core.UUID]   `json:"default_tls_cert_id"`
+	Description             string                         `json:"description"`
+	EnableH2                nullable.Nullable[bool]        `json:"enable_h2"`
+	ListenerTimeout         nullable.Nullable[int]         `json:"listener_timeout"`
+	Name                    string                         `json:"name"`
+	ServerConnectingTimeout nullable.Nullable[int]         `json:"server_connecting_timeout"`
+	ServerGroupId           nullable.Nullable[core.UUID]   `json:"server_group_id"`
+	ServerTimeout           nullable.Nullable[int]         `json:"server_timeout"`
+	SetXForwardedFor        nullable.Nullable[bool]        `json:"set_x_forwarded_for"`
+	SetXForwardedPort       nullable.Nullable[bool]        `json:"set_x_forwarded_port"`
+	SetXForwardedProto      nullable.Nullable[bool]        `json:"set_x_forwarded_proto"`
+	SniTlsCertIds           nullable.Nullable[[]core.UUID] `json:"sni_tls_cert_ids"`
 }
 
 // LoadBalancerCreateSchema defines model for LoadBalancerCreateSchema.
@@ -1040,8 +1041,8 @@ type LoadBalancerCreateSchema struct {
 	Listeners    *[]LBListenerCreateSchema    `json:"listeners,omitempty"`
 	Name         string                       `json:"name"`
 	Package      LoadBalancerPackage          `json:"package"`
-	PrivateIpId  *core.UUID                   `json:"private_ip_id,omitempty"`
-	QosPolicyId  *core.UUID                   `json:"qos_policy_id,omitempty"`
+	PrivateIpId  nullable.Nullable[core.UUID] `json:"private_ip_id,omitempty"`
+	QosPolicyId  nullable.Nullable[core.UUID] `json:"qos_policy_id,omitempty"`
 	RegionId     core.UUID                    `json:"region_id"`
 	ServerGroups *[]LBServerGroupCreateSchema `json:"server_groups,omitempty"`
 	Topology     LoadBalancerTopology         `json:"topology"`
@@ -1051,25 +1052,25 @@ type LoadBalancerCreateSchema struct {
 
 // LoadBalancerDetailSchema defines model for LoadBalancerDetailSchema.
 type LoadBalancerDetailSchema struct {
-	AccessLogEnabled   bool                            `json:"access_log_enabled"`
-	AccessLogStore     *NestedLogStoreSchema           `json:"access_log_store,omitempty"`
-	CreatedAt          time.Time                       `json:"created_at"`
-	Description        *string                         `json:"description"`
-	Id                 core.UUID                       `json:"id"`
-	Name               string                          `json:"name"`
-	Package            LoadBalancerPackage             `json:"package"`
-	PrivateIpId        *core.UUID                      `json:"private_ip_id,omitempty"`
-	ProvisioningStatus LoadBalancingProvisioningStatus `json:"provisioning_status"`
-	PublicAddress      *string                         `json:"public_address,omitempty"`
-	QosPolicy          *NestedQoSPolicySchema          `json:"qos_policy,omitempty"`
-	Region             NestedRegionSchema              `json:"region"`
-	Status             LoadBalancingStatus             `json:"status"`
-	Topology           LoadBalancerTopology            `json:"topology"`
-	Type               LoadBalancerType                `json:"type"`
-	UpdatedAt          time.Time                       `json:"updated_at"`
-	V6PublicAddress    *string                         `json:"v6_public_address,omitempty"`
-	VipAddress         *string                         `json:"vip_address,omitempty"`
-	Vpc                NestedVPCSchema                 `json:"vpc"`
+	AccessLogEnabled   bool                                     `json:"access_log_enabled"`
+	AccessLogStore     nullable.Nullable[NestedLogStoreSchema]  `json:"access_log_store,omitempty"`
+	CreatedAt          time.Time                                `json:"created_at"`
+	Description        nullable.Nullable[string]                `json:"description"`
+	Id                 core.UUID                                `json:"id"`
+	Name               string                                   `json:"name"`
+	Package            LoadBalancerPackage                      `json:"package"`
+	PrivateIpId        nullable.Nullable[core.UUID]             `json:"private_ip_id,omitempty"`
+	ProvisioningStatus LoadBalancingProvisioningStatus          `json:"provisioning_status"`
+	PublicAddress      nullable.Nullable[string]                `json:"public_address,omitempty"`
+	QosPolicy          nullable.Nullable[NestedQoSPolicySchema] `json:"qos_policy,omitempty"`
+	Region             NestedRegionSchema                       `json:"region"`
+	Status             LoadBalancingStatus                      `json:"status"`
+	Topology           LoadBalancerTopology                     `json:"topology"`
+	Type               LoadBalancerType                         `json:"type"`
+	UpdatedAt          time.Time                                `json:"updated_at"`
+	V6PublicAddress    nullable.Nullable[string]                `json:"v6_public_address,omitempty"`
+	VipAddress         nullable.Nullable[string]                `json:"vip_address,omitempty"`
+	Vpc                NestedVPCSchema                          `json:"vpc"`
 }
 
 // LoadBalancerPackage defines model for LoadBalancerPackage.
@@ -1077,10 +1078,10 @@ type LoadBalancerPackage string
 
 // LoadBalancerPartialUpdateSchema defines model for LoadBalancerPartialUpdateSchema.
 type LoadBalancerPartialUpdateSchema struct {
-	Description *string               `json:"description,omitempty"`
-	Name        *string               `json:"name,omitempty"`
-	Package     *LoadBalancerPackage  `json:"package,omitempty"`
-	Topology    *LoadBalancerTopology `json:"topology,omitempty"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Name        *string                   `json:"name,omitempty"`
+	Package     *LoadBalancerPackage      `json:"package,omitempty"`
+	Topology    *LoadBalancerTopology     `json:"topology,omitempty"`
 }
 
 // LoadBalancerPublicIPMode defines model for LoadBalancerPublicIPMode.
@@ -1088,28 +1089,28 @@ type LoadBalancerPublicIPMode string
 
 // LoadBalancerPublicIPSchema defines model for LoadBalancerPublicIPSchema.
 type LoadBalancerPublicIPSchema struct {
-	Mode *LoadBalancerPublicIPMode `json:"mode"`
+	Mode nullable.Nullable[LoadBalancerPublicIPMode] `json:"mode"`
 }
 
 // LoadBalancerSchema defines model for LoadBalancerSchema.
 type LoadBalancerSchema struct {
-	AccessLogEnabled   bool                            `json:"access_log_enabled"`
-	AccessLogStore     *NestedLogStoreSchema           `json:"access_log_store,omitempty"`
-	CreatedAt          time.Time                       `json:"created_at"`
-	Id                 core.UUID                       `json:"id"`
-	Name               string                          `json:"name"`
-	Package            LoadBalancerPackage             `json:"package"`
-	PrivateIpId        *core.UUID                      `json:"private_ip_id,omitempty"`
-	ProvisioningStatus LoadBalancingProvisioningStatus `json:"provisioning_status"`
-	PublicAddress      *string                         `json:"public_address,omitempty"`
-	QosPolicy          *NestedQoSPolicySchema          `json:"qos_policy,omitempty"`
-	Region             NestedRegionSchema              `json:"region"`
-	Status             LoadBalancingStatus             `json:"status"`
-	Topology           LoadBalancerTopology            `json:"topology"`
-	Type               LoadBalancerType                `json:"type"`
-	UpdatedAt          time.Time                       `json:"updated_at"`
-	V6PublicAddress    *string                         `json:"v6_public_address,omitempty"`
-	VipAddress         *string                         `json:"vip_address,omitempty"`
+	AccessLogEnabled   bool                                     `json:"access_log_enabled"`
+	AccessLogStore     nullable.Nullable[NestedLogStoreSchema]  `json:"access_log_store,omitempty"`
+	CreatedAt          time.Time                                `json:"created_at"`
+	Id                 core.UUID                                `json:"id"`
+	Name               string                                   `json:"name"`
+	Package            LoadBalancerPackage                      `json:"package"`
+	PrivateIpId        nullable.Nullable[core.UUID]             `json:"private_ip_id,omitempty"`
+	ProvisioningStatus LoadBalancingProvisioningStatus          `json:"provisioning_status"`
+	PublicAddress      nullable.Nullable[string]                `json:"public_address,omitempty"`
+	QosPolicy          nullable.Nullable[NestedQoSPolicySchema] `json:"qos_policy,omitempty"`
+	Region             NestedRegionSchema                       `json:"region"`
+	Status             LoadBalancingStatus                      `json:"status"`
+	Topology           LoadBalancerTopology                     `json:"topology"`
+	Type               LoadBalancerType                         `json:"type"`
+	UpdatedAt          time.Time                                `json:"updated_at"`
+	V6PublicAddress    nullable.Nullable[string]                `json:"v6_public_address,omitempty"`
+	VipAddress         nullable.Nullable[string]                `json:"vip_address,omitempty"`
 }
 
 // LoadBalancerTopology defines model for LoadBalancerTopology.
@@ -1157,22 +1158,22 @@ type MetricSchema struct {
 
 // NestedCertificateSchema defines model for NestedCertificateSchema.
 type NestedCertificateSchema struct {
-	CommonName *string    `json:"common_name"`
-	CreatedAt  time.Time  `json:"created_at"`
-	ExpiresOn  *time.Time `json:"expires_on"`
-	Id         core.UUID  `json:"id"`
-	IssuedOn   *time.Time `json:"issued_on"`
-	Name       string     `json:"name"`
+	CommonName nullable.Nullable[string]    `json:"common_name"`
+	CreatedAt  time.Time                    `json:"created_at"`
+	ExpiresOn  nullable.Nullable[time.Time] `json:"expires_on"`
+	Id         core.UUID                    `json:"id"`
+	IssuedOn   nullable.Nullable[time.Time] `json:"issued_on"`
+	Name       string                       `json:"name"`
 }
 
 // NestedL7RuleSchema defines model for NestedL7RuleSchema.
 type NestedL7RuleSchema struct {
-	CompareType L7RuleCompareType `json:"compare_type"`
-	Id          core.UUID         `json:"id"`
-	Invert      bool              `json:"invert"`
-	Key         *string           `json:"key"`
-	Type        L7RuleType        `json:"type"`
-	Value       string            `json:"value"`
+	CompareType L7RuleCompareType         `json:"compare_type"`
+	Id          core.UUID                 `json:"id"`
+	Invert      bool                      `json:"invert"`
+	Key         nullable.Nullable[string] `json:"key"`
+	Type        L7RuleType                `json:"type"`
+	Value       string                    `json:"value"`
 }
 
 // NestedLoadBalancerSchema defines model for NestedLoadBalancerSchema.
@@ -1219,50 +1220,50 @@ type NestedVPCSchema struct {
 
 // PagedL7PolicySchema defines model for PagedL7PolicySchema.
 type PagedL7PolicySchema struct {
-	Count    int              `json:"count"`
-	Next     *string          `json:"next,omitempty"`
-	Previous *string          `json:"previous,omitempty"`
-	Results  []L7PolicySchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []L7PolicySchema          `json:"results"`
 }
 
 // PagedL7RuleSchema defines model for PagedL7RuleSchema.
 type PagedL7RuleSchema struct {
-	Count    int            `json:"count"`
-	Next     *string        `json:"next,omitempty"`
-	Previous *string        `json:"previous,omitempty"`
-	Results  []L7RuleSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []L7RuleSchema            `json:"results"`
 }
 
 // PagedListenerAuthUserSchema defines model for PagedListenerAuthUserSchema.
 type PagedListenerAuthUserSchema struct {
-	Count    int                      `json:"count"`
-	Next     *string                  `json:"next,omitempty"`
-	Previous *string                  `json:"previous,omitempty"`
-	Results  []ListenerAuthUserSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []ListenerAuthUserSchema  `json:"results"`
 }
 
 // PagedListenerRateLimitSchema defines model for PagedListenerRateLimitSchema.
 type PagedListenerRateLimitSchema struct {
 	Count    int                       `json:"count"`
-	Next     *string                   `json:"next,omitempty"`
-	Previous *string                   `json:"previous,omitempty"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
 	Results  []ListenerRateLimitSchema `json:"results"`
 }
 
 // PagedListenerSchema defines model for PagedListenerSchema.
 type PagedListenerSchema struct {
-	Count    int              `json:"count"`
-	Next     *string          `json:"next,omitempty"`
-	Previous *string          `json:"previous,omitempty"`
-	Results  []ListenerSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []ListenerSchema          `json:"results"`
 }
 
 // PagedLoadBalancerSchema defines model for PagedLoadBalancerSchema.
 type PagedLoadBalancerSchema struct {
-	Count    int                  `json:"count"`
-	Next     *string              `json:"next,omitempty"`
-	Previous *string              `json:"previous,omitempty"`
-	Results  []LoadBalancerSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []LoadBalancerSchema      `json:"results"`
 }
 
 // PagedMetricResultSchema defines model for PagedMetricResultSchema.
@@ -1274,17 +1275,17 @@ type PagedMetricResultSchema struct {
 // PagedServerGroupMemberSchema defines model for PagedServerGroupMemberSchema.
 type PagedServerGroupMemberSchema struct {
 	Count    int                       `json:"count"`
-	Next     *string                   `json:"next,omitempty"`
-	Previous *string                   `json:"previous,omitempty"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
 	Results  []ServerGroupMemberSchema `json:"results"`
 }
 
 // PagedServerGroupSchema defines model for PagedServerGroupSchema.
 type PagedServerGroupSchema struct {
-	Count    int                 `json:"count"`
-	Next     *string             `json:"next,omitempty"`
-	Previous *string             `json:"previous,omitempty"`
-	Results  []ServerGroupSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []ServerGroupSchema       `json:"results"`
 }
 
 // ServerGroupAlgorithm defines model for ServerGroupAlgorithm.
@@ -1292,12 +1293,12 @@ type ServerGroupAlgorithm string
 
 // ServerGroupBatchMember defines model for ServerGroupBatchMember.
 type ServerGroupBatchMember struct {
-	Address      string     `json:"address"`
-	Backup       *bool      `json:"backup,omitempty"`
-	Id           *core.UUID `json:"id"`
-	Name         string     `json:"name"`
-	ProtocolPort int        `json:"protocol_port"`
-	Weight       *int       `json:"weight,omitempty"`
+	Address      string                       `json:"address"`
+	Backup       *bool                        `json:"backup,omitempty"`
+	Id           nullable.Nullable[core.UUID] `json:"id"`
+	Name         string                       `json:"name"`
+	ProtocolPort int                          `json:"protocol_port"`
+	Weight       *int                         `json:"weight,omitempty"`
 }
 
 // ServerGroupBatchUpdateMemberSchema defines model for ServerGroupBatchUpdateMemberSchema.
@@ -1307,13 +1308,13 @@ type ServerGroupBatchUpdateMemberSchema struct {
 
 // ServerGroupCreateSchema defines model for ServerGroupCreateSchema.
 type ServerGroupCreateSchema struct {
-	Algorithm     ServerGroupAlgorithm          `json:"algorithm"`
-	Description   *string                       `json:"description,omitempty"`
-	EnableH2      *bool                         `json:"enable_h2,omitempty"`
-	EncryptCertId *core.UUID                    `json:"encrypt_cert_id,omitempty"`
-	HealthCheck   *ServerGroupHealthCheckConfig `json:"health_check"`
-	Name          string                        `json:"name"`
-	Protocol      ServerGroupProtocolType       `json:"protocol"`
+	Algorithm     ServerGroupAlgorithm                            `json:"algorithm"`
+	Description   *string                                         `json:"description,omitempty"`
+	EnableH2      nullable.Nullable[bool]                         `json:"enable_h2,omitempty"`
+	EncryptCertId nullable.Nullable[core.UUID]                    `json:"encrypt_cert_id,omitempty"`
+	HealthCheck   nullable.Nullable[ServerGroupHealthCheckConfig] `json:"health_check"`
+	Name          string                                          `json:"name"`
+	Protocol      ServerGroupProtocolType                         `json:"protocol"`
 
 	// SessionPersistence ServerGroupSessionPersistenceKind is exactly one of: ServerGroupSessionPersistenceBasic, ServerGroupSessionPersistenceAppCookie. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
 	SessionPersistence ServerGroupSessionPersistenceKind `json:"session_persistence"`
@@ -1321,29 +1322,29 @@ type ServerGroupCreateSchema struct {
 
 // ServerGroupDetailSchema defines model for ServerGroupDetailSchema.
 type ServerGroupDetailSchema struct {
-	Algorithm                    ServerGroupAlgorithm            `json:"algorithm"`
-	CreatedAt                    time.Time                       `json:"created_at"`
-	Description                  *string                         `json:"description"`
-	EnableH2                     *bool                           `json:"enable_h2"`
-	EnableHealthCheck            bool                            `json:"enable_health_check"`
-	EncryptCertId                *core.UUID                      `json:"encrypt_cert_id"`
-	Id                           core.UUID                       `json:"id"`
-	MemberCount                  int                             `json:"member_count"`
-	MonitorDelay                 *int                            `json:"monitor_delay"`
-	MonitorExpectedCodes         *string                         `json:"monitor_expected_codes"`
-	MonitorHttpMethod            *ServerGroupMonitorHTTPMethod   `json:"monitor_http_method"`
-	MonitorMaxRetries            *int                            `json:"monitor_max_retries"`
-	MonitorMaxRetriesDown        *int                            `json:"monitor_max_retries_down"`
-	MonitorPath                  *string                         `json:"monitor_path"`
-	MonitorTimeout               *int                            `json:"monitor_timeout"`
-	MonitorType                  *ServerGroupMonitorType         `json:"monitor_type"`
-	Name                         string                          `json:"name"`
-	Protocol                     ServerGroupProtocolType         `json:"protocol"`
-	ProvisioningStatus           LoadBalancingProvisioningStatus `json:"provisioning_status"`
-	SessionPersistenceCookieName *string                         `json:"session_persistence_cookie_name"`
-	SessionPersistenceType       *ServerGroupSessionPersistence  `json:"session_persistence_type"`
-	Status                       LoadBalancingStatus             `json:"status"`
-	UpdatedAt                    time.Time                       `json:"updated_at"`
+	Algorithm                    ServerGroupAlgorithm                             `json:"algorithm"`
+	CreatedAt                    time.Time                                        `json:"created_at"`
+	Description                  nullable.Nullable[string]                        `json:"description"`
+	EnableH2                     nullable.Nullable[bool]                          `json:"enable_h2"`
+	EnableHealthCheck            bool                                             `json:"enable_health_check"`
+	EncryptCertId                nullable.Nullable[core.UUID]                     `json:"encrypt_cert_id"`
+	Id                           core.UUID                                        `json:"id"`
+	MemberCount                  int                                              `json:"member_count"`
+	MonitorDelay                 nullable.Nullable[int]                           `json:"monitor_delay"`
+	MonitorExpectedCodes         nullable.Nullable[string]                        `json:"monitor_expected_codes"`
+	MonitorHttpMethod            nullable.Nullable[ServerGroupMonitorHTTPMethod]  `json:"monitor_http_method"`
+	MonitorMaxRetries            nullable.Nullable[int]                           `json:"monitor_max_retries"`
+	MonitorMaxRetriesDown        nullable.Nullable[int]                           `json:"monitor_max_retries_down"`
+	MonitorPath                  nullable.Nullable[string]                        `json:"monitor_path"`
+	MonitorTimeout               nullable.Nullable[int]                           `json:"monitor_timeout"`
+	MonitorType                  nullable.Nullable[ServerGroupMonitorType]        `json:"monitor_type"`
+	Name                         string                                           `json:"name"`
+	Protocol                     ServerGroupProtocolType                          `json:"protocol"`
+	ProvisioningStatus           LoadBalancingProvisioningStatus                  `json:"provisioning_status"`
+	SessionPersistenceCookieName nullable.Nullable[string]                        `json:"session_persistence_cookie_name"`
+	SessionPersistenceType       nullable.Nullable[ServerGroupSessionPersistence] `json:"session_persistence_type"`
+	Status                       LoadBalancingStatus                              `json:"status"`
+	UpdatedAt                    time.Time                                        `json:"updated_at"`
 }
 
 // ServerGroupHealthCheckConfig ServerGroupHealthCheckConfig is exactly one of: ServerGroupHealthCheckOtherConfig, ServerGroupHealthCheckHttpConfig. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
@@ -1425,12 +1426,12 @@ type ServerGroupMonitorType string
 
 // ServerGroupPartialUpdateSchema defines model for ServerGroupPartialUpdateSchema.
 type ServerGroupPartialUpdateSchema struct {
-	Algorithm     *ServerGroupAlgorithm         `json:"algorithm,omitempty"`
-	Description   *string                       `json:"description,omitempty"`
-	EnableH2      *bool                         `json:"enable_h2,omitempty"`
-	EncryptCertId *core.UUID                    `json:"encrypt_cert_id,omitempty"`
-	HealthCheck   *ServerGroupHealthCheckConfig `json:"health_check,omitempty"`
-	Name          *string                       `json:"name,omitempty"`
+	Algorithm     *ServerGroupAlgorithm                           `json:"algorithm,omitempty"`
+	Description   nullable.Nullable[string]                       `json:"description,omitempty"`
+	EnableH2      nullable.Nullable[bool]                         `json:"enable_h2,omitempty"`
+	EncryptCertId nullable.Nullable[core.UUID]                    `json:"encrypt_cert_id,omitempty"`
+	HealthCheck   nullable.Nullable[ServerGroupHealthCheckConfig] `json:"health_check,omitempty"`
+	Name          *string                                         `json:"name,omitempty"`
 
 	// SessionPersistence ServerGroupSessionPersistenceKind is exactly one of: ServerGroupSessionPersistenceBasic, ServerGroupSessionPersistenceAppCookie. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
 	SessionPersistence *ServerGroupSessionPersistenceKind `json:"session_persistence,omitempty"`
@@ -1443,9 +1444,9 @@ type ServerGroupProtocolType string
 type ServerGroupSchema struct {
 	Algorithm          ServerGroupAlgorithm            `json:"algorithm"`
 	CreatedAt          time.Time                       `json:"created_at"`
-	EnableH2           *bool                           `json:"enable_h2"`
+	EnableH2           nullable.Nullable[bool]         `json:"enable_h2"`
 	EnableHealthCheck  bool                            `json:"enable_health_check"`
-	EncryptCertId      *core.UUID                      `json:"encrypt_cert_id"`
+	EncryptCertId      nullable.Nullable[core.UUID]    `json:"encrypt_cert_id"`
 	Id                 core.UUID                       `json:"id"`
 	MemberCount        int                             `json:"member_count"`
 	Name               string                          `json:"name"`
@@ -1482,14 +1483,14 @@ type ServerGroupSessionPersistenceKind struct {
 
 // ServerGroupUpdateSchema defines model for ServerGroupUpdateSchema.
 type ServerGroupUpdateSchema struct {
-	Algorithm   ServerGroupAlgorithm `json:"algorithm"`
-	Description string               `json:"description"`
-	EnableH2    *bool                `json:"enable_h2"`
+	Algorithm   ServerGroupAlgorithm    `json:"algorithm"`
+	Description string                  `json:"description"`
+	EnableH2    nullable.Nullable[bool] `json:"enable_h2"`
 
 	// EncryptCertId This field will be updated to None if not specified
-	EncryptCertId *core.UUID                    `json:"encrypt_cert_id,omitempty"`
-	HealthCheck   *ServerGroupHealthCheckConfig `json:"health_check"`
-	Name          string                        `json:"name"`
+	EncryptCertId nullable.Nullable[core.UUID]                    `json:"encrypt_cert_id,omitempty"`
+	HealthCheck   nullable.Nullable[ServerGroupHealthCheckConfig] `json:"health_check"`
+	Name          string                                          `json:"name"`
 
 	// SessionPersistence ServerGroupSessionPersistenceKind is exactly one of: ServerGroupSessionPersistenceBasic, ServerGroupSessionPersistenceAppCookie. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
 	SessionPersistence ServerGroupSessionPersistenceKind `json:"session_persistence"`

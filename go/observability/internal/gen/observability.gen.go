@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/oapi-codegen/nullable"
 	core "github.com/viettelcloud-oss/sdks/go/core"
 	runtime "github.com/viettelcloud-oss/sdks/go/internal/oapi"
 )
@@ -155,13 +156,13 @@ type CompareOperator string
 
 // DashboardBaseSchema defines model for DashboardBaseSchema.
 type DashboardBaseSchema struct {
-	CreatedAt   time.Time           `json:"created_at"`
-	Description string              `json:"description"`
-	Id          core.UUID           `json:"id"`
-	Name        string              `json:"name"`
-	Owner       *NestedUserSchema   `json:"owner"`
-	Project     NestedProjectSchema `json:"project"`
-	UpdatedAt   time.Time           `json:"updated_at"`
+	CreatedAt   time.Time                           `json:"created_at"`
+	Description string                              `json:"description"`
+	Id          core.UUID                           `json:"id"`
+	Name        string                              `json:"name"`
+	Owner       nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Project     NestedProjectSchema                 `json:"project"`
+	UpdatedAt   time.Time                           `json:"updated_at"`
 }
 
 // DashboardCreateSchema defines model for DashboardCreateSchema.
@@ -180,14 +181,14 @@ type DashboardPartialUpdateSchema struct {
 
 // DashboardSchema defines model for DashboardSchema.
 type DashboardSchema struct {
-	CreatedAt   time.Time              `json:"created_at"`
-	Description string                 `json:"description"`
-	Id          core.UUID              `json:"id"`
-	Name        string                 `json:"name"`
-	Owner       *NestedUserSchema      `json:"owner"`
-	Project     NestedProjectSchema    `json:"project"`
-	Template    map[string]interface{} `json:"template"`
-	UpdatedAt   time.Time              `json:"updated_at"`
+	CreatedAt   time.Time                           `json:"created_at"`
+	Description string                              `json:"description"`
+	Id          core.UUID                           `json:"id"`
+	Name        string                              `json:"name"`
+	Owner       nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Project     NestedProjectSchema                 `json:"project"`
+	Template    map[string]interface{}              `json:"template"`
+	UpdatedAt   time.Time                           `json:"updated_at"`
 }
 
 // DashboardTemplateBaseSchema defines model for DashboardTemplateBaseSchema.
@@ -203,8 +204,8 @@ type DashboardTemplateBaseSchema struct {
 
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
-	Errors    []ErrorSchema `json:"errors"`
-	RequestId *string       `json:"request_id"`
+	Errors    []ErrorSchema             `json:"errors"`
+	RequestId nullable.Nullable[string] `json:"request_id"`
 }
 
 // ErrorSchema defines model for ErrorSchema.
@@ -216,14 +217,14 @@ type ErrorSchema struct {
 
 // LogDashboardBaseSchema defines model for LogDashboardBaseSchema.
 type LogDashboardBaseSchema struct {
-	CreatedAt   time.Time           `json:"created_at"`
-	Description *string             `json:"description"`
-	Id          core.UUID           `json:"id"`
-	Name        string              `json:"name"`
-	Owner       *NestedUserSchema   `json:"owner"`
-	Project     NestedProjectSchema `json:"project"`
-	Tags        *[]string           `json:"tags"`
-	UpdatedAt   time.Time           `json:"updated_at"`
+	CreatedAt   time.Time                           `json:"created_at"`
+	Description nullable.Nullable[string]           `json:"description"`
+	Id          core.UUID                           `json:"id"`
+	Name        string                              `json:"name"`
+	Owner       nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Project     NestedProjectSchema                 `json:"project"`
+	Tags        nullable.Nullable[[]string]         `json:"tags"`
+	UpdatedAt   time.Time                           `json:"updated_at"`
 }
 
 // LogDashboardCreateSchema defines model for LogDashboardCreateSchema.
@@ -235,15 +236,15 @@ type LogDashboardCreateSchema struct {
 
 // LogDashboardDetailSchema defines model for LogDashboardDetailSchema.
 type LogDashboardDetailSchema struct {
-	CreatedAt   time.Time              `json:"created_at"`
-	Description *string                `json:"description"`
-	Id          core.UUID              `json:"id"`
-	Name        string                 `json:"name"`
-	Owner       *NestedUserSchema      `json:"owner"`
-	Project     NestedProjectSchema    `json:"project"`
-	Tags        *[]string              `json:"tags"`
-	Template    map[string]interface{} `json:"template"`
-	UpdatedAt   time.Time              `json:"updated_at"`
+	CreatedAt   time.Time                           `json:"created_at"`
+	Description nullable.Nullable[string]           `json:"description"`
+	Id          core.UUID                           `json:"id"`
+	Name        string                              `json:"name"`
+	Owner       nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Project     NestedProjectSchema                 `json:"project"`
+	Tags        nullable.Nullable[[]string]         `json:"tags"`
+	Template    map[string]interface{}              `json:"template"`
+	UpdatedAt   time.Time                           `json:"updated_at"`
 }
 
 // LogDashboardPartialUpdateSchema defines model for LogDashboardPartialUpdateSchema.
@@ -256,19 +257,19 @@ type LogDashboardPartialUpdateSchema struct {
 
 // LogRuleCreateSchema defines model for LogRuleCreateSchema.
 type LogRuleCreateSchema struct {
-	Description    *string     `json:"description,omitempty"`
-	Enabled        *bool       `json:"enabled,omitempty"`
-	Interval       *int        `json:"interval,omitempty"`
-	LogRuleGroupId core.UUID   `json:"log_rule_group_id"`
-	LogStoreId     core.UUID   `json:"log_store_id"`
-	Name           string      `json:"name"`
-	NewTermField   *[]string   `json:"new_term_field,omitempty"`
-	Query          string      `json:"query"`
-	Severity       Severity    `json:"severity"`
-	Threshold      *int        `json:"threshold,omitempty"`
-	TimeframeUnit  *TimeUnit   `json:"timeframe_unit,omitempty"`
-	TimeframeValue *int        `json:"timeframe_value,omitempty"`
-	Type           LogRuleType `json:"type"`
+	Description    *string                     `json:"description,omitempty"`
+	Enabled        *bool                       `json:"enabled,omitempty"`
+	Interval       nullable.Nullable[int]      `json:"interval,omitempty"`
+	LogRuleGroupId core.UUID                   `json:"log_rule_group_id"`
+	LogStoreId     core.UUID                   `json:"log_store_id"`
+	Name           string                      `json:"name"`
+	NewTermField   nullable.Nullable[[]string] `json:"new_term_field,omitempty"`
+	Query          string                      `json:"query"`
+	Severity       Severity                    `json:"severity"`
+	Threshold      nullable.Nullable[int]      `json:"threshold,omitempty"`
+	TimeframeUnit  nullable.Nullable[TimeUnit] `json:"timeframe_unit,omitempty"`
+	TimeframeValue nullable.Nullable[int]      `json:"timeframe_value,omitempty"`
+	Type           LogRuleType                 `json:"type"`
 }
 
 // LogRuleGroupCreateSchema defines model for LogRuleGroupCreateSchema.
@@ -287,12 +288,12 @@ type LogRuleGroupReceiverCreateSchema struct {
 
 // LogRuleGroupReceiverSchema defines model for LogRuleGroupReceiverSchema.
 type LogRuleGroupReceiverSchema struct {
-	Id             core.UUID            `json:"id"`
-	Owner          *NestedUserSchema    `json:"owner"`
-	Project        NestedProjectSchema  `json:"project"`
-	Receiver       NestedReceiverSchema `json:"receiver"`
-	RepeatInterval int                  `json:"repeat_interval"`
-	RuleGroupId    core.UUID            `json:"rule_group_id"`
+	Id             core.UUID                           `json:"id"`
+	Owner          nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Project        NestedProjectSchema                 `json:"project"`
+	Receiver       NestedReceiverSchema                `json:"receiver"`
+	RepeatInterval int                                 `json:"repeat_interval"`
+	RuleGroupId    core.UUID                           `json:"rule_group_id"`
 }
 
 // LogRuleGroupReceiverUpdateSchema defines model for LogRuleGroupReceiverUpdateSchema.
@@ -304,14 +305,14 @@ type LogRuleGroupReceiverUpdateSchema struct {
 
 // LogRuleGroupSchema defines model for LogRuleGroupSchema.
 type LogRuleGroupSchema struct {
-	CreatedAt time.Time           `json:"created_at"`
-	Enabled   bool                `json:"enabled"`
-	Id        core.UUID           `json:"id"`
-	Name      string              `json:"name"`
-	Owner     *NestedUserSchema   `json:"owner"`
-	Project   NestedProjectSchema `json:"project"`
-	Region    NestedRegionSchema  `json:"region"`
-	UpdatedAt time.Time           `json:"updated_at"`
+	CreatedAt time.Time                           `json:"created_at"`
+	Enabled   bool                                `json:"enabled"`
+	Id        core.UUID                           `json:"id"`
+	Name      string                              `json:"name"`
+	Owner     nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Project   NestedProjectSchema                 `json:"project"`
+	Region    NestedRegionSchema                  `json:"region"`
+	UpdatedAt time.Time                           `json:"updated_at"`
 }
 
 // LogRuleGroupUpdateSchema defines model for LogRuleGroupUpdateSchema.
@@ -322,44 +323,44 @@ type LogRuleGroupUpdateSchema struct {
 
 // LogRuleSchema defines model for LogRuleSchema.
 type LogRuleSchema struct {
-	CreatedAt      time.Time           `json:"created_at"`
-	Description    string              `json:"description"`
-	Enabled        bool                `json:"enabled"`
-	Id             core.UUID           `json:"id"`
-	Interval       int                 `json:"interval"`
-	LogStoreId     core.UUID           `json:"log_store_id"`
-	Name           string              `json:"name"`
-	NewTermField   *[]string           `json:"new_term_field"`
-	Owner          *NestedUserSchema   `json:"owner"`
-	Project        NestedProjectSchema `json:"project"`
-	Query          string              `json:"query"`
-	Region         NestedRegionSchema  `json:"region"`
-	RuleGroupId    core.UUID           `json:"rule_group_id"`
-	Severity       Severity            `json:"severity"`
-	Threshold      *int                `json:"threshold"`
-	TimeframeUnit  *TimeUnit           `json:"timeframe_unit"`
-	TimeframeValue *int                `json:"timeframe_value"`
-	Type           LogRuleType         `json:"type"`
-	UpdatedAt      time.Time           `json:"updated_at"`
+	CreatedAt      time.Time                           `json:"created_at"`
+	Description    string                              `json:"description"`
+	Enabled        bool                                `json:"enabled"`
+	Id             core.UUID                           `json:"id"`
+	Interval       int                                 `json:"interval"`
+	LogStoreId     core.UUID                           `json:"log_store_id"`
+	Name           string                              `json:"name"`
+	NewTermField   nullable.Nullable[[]string]         `json:"new_term_field"`
+	Owner          nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Project        NestedProjectSchema                 `json:"project"`
+	Query          string                              `json:"query"`
+	Region         NestedRegionSchema                  `json:"region"`
+	RuleGroupId    core.UUID                           `json:"rule_group_id"`
+	Severity       Severity                            `json:"severity"`
+	Threshold      nullable.Nullable[int]              `json:"threshold"`
+	TimeframeUnit  nullable.Nullable[TimeUnit]         `json:"timeframe_unit"`
+	TimeframeValue nullable.Nullable[int]              `json:"timeframe_value"`
+	Type           LogRuleType                         `json:"type"`
+	UpdatedAt      time.Time                           `json:"updated_at"`
 }
 
 // LogRuleTemplateSchema defines model for LogRuleTemplateSchema.
 type LogRuleTemplateSchema struct {
-	CreatedAt      time.Time   `json:"created_at"`
-	Description    string      `json:"description"`
-	Enabled        bool        `json:"enabled"`
-	Id             core.UUID   `json:"id"`
-	Interval       int         `json:"interval"`
-	Label          string      `json:"label"`
-	Name           string      `json:"name"`
-	NewTermField   *[]string   `json:"new_term_field"`
-	Query          string      `json:"query"`
-	Severity       Severity    `json:"severity"`
-	Threshold      *int        `json:"threshold"`
-	TimeframeUnit  *TimeUnit   `json:"timeframe_unit"`
-	TimeframeValue *int        `json:"timeframe_value"`
-	Type           LogRuleType `json:"type"`
-	UpdatedAt      time.Time   `json:"updated_at"`
+	CreatedAt      time.Time                   `json:"created_at"`
+	Description    string                      `json:"description"`
+	Enabled        bool                        `json:"enabled"`
+	Id             core.UUID                   `json:"id"`
+	Interval       int                         `json:"interval"`
+	Label          string                      `json:"label"`
+	Name           string                      `json:"name"`
+	NewTermField   nullable.Nullable[[]string] `json:"new_term_field"`
+	Query          string                      `json:"query"`
+	Severity       Severity                    `json:"severity"`
+	Threshold      nullable.Nullable[int]      `json:"threshold"`
+	TimeframeUnit  nullable.Nullable[TimeUnit] `json:"timeframe_unit"`
+	TimeframeValue nullable.Nullable[int]      `json:"timeframe_value"`
+	Type           LogRuleType                 `json:"type"`
+	UpdatedAt      time.Time                   `json:"updated_at"`
 }
 
 // LogRuleType defines model for LogRuleType.
@@ -367,17 +368,17 @@ type LogRuleType string
 
 // LogRuleUpdateSchema defines model for LogRuleUpdateSchema.
 type LogRuleUpdateSchema struct {
-	Description    *string     `json:"description,omitempty"`
-	Enabled        bool        `json:"enabled"`
-	Interval       *int        `json:"interval,omitempty"`
-	Name           string      `json:"name"`
-	NewTermField   *[]string   `json:"new_term_field,omitempty"`
-	Query          string      `json:"query"`
-	Severity       Severity    `json:"severity"`
-	Threshold      *int        `json:"threshold,omitempty"`
-	TimeframeUnit  *TimeUnit   `json:"timeframe_unit,omitempty"`
-	TimeframeValue *int        `json:"timeframe_value,omitempty"`
-	Type           LogRuleType `json:"type"`
+	Description    *string                     `json:"description,omitempty"`
+	Enabled        bool                        `json:"enabled"`
+	Interval       nullable.Nullable[int]      `json:"interval,omitempty"`
+	Name           string                      `json:"name"`
+	NewTermField   nullable.Nullable[[]string] `json:"new_term_field,omitempty"`
+	Query          string                      `json:"query"`
+	Severity       Severity                    `json:"severity"`
+	Threshold      nullable.Nullable[int]      `json:"threshold,omitempty"`
+	TimeframeUnit  nullable.Nullable[TimeUnit] `json:"timeframe_unit,omitempty"`
+	TimeframeValue nullable.Nullable[int]      `json:"timeframe_value,omitempty"`
+	Type           LogRuleType                 `json:"type"`
 }
 
 // LogStoreCreateSchema defines model for LogStoreCreateSchema.
@@ -391,19 +392,19 @@ type LogStoreCreateSchema struct {
 
 // LogStoreSchema defines model for LogStoreSchema.
 type LogStoreSchema struct {
-	CreatedAt     time.Time           `json:"created_at"`
-	Description   string              `json:"description"`
-	Id            core.UUID           `json:"id"`
-	IsReadOnly    bool                `json:"is_read_only"`
-	LastSyncTime  *time.Time          `json:"last_sync_time"`
-	Name          string              `json:"name"`
-	Owner         *NestedUserSchema   `json:"owner"`
-	Project       NestedProjectSchema `json:"project"`
-	Quota         int                 `json:"quota"`
-	Region        NestedRegionSchema  `json:"region"`
-	RetentionTime int                 `json:"retention_time"`
-	StoredSize    int                 `json:"stored_size"`
-	UpdatedAt     time.Time           `json:"updated_at"`
+	CreatedAt     time.Time                           `json:"created_at"`
+	Description   string                              `json:"description"`
+	Id            core.UUID                           `json:"id"`
+	IsReadOnly    bool                                `json:"is_read_only"`
+	LastSyncTime  nullable.Nullable[time.Time]        `json:"last_sync_time"`
+	Name          string                              `json:"name"`
+	Owner         nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Project       NestedProjectSchema                 `json:"project"`
+	Quota         int                                 `json:"quota"`
+	Region        NestedRegionSchema                  `json:"region"`
+	RetentionTime int                                 `json:"retention_time"`
+	StoredSize    int                                 `json:"stored_size"`
+	UpdatedAt     time.Time                           `json:"updated_at"`
 }
 
 // LogStoreUpdateSchema defines model for LogStoreUpdateSchema.
@@ -443,14 +444,14 @@ type MetricRuleGroupReceiverCreateSchema struct {
 
 // MetricRuleGroupReceiverSchema defines model for MetricRuleGroupReceiverSchema.
 type MetricRuleGroupReceiverSchema struct {
-	CreatedAt      time.Time            `json:"created_at"`
-	Id             core.UUID            `json:"id"`
-	Owner          *NestedUserSchema    `json:"owner"`
-	Project        NestedProjectSchema  `json:"project"`
-	Receiver       NestedReceiverSchema `json:"receiver"`
-	RepeatInterval int                  `json:"repeat_interval"`
-	RuleGroupId    core.UUID            `json:"rule_group_id"`
-	UpdatedAt      time.Time            `json:"updated_at"`
+	CreatedAt      time.Time                           `json:"created_at"`
+	Id             core.UUID                           `json:"id"`
+	Owner          nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Project        NestedProjectSchema                 `json:"project"`
+	Receiver       NestedReceiverSchema                `json:"receiver"`
+	RepeatInterval int                                 `json:"repeat_interval"`
+	RuleGroupId    core.UUID                           `json:"rule_group_id"`
+	UpdatedAt      time.Time                           `json:"updated_at"`
 }
 
 // MetricRuleGroupReceiverUpdateSchema defines model for MetricRuleGroupReceiverUpdateSchema.
@@ -462,16 +463,16 @@ type MetricRuleGroupReceiverUpdateSchema struct {
 
 // MetricRuleGroupSchema defines model for MetricRuleGroupSchema.
 type MetricRuleGroupSchema struct {
-	CreatedAt      time.Time           `json:"created_at"`
-	Enabled        bool                `json:"enabled"`
-	Id             core.UUID           `json:"id"`
-	Interval       int                 `json:"interval"`
-	Name           string              `json:"name"`
-	Owner          *NestedUserSchema   `json:"owner"`
-	Project        NestedProjectSchema `json:"project"`
-	Region         NestedRegionSchema  `json:"region"`
-	TotalIncidents int                 `json:"total_incidents"`
-	UpdatedAt      time.Time           `json:"updated_at"`
+	CreatedAt      time.Time                           `json:"created_at"`
+	Enabled        bool                                `json:"enabled"`
+	Id             core.UUID                           `json:"id"`
+	Interval       int                                 `json:"interval"`
+	Name           string                              `json:"name"`
+	Owner          nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Project        NestedProjectSchema                 `json:"project"`
+	Region         NestedRegionSchema                  `json:"region"`
+	TotalIncidents int                                 `json:"total_incidents"`
+	UpdatedAt      time.Time                           `json:"updated_at"`
 }
 
 // MetricRuleGroupUpdateSchema defines model for MetricRuleGroupUpdateSchema.
@@ -483,21 +484,21 @@ type MetricRuleGroupUpdateSchema struct {
 
 // MetricRuleSchema defines model for MetricRuleSchema.
 type MetricRuleSchema struct {
-	CompareOperation CompareOperator     `json:"compare_operation"`
-	CreatedAt        time.Time           `json:"created_at"`
-	Duration         int                 `json:"duration"`
-	Enabled          bool                `json:"enabled"`
-	Id               core.UUID           `json:"id"`
-	Name             string              `json:"name"`
-	Owner            *NestedUserSchema   `json:"owner"`
-	Project          NestedProjectSchema `json:"project"`
-	Query            string              `json:"query"`
-	Region           NestedRegionSchema  `json:"region"`
-	RuleGroupId      core.UUID           `json:"rule_group_id"`
-	Severity         Severity            `json:"severity"`
-	Threshold        int                 `json:"threshold"`
-	TotalIncidents   int                 `json:"total_incidents"`
-	UpdatedAt        time.Time           `json:"updated_at"`
+	CompareOperation CompareOperator                     `json:"compare_operation"`
+	CreatedAt        time.Time                           `json:"created_at"`
+	Duration         int                                 `json:"duration"`
+	Enabled          bool                                `json:"enabled"`
+	Id               core.UUID                           `json:"id"`
+	Name             string                              `json:"name"`
+	Owner            nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Project          NestedProjectSchema                 `json:"project"`
+	Query            string                              `json:"query"`
+	Region           NestedRegionSchema                  `json:"region"`
+	RuleGroupId      core.UUID                           `json:"rule_group_id"`
+	Severity         Severity                            `json:"severity"`
+	Threshold        int                                 `json:"threshold"`
+	TotalIncidents   int                                 `json:"total_incidents"`
+	UpdatedAt        time.Time                           `json:"updated_at"`
 }
 
 // MetricRuleTemplateSchema defines model for MetricRuleTemplateSchema.
@@ -559,114 +560,114 @@ type NestedUserSchema struct {
 
 // PagedDashboardBaseSchema defines model for PagedDashboardBaseSchema.
 type PagedDashboardBaseSchema struct {
-	Count    int                   `json:"count"`
-	Next     *string               `json:"next,omitempty"`
-	Previous *string               `json:"previous,omitempty"`
-	Results  []DashboardBaseSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []DashboardBaseSchema     `json:"results"`
 }
 
 // PagedDashboardTemplateBaseSchema defines model for PagedDashboardTemplateBaseSchema.
 type PagedDashboardTemplateBaseSchema struct {
 	Count    int                           `json:"count"`
-	Next     *string                       `json:"next,omitempty"`
-	Previous *string                       `json:"previous,omitempty"`
+	Next     nullable.Nullable[string]     `json:"next,omitempty"`
+	Previous nullable.Nullable[string]     `json:"previous,omitempty"`
 	Results  []DashboardTemplateBaseSchema `json:"results"`
 }
 
 // PagedLogDashboardBaseSchema defines model for PagedLogDashboardBaseSchema.
 type PagedLogDashboardBaseSchema struct {
-	Count    int                      `json:"count"`
-	Next     *string                  `json:"next,omitempty"`
-	Previous *string                  `json:"previous,omitempty"`
-	Results  []LogDashboardBaseSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []LogDashboardBaseSchema  `json:"results"`
 }
 
 // PagedLogRuleGroupReceiverSchema defines model for PagedLogRuleGroupReceiverSchema.
 type PagedLogRuleGroupReceiverSchema struct {
 	Count    int                          `json:"count"`
-	Next     *string                      `json:"next,omitempty"`
-	Previous *string                      `json:"previous,omitempty"`
+	Next     nullable.Nullable[string]    `json:"next,omitempty"`
+	Previous nullable.Nullable[string]    `json:"previous,omitempty"`
 	Results  []LogRuleGroupReceiverSchema `json:"results"`
 }
 
 // PagedLogRuleGroupSchema defines model for PagedLogRuleGroupSchema.
 type PagedLogRuleGroupSchema struct {
-	Count    int                  `json:"count"`
-	Next     *string              `json:"next,omitempty"`
-	Previous *string              `json:"previous,omitempty"`
-	Results  []LogRuleGroupSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []LogRuleGroupSchema      `json:"results"`
 }
 
 // PagedLogRuleSchema defines model for PagedLogRuleSchema.
 type PagedLogRuleSchema struct {
-	Count    int             `json:"count"`
-	Next     *string         `json:"next,omitempty"`
-	Previous *string         `json:"previous,omitempty"`
-	Results  []LogRuleSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []LogRuleSchema           `json:"results"`
 }
 
 // PagedLogRuleTemplateSchema defines model for PagedLogRuleTemplateSchema.
 type PagedLogRuleTemplateSchema struct {
-	Count    int                     `json:"count"`
-	Next     *string                 `json:"next,omitempty"`
-	Previous *string                 `json:"previous,omitempty"`
-	Results  []LogRuleTemplateSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []LogRuleTemplateSchema   `json:"results"`
 }
 
 // PagedLogStoreSchema defines model for PagedLogStoreSchema.
 type PagedLogStoreSchema struct {
-	Count    int              `json:"count"`
-	Next     *string          `json:"next,omitempty"`
-	Previous *string          `json:"previous,omitempty"`
-	Results  []LogStoreSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []LogStoreSchema          `json:"results"`
 }
 
 // PagedMetricRuleGroupReceiverSchema defines model for PagedMetricRuleGroupReceiverSchema.
 type PagedMetricRuleGroupReceiverSchema struct {
 	Count    int                             `json:"count"`
-	Next     *string                         `json:"next,omitempty"`
-	Previous *string                         `json:"previous,omitempty"`
+	Next     nullable.Nullable[string]       `json:"next,omitempty"`
+	Previous nullable.Nullable[string]       `json:"previous,omitempty"`
 	Results  []MetricRuleGroupReceiverSchema `json:"results"`
 }
 
 // PagedMetricRuleGroupSchema defines model for PagedMetricRuleGroupSchema.
 type PagedMetricRuleGroupSchema struct {
-	Count    int                     `json:"count"`
-	Next     *string                 `json:"next,omitempty"`
-	Previous *string                 `json:"previous,omitempty"`
-	Results  []MetricRuleGroupSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []MetricRuleGroupSchema   `json:"results"`
 }
 
 // PagedMetricRuleSchema defines model for PagedMetricRuleSchema.
 type PagedMetricRuleSchema struct {
-	Count    int                `json:"count"`
-	Next     *string            `json:"next,omitempty"`
-	Previous *string            `json:"previous,omitempty"`
-	Results  []MetricRuleSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []MetricRuleSchema        `json:"results"`
 }
 
 // PagedMetricRuleTemplateSchema defines model for PagedMetricRuleTemplateSchema.
 type PagedMetricRuleTemplateSchema struct {
 	Count    int                        `json:"count"`
-	Next     *string                    `json:"next,omitempty"`
-	Previous *string                    `json:"previous,omitempty"`
+	Next     nullable.Nullable[string]  `json:"next,omitempty"`
+	Previous nullable.Nullable[string]  `json:"previous,omitempty"`
 	Results  []MetricRuleTemplateSchema `json:"results"`
 }
 
 // PagedReceiverSchema defines model for PagedReceiverSchema.
 type PagedReceiverSchema struct {
-	Count    int              `json:"count"`
-	Next     *string          `json:"next,omitempty"`
-	Previous *string          `json:"previous,omitempty"`
-	Results  []ReceiverSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []ReceiverSchema          `json:"results"`
 }
 
 // PagedTokenSchema defines model for PagedTokenSchema.
 type PagedTokenSchema struct {
-	Count    int           `json:"count"`
-	Next     *string       `json:"next,omitempty"`
-	Previous *string       `json:"previous,omitempty"`
-	Results  []TokenSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []TokenSchema             `json:"results"`
 }
 
 // ReceiverCreateSchema defines model for ReceiverCreateSchema.
@@ -680,16 +681,16 @@ type ReceiverCreateSchema struct {
 
 // ReceiverSchema defines model for ReceiverSchema.
 type ReceiverSchema struct {
-	CreatedAt      time.Time              `json:"created_at"`
-	Destination    string                 `json:"destination"`
-	Enabled        bool                   `json:"enabled"`
-	Id             core.UUID              `json:"id"`
-	Name           string                 `json:"name"`
-	Owner          *NestedUserSchema      `json:"owner"`
-	Project        NestedProjectSchema    `json:"project"`
-	ReceiverType   ReceiverType           `json:"receiver_type"`
-	UpdatedAt      time.Time              `json:"updated_at"`
-	WebhookHeaders map[string]interface{} `json:"webhook_headers"`
+	CreatedAt      time.Time                           `json:"created_at"`
+	Destination    string                              `json:"destination"`
+	Enabled        bool                                `json:"enabled"`
+	Id             core.UUID                           `json:"id"`
+	Name           string                              `json:"name"`
+	Owner          nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Project        NestedProjectSchema                 `json:"project"`
+	ReceiverType   ReceiverType                        `json:"receiver_type"`
+	UpdatedAt      time.Time                           `json:"updated_at"`
+	WebhookHeaders map[string]interface{}              `json:"webhook_headers"`
 }
 
 // ReceiverType defines model for ReceiverType.
@@ -715,35 +716,35 @@ type TimeUnit string
 
 // TokenCreateSchema defines model for TokenCreateSchema.
 type TokenCreateSchema struct {
-	Enabled bool       `json:"enabled"`
-	Expiry  *time.Time `json:"expiry,omitempty"`
-	Name    string     `json:"name"`
+	Enabled bool                         `json:"enabled"`
+	Expiry  nullable.Nullable[time.Time] `json:"expiry,omitempty"`
+	Name    string                       `json:"name"`
 }
 
 // TokenCreatedSchema defines model for TokenCreatedSchema.
 type TokenCreatedSchema struct {
-	Enabled     bool                `json:"enabled"`
-	Expiry      *time.Time          `json:"expiry"`
-	Id          core.UUID           `json:"id"`
-	Name        string              `json:"name"`
-	Owner       *NestedUserSchema   `json:"owner"`
-	Project     NestedProjectSchema `json:"project"`
-	TokenString string              `json:"token_string"`
+	Enabled     bool                                `json:"enabled"`
+	Expiry      nullable.Nullable[time.Time]        `json:"expiry"`
+	Id          core.UUID                           `json:"id"`
+	Name        string                              `json:"name"`
+	Owner       nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Project     NestedProjectSchema                 `json:"project"`
+	TokenString string                              `json:"token_string"`
 }
 
 // TokenSchema defines model for TokenSchema.
 type TokenSchema struct {
-	CreatedAt  time.Time           `json:"created_at"`
-	Enabled    bool                `json:"enabled"`
-	Expiry     *time.Time          `json:"expiry"`
-	HashToken  string              `json:"hash_token"`
-	Id         core.UUID           `json:"id"`
-	LastUsedAt *time.Time          `json:"last_used_at"`
-	Name       string              `json:"name"`
-	Owner      *NestedUserSchema   `json:"owner"`
-	Project    NestedProjectSchema `json:"project"`
-	TokenKey   string              `json:"token_key"`
-	UpdatedAt  time.Time           `json:"updated_at"`
+	CreatedAt  time.Time                           `json:"created_at"`
+	Enabled    bool                                `json:"enabled"`
+	Expiry     nullable.Nullable[time.Time]        `json:"expiry"`
+	HashToken  string                              `json:"hash_token"`
+	Id         core.UUID                           `json:"id"`
+	LastUsedAt nullable.Nullable[time.Time]        `json:"last_used_at"`
+	Name       string                              `json:"name"`
+	Owner      nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Project    NestedProjectSchema                 `json:"project"`
+	TokenKey   string                              `json:"token_key"`
+	UpdatedAt  time.Time                           `json:"updated_at"`
 }
 
 // TokenUpdateSchema defines model for TokenUpdateSchema.

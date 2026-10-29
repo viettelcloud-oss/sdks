@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/oapi-codegen/nullable"
 	core "github.com/viettelcloud-oss/sdks/go/core"
 	runtime "github.com/viettelcloud-oss/sdks/go/internal/oapi"
 )
@@ -601,11 +602,11 @@ type CassandraTopologyConfigKind string
 
 // DBClusterAutoBackupConfigSchema defines model for DBClusterAutoBackupConfigSchema.
 type DBClusterAutoBackupConfigSchema struct {
-	BackupInterval BackupInterval `json:"backup_interval"`
-	DayOfWeek      *DayOfWeek     `json:"day_of_week,omitempty"`
-	MaxAutoBackup  *int           `json:"max_auto_backup,omitempty"`
-	RetentionDays  *int           `json:"retention_days,omitempty"`
-	StartHour      int            `json:"start_hour"`
+	BackupInterval BackupInterval               `json:"backup_interval"`
+	DayOfWeek      nullable.Nullable[DayOfWeek] `json:"day_of_week,omitempty"`
+	MaxAutoBackup  nullable.Nullable[int]       `json:"max_auto_backup,omitempty"`
+	RetentionDays  nullable.Nullable[int]       `json:"retention_days,omitempty"`
+	StartHour      int                          `json:"start_hour"`
 }
 
 // DBClusterAutoBackupConfigUpdateSchema defines model for DBClusterAutoBackupConfigUpdateSchema.
@@ -627,31 +628,31 @@ type DBClusterBackupOperationalStatus string
 
 // DBClusterBackupSchema defines model for DBClusterBackupSchema.
 type DBClusterBackupSchema struct {
-	BackupInfo            string                           `json:"backup_info"`
-	BackupTimestamp       *time.Time                       `json:"backup_timestamp,omitempty"`
-	BackupType            BackupType                       `json:"backup_type"`
-	CloudObjectId         *string                          `json:"cloud_object_id,omitempty"`
-	CreatedAt             time.Time                        `json:"created_at"`
-	DbCluster             *NestedDBClusterSchema           `json:"db_cluster,omitempty"`
-	Description           string                           `json:"description"`
-	EndRestoreTimestamp   *time.Time                       `json:"end_restore_timestamp,omitempty"`
-	Engine                DBClusterEngineType              `json:"engine"`
-	EngineVersion         string                           `json:"engine_version"`
-	ErrorMessage          string                           `json:"error_message"`
-	Id                    core.UUID                        `json:"id"`
-	Name                  string                           `json:"name"`
-	OperationalStatus     DBClusterBackupOperationalStatus `json:"operational_status"`
-	Project               NestedProjectSchema              `json:"project"`
-	Region                NestedRegionSchema               `json:"region"`
-	RequiredVolumeSize    int                              `json:"required_volume_size"`
-	Size                  int                              `json:"size"`
-	StartRestoreTimestamp *time.Time                       `json:"start_restore_timestamp,omitempty"`
-	Status                DBClusterBackupStatus            `json:"status"`
+	BackupInfo            string                                   `json:"backup_info"`
+	BackupTimestamp       nullable.Nullable[time.Time]             `json:"backup_timestamp,omitempty"`
+	BackupType            BackupType                               `json:"backup_type"`
+	CloudObjectId         nullable.Nullable[string]                `json:"cloud_object_id,omitempty"`
+	CreatedAt             time.Time                                `json:"created_at"`
+	DbCluster             nullable.Nullable[NestedDBClusterSchema] `json:"db_cluster,omitempty"`
+	Description           string                                   `json:"description"`
+	EndRestoreTimestamp   nullable.Nullable[time.Time]             `json:"end_restore_timestamp,omitempty"`
+	Engine                DBClusterEngineType                      `json:"engine"`
+	EngineVersion         string                                   `json:"engine_version"`
+	ErrorMessage          string                                   `json:"error_message"`
+	Id                    core.UUID                                `json:"id"`
+	Name                  string                                   `json:"name"`
+	OperationalStatus     DBClusterBackupOperationalStatus         `json:"operational_status"`
+	Project               NestedProjectSchema                      `json:"project"`
+	Region                NestedRegionSchema                       `json:"region"`
+	RequiredVolumeSize    int                                      `json:"required_volume_size"`
+	Size                  int                                      `json:"size"`
+	StartRestoreTimestamp nullable.Nullable[time.Time]             `json:"start_restore_timestamp,omitempty"`
+	Status                DBClusterBackupStatus                    `json:"status"`
 
 	// TopologyConfig The node layout is restored from the backup snapshot.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-	TopologyConfig *map[string]interface{} `json:"topology_config,omitempty"`
-	UpdatedAt      time.Time               `json:"updated_at"`
+	TopologyConfig nullable.Nullable[map[string]interface{}] `json:"topology_config,omitempty"`
+	UpdatedAt      time.Time                                 `json:"updated_at"`
 }
 
 // DBClusterBackupStatus defines model for DBClusterBackupStatus.
@@ -674,96 +675,96 @@ type DBClusterChangePasswordSchema struct {
 
 // DBClusterCreateSchema defines model for DBClusterCreateSchema.
 type DBClusterCreateSchema struct {
-	AllowedCidrs     *[]string               `json:"allowed_cidrs,omitempty"`
-	AutoBackupConfig *AutoBackupConfigSchema `json:"auto_backup_config,omitempty"`
-	Description      *string                 `json:"description,omitempty"`
+	AllowedCidrs     *[]string                                 `json:"allowed_cidrs,omitempty"`
+	AutoBackupConfig nullable.Nullable[AutoBackupConfigSchema] `json:"auto_backup_config,omitempty"`
+	Description      *string                                   `json:"description,omitempty"`
 
 	// DiskSize Use node_pools[].disk_size.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-	DiskSize                     *int                 `json:"disk_size,omitempty"`
-	EnableAutoIncreaseVolumeSize *bool                `json:"enable_auto_increase_volume_size,omitempty"`
-	EnablePitrBackup             *bool                `json:"enable_pitr_backup,omitempty"`
-	EnablePublicAccess           *bool                `json:"enable_public_access,omitempty"`
-	EnableSsl                    *bool                `json:"enable_ssl,omitempty"`
-	Engine                       *DBClusterEngineType `json:"engine,omitempty"`
+	DiskSize                     nullable.Nullable[int]                 `json:"disk_size,omitempty"`
+	EnableAutoIncreaseVolumeSize *bool                                  `json:"enable_auto_increase_volume_size,omitempty"`
+	EnablePitrBackup             *bool                                  `json:"enable_pitr_backup,omitempty"`
+	EnablePublicAccess           *bool                                  `json:"enable_public_access,omitempty"`
+	EnableSsl                    *bool                                  `json:"enable_ssl,omitempty"`
+	Engine                       nullable.Nullable[DBClusterEngineType] `json:"engine,omitempty"`
 
 	// EngineConfig The modern alternative to topology_config for an engine with exactly one topology (not MongoDB): send this with node_pools instead of topology_config. Required for memcached and starrocks, which accept no other form. OpenSearch may omit both fields.
-	EngineConfig      *map[string]interface{}           `json:"engine_config,omitempty"`
-	EngineVersionId   *core.UUID                        `json:"engine_version_id,omitempty"`
-	InitBackupId      *core.UUID                        `json:"init_backup_id,omitempty"`
-	KeepBackup        *bool                             `json:"keep_backup,omitempty"`
-	MaintenanceConfig *MaintenanceConfig                `json:"maintenance_config,omitempty"`
-	Metadata          *map[string]interface{}           `json:"metadata,omitempty"`
-	Name              string                            `json:"name"`
-	NodePools         *[]DBClusterNodePoolCreateSchema  `json:"node_pools,omitempty"`
-	Plugins           *[]DBClusterPluginSelectionSchema `json:"plugins,omitempty"`
-	RegionId          core.UUID                         `json:"region_id"`
+	EngineConfig      nullable.Nullable[map[string]interface{}] `json:"engine_config,omitempty"`
+	EngineVersionId   nullable.Nullable[core.UUID]              `json:"engine_version_id,omitempty"`
+	InitBackupId      nullable.Nullable[core.UUID]              `json:"init_backup_id,omitempty"`
+	KeepBackup        *bool                                     `json:"keep_backup,omitempty"`
+	MaintenanceConfig *MaintenanceConfig                        `json:"maintenance_config,omitempty"`
+	Metadata          *map[string]interface{}                   `json:"metadata,omitempty"`
+	Name              string                                    `json:"name"`
+	NodePools         *[]DBClusterNodePoolCreateSchema          `json:"node_pools,omitempty"`
+	Plugins           *[]DBClusterPluginSelectionSchema         `json:"plugins,omitempty"`
+	RegionId          core.UUID                                 `json:"region_id"`
 
 	// ResourceConfigId Use node_pools[].resource_config_id.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-	ResourceConfigId *core.UUID `json:"resource_config_id,omitempty"`
-	RestoreTimestamp *time.Time `json:"restore_timestamp,omitempty"`
-	RootPassword     *string    `json:"root_password,omitempty"`
+	ResourceConfigId nullable.Nullable[core.UUID] `json:"resource_config_id,omitempty"`
+	RestoreTimestamp nullable.Nullable[time.Time] `json:"restore_timestamp,omitempty"`
+	RootPassword     *string                      `json:"root_password,omitempty"`
 
 	// StorageClassId Use node_pools[].storage_class_id.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-	StorageClassId *core.UUID `json:"storage_class_id,omitempty"`
-	SubnetId       core.UUID  `json:"subnet_id"`
+	StorageClassId nullable.Nullable[core.UUID] `json:"storage_class_id,omitempty"`
+	SubnetId       core.UUID                    `json:"subnet_id"`
 
 	// TopologyConfig Use node_pools and engine_config. Not supported for memcached or starrocks.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-	TopologyConfig *DBClusterTopologyConfig `json:"topology_config,omitempty"`
-	ZoneId         *core.UUID               `json:"zone_id,omitempty"`
+	TopologyConfig nullable.Nullable[DBClusterTopologyConfig] `json:"topology_config,omitempty"`
+	ZoneId         nullable.Nullable[core.UUID]               `json:"zone_id,omitempty"`
 }
 
 // DBClusterDetailSchema defines model for DBClusterDetailSchema.
 type DBClusterDetailSchema struct {
-	AdminUsername     string                           `json:"admin_username"`
-	AllowedCidrs      []string                         `json:"allowed_cidrs"`
-	AutoBackupConfig  *DBClusterAutoBackupConfigSchema `json:"auto_backup_config,omitempty"`
-	BackupStorageUsed int                              `json:"backup_storage_used"`
-	CloudObjectId     *string                          `json:"cloud_object_id,omitempty"`
-	CreatedAt         time.Time                        `json:"created_at"`
-	Description       string                           `json:"description"`
+	AdminUsername     string                                             `json:"admin_username"`
+	AllowedCidrs      []string                                           `json:"allowed_cidrs"`
+	AutoBackupConfig  nullable.Nullable[DBClusterAutoBackupConfigSchema] `json:"auto_backup_config,omitempty"`
+	BackupStorageUsed int                                                `json:"backup_storage_used"`
+	CloudObjectId     nullable.Nullable[string]                          `json:"cloud_object_id,omitempty"`
+	CreatedAt         time.Time                                          `json:"created_at"`
+	Description       string                                             `json:"description"`
 
 	// DiskSize Use node_pools[].disk_size.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-	DiskSize                         *int                               `json:"disk_size,omitempty"`
-	EnableAutoBackup                 bool                               `json:"enable_auto_backup"`
-	EnableAutoIncreaseVolumeSize     bool                               `json:"enable_auto_increase_volume_size"`
-	EnablePitrBackup                 bool                               `json:"enable_pitr_backup"`
-	EnablePublicAccess               bool                               `json:"enable_public_access"`
-	EnableSsl                        bool                               `json:"enable_ssl"`
-	Endpoint                         map[string]interface{}             `json:"endpoint"`
-	Engine                           DBClusterEngineType                `json:"engine"`
-	EngineConfig                     map[string]interface{}             `json:"engine_config"`
-	EngineVersion                    NestedDBClusterEngineVersionSchema `json:"engine_version"`
-	ErrorMessage                     string                             `json:"error_message"`
-	Id                               core.UUID                          `json:"id"`
-	InitBackupId                     *core.UUID                         `json:"init_backup_id,omitempty"`
-	KeepBackup                       bool                               `json:"keep_backup"`
-	MaintenanceConfig                map[string]interface{}             `json:"maintenance_config"`
-	Metadata                         map[string]interface{}             `json:"metadata"`
-	Name                             string                             `json:"name"`
-	NodePools                        []NestedDBClusterNodePoolSchema    `json:"node_pools"`
-	ObservabilityDashboardTemplateId *string                            `json:"observability_dashboard_template_id,omitempty"`
-	ObservabilityParams              *[]map[string]string               `json:"observability_params,omitempty"`
-	OperationalStatus                DBClusterOperationalStatus         `json:"operational_status"`
-	Plugins                          []NestedDBClusterPluginSchema      `json:"plugins"`
-	Project                          NestedProjectSchema                `json:"project"`
-	Region                           NestedRegionSchema                 `json:"region"`
+	DiskSize                         nullable.Nullable[int]                 `json:"disk_size,omitempty"`
+	EnableAutoBackup                 bool                                   `json:"enable_auto_backup"`
+	EnableAutoIncreaseVolumeSize     bool                                   `json:"enable_auto_increase_volume_size"`
+	EnablePitrBackup                 bool                                   `json:"enable_pitr_backup"`
+	EnablePublicAccess               bool                                   `json:"enable_public_access"`
+	EnableSsl                        bool                                   `json:"enable_ssl"`
+	Endpoint                         map[string]interface{}                 `json:"endpoint"`
+	Engine                           DBClusterEngineType                    `json:"engine"`
+	EngineConfig                     map[string]interface{}                 `json:"engine_config"`
+	EngineVersion                    NestedDBClusterEngineVersionSchema     `json:"engine_version"`
+	ErrorMessage                     string                                 `json:"error_message"`
+	Id                               core.UUID                              `json:"id"`
+	InitBackupId                     nullable.Nullable[core.UUID]           `json:"init_backup_id,omitempty"`
+	KeepBackup                       bool                                   `json:"keep_backup"`
+	MaintenanceConfig                map[string]interface{}                 `json:"maintenance_config"`
+	Metadata                         map[string]interface{}                 `json:"metadata"`
+	Name                             string                                 `json:"name"`
+	NodePools                        []NestedDBClusterNodePoolSchema        `json:"node_pools"`
+	ObservabilityDashboardTemplateId nullable.Nullable[string]              `json:"observability_dashboard_template_id,omitempty"`
+	ObservabilityParams              nullable.Nullable[[]map[string]string] `json:"observability_params,omitempty"`
+	OperationalStatus                DBClusterOperationalStatus             `json:"operational_status"`
+	Plugins                          []NestedDBClusterPluginSchema          `json:"plugins"`
+	Project                          NestedProjectSchema                    `json:"project"`
+	Region                           NestedRegionSchema                     `json:"region"`
 
 	// ResourceConfig Use node_pools[].resource_config.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	ResourceConfig   NestedDBClusterResourceConfigSchema `json:"resource_config"`
-	RestoreTimestamp *time.Time                          `json:"restore_timestamp,omitempty"`
+	RestoreTimestamp nullable.Nullable[time.Time]        `json:"restore_timestamp,omitempty"`
 	Status           DBClusterStatus                     `json:"status"`
 
 	// StorageClass Use node_pools[].storage_class.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-	StorageClass *NestedDBClusterStorageClassSchema `json:"storage_class,omitempty"`
-	Subnet       NestedDBClusterSubnetSchema        `json:"subnet"`
-	Topology     DBClusterTopologyKind              `json:"topology"`
+	StorageClass nullable.Nullable[NestedDBClusterStorageClassSchema] `json:"storage_class,omitempty"`
+	Subnet       NestedDBClusterSubnetSchema                          `json:"subnet"`
+	Topology     DBClusterTopologyKind                                `json:"topology"`
 
 	// TopologyConfig Use node_pools and engine_config.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
@@ -772,9 +773,9 @@ type DBClusterDetailSchema struct {
 
 	// UsedDiskSize Use node_pools[].used_disk_size.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-	UsedDiskSize int               `json:"used_disk_size"`
-	Version      string            `json:"version"`
-	Zone         *NestedZoneSchema `json:"zone,omitempty"`
+	UsedDiskSize int                                 `json:"used_disk_size"`
+	Version      string                              `json:"version"`
+	Zone         nullable.Nullable[NestedZoneSchema] `json:"zone,omitempty"`
 }
 
 // DBClusterDiskType defines model for DBClusterDiskType.
@@ -794,17 +795,17 @@ type DBClusterEngineVersionSchema struct {
 
 // DBClusterListSchema defines model for DBClusterListSchema.
 type DBClusterListSchema struct {
-	AdminUsername     string                           `json:"admin_username"`
-	AllowedCidrs      []string                         `json:"allowed_cidrs"`
-	AutoBackupConfig  *DBClusterAutoBackupConfigSchema `json:"auto_backup_config,omitempty"`
-	BackupStorageUsed int                              `json:"backup_storage_used"`
-	CloudObjectId     *string                          `json:"cloud_object_id,omitempty"`
-	CreatedAt         time.Time                        `json:"created_at"`
-	Description       string                           `json:"description"`
+	AdminUsername     string                                             `json:"admin_username"`
+	AllowedCidrs      []string                                           `json:"allowed_cidrs"`
+	AutoBackupConfig  nullable.Nullable[DBClusterAutoBackupConfigSchema] `json:"auto_backup_config,omitempty"`
+	BackupStorageUsed int                                                `json:"backup_storage_used"`
+	CloudObjectId     nullable.Nullable[string]                          `json:"cloud_object_id,omitempty"`
+	CreatedAt         time.Time                                          `json:"created_at"`
+	Description       string                                             `json:"description"`
 
 	// DiskSize Use node_pools[].disk_size.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-	DiskSize                     *int                               `json:"disk_size,omitempty"`
+	DiskSize                     nullable.Nullable[int]             `json:"disk_size,omitempty"`
 	EnableAutoBackup             bool                               `json:"enable_auto_backup"`
 	EnableAutoIncreaseVolumeSize bool                               `json:"enable_auto_increase_volume_size"`
 	EnablePitrBackup             bool                               `json:"enable_pitr_backup"`
@@ -816,7 +817,7 @@ type DBClusterListSchema struct {
 	EngineVersion                NestedDBClusterEngineVersionSchema `json:"engine_version"`
 	ErrorMessage                 string                             `json:"error_message"`
 	Id                           core.UUID                          `json:"id"`
-	InitBackupId                 *core.UUID                         `json:"init_backup_id,omitempty"`
+	InitBackupId                 nullable.Nullable[core.UUID]       `json:"init_backup_id,omitempty"`
 	KeepBackup                   bool                               `json:"keep_backup"`
 	MaintenanceConfig            map[string]interface{}             `json:"maintenance_config"`
 	Metadata                     map[string]interface{}             `json:"metadata"`
@@ -829,14 +830,14 @@ type DBClusterListSchema struct {
 	// ResourceConfig Use node_pools[].resource_config.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	ResourceConfig   NestedDBClusterResourceConfigSchema `json:"resource_config"`
-	RestoreTimestamp *time.Time                          `json:"restore_timestamp,omitempty"`
+	RestoreTimestamp nullable.Nullable[time.Time]        `json:"restore_timestamp,omitempty"`
 	Status           DBClusterStatus                     `json:"status"`
 
 	// StorageClass Use node_pools[].storage_class.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-	StorageClass *NestedDBClusterStorageClassSchema `json:"storage_class,omitempty"`
-	Subnet       NestedDBClusterSubnetSchema        `json:"subnet"`
-	Topology     DBClusterTopologyKind              `json:"topology"`
+	StorageClass nullable.Nullable[NestedDBClusterStorageClassSchema] `json:"storage_class,omitempty"`
+	Subnet       NestedDBClusterSubnetSchema                          `json:"subnet"`
+	Topology     DBClusterTopologyKind                                `json:"topology"`
 
 	// TopologyConfig Use node_pools and engine_config.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
@@ -845,21 +846,21 @@ type DBClusterListSchema struct {
 
 	// UsedDiskSize Use node_pools[].used_disk_size.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-	UsedDiskSize int               `json:"used_disk_size"`
-	Version      string            `json:"version"`
-	Zone         *NestedZoneSchema `json:"zone,omitempty"`
+	UsedDiskSize int                                 `json:"used_disk_size"`
+	Version      string                              `json:"version"`
+	Zone         nullable.Nullable[NestedZoneSchema] `json:"zone,omitempty"`
 }
 
 // DBClusterNodePoolCreateSchema defines model for DBClusterNodePoolCreateSchema.
 type DBClusterNodePoolCreateSchema struct {
-	DiskSize         *int                    `json:"disk_size,omitempty"`
-	EngineRoles      *[]OpenSearchNodeRole   `json:"engine_roles,omitempty"`
-	Name             string                  `json:"name"`
-	PartitionCount   *int                    `json:"partition_count,omitempty"`
-	PoolConfig       *map[string]interface{} `json:"pool_config,omitempty"`
-	Replicas         int                     `json:"replicas"`
-	ResourceConfigId core.UUID               `json:"resource_config_id"`
-	StorageClassId   *core.UUID              `json:"storage_class_id,omitempty"`
+	DiskSize         nullable.Nullable[int]       `json:"disk_size,omitempty"`
+	EngineRoles      *[]OpenSearchNodeRole        `json:"engine_roles,omitempty"`
+	Name             string                       `json:"name"`
+	PartitionCount   *int                         `json:"partition_count,omitempty"`
+	PoolConfig       *map[string]interface{}      `json:"pool_config,omitempty"`
+	Replicas         int                          `json:"replicas"`
+	ResourceConfigId core.UUID                    `json:"resource_config_id"`
+	StorageClassId   nullable.Nullable[core.UUID] `json:"storage_class_id,omitempty"`
 }
 
 // DBClusterNodePoolResizeFlavorSchema defines model for DBClusterNodePoolResizeFlavorSchema.
@@ -880,7 +881,7 @@ type DBClusterNodePoolScaleSchema struct {
 // DBClusterNodePoolSchema defines model for DBClusterNodePoolSchema.
 type DBClusterNodePoolSchema struct {
 	CreatedAt      time.Time                           `json:"created_at"`
-	DiskSize       *int                                `json:"disk_size,omitempty"`
+	DiskSize       nullable.Nullable[int]              `json:"disk_size,omitempty"`
 	EngineRoles    []string                            `json:"engine_roles"`
 	Id             core.UUID                           `json:"id"`
 	Name           string                              `json:"name"`
@@ -896,10 +897,10 @@ type DBClusterNodePoolSchema struct {
 	// DBClusterEngineType or DBClusterTopologyKind value — the pool carries no
 	// `kind` discriminator, so a role read out of context must still be
 	// unambiguous.
-	Role         DBClusterNodeRole                  `json:"role"`
-	StorageClass *NestedDBClusterStorageClassSchema `json:"storage_class,omitempty"`
-	UpdatedAt    time.Time                          `json:"updated_at"`
-	UsedDiskSize int                                `json:"used_disk_size"`
+	Role         DBClusterNodeRole                                    `json:"role"`
+	StorageClass nullable.Nullable[NestedDBClusterStorageClassSchema] `json:"storage_class,omitempty"`
+	UpdatedAt    time.Time                                            `json:"updated_at"`
+	UsedDiskSize int                                                  `json:"used_disk_size"`
 }
 
 // DBClusterNodeRole A node pool's place in its cluster's topology.
@@ -947,17 +948,17 @@ type DBClusterResourcePackageSchema struct {
 
 // DBClusterSchema defines model for DBClusterSchema.
 type DBClusterSchema struct {
-	AdminUsername     string                           `json:"admin_username"`
-	AllowedCidrs      []string                         `json:"allowed_cidrs"`
-	AutoBackupConfig  *DBClusterAutoBackupConfigSchema `json:"auto_backup_config,omitempty"`
-	BackupStorageUsed int                              `json:"backup_storage_used"`
-	CloudObjectId     *string                          `json:"cloud_object_id,omitempty"`
-	CreatedAt         time.Time                        `json:"created_at"`
-	Description       string                           `json:"description"`
+	AdminUsername     string                                             `json:"admin_username"`
+	AllowedCidrs      []string                                           `json:"allowed_cidrs"`
+	AutoBackupConfig  nullable.Nullable[DBClusterAutoBackupConfigSchema] `json:"auto_backup_config,omitempty"`
+	BackupStorageUsed int                                                `json:"backup_storage_used"`
+	CloudObjectId     nullable.Nullable[string]                          `json:"cloud_object_id,omitempty"`
+	CreatedAt         time.Time                                          `json:"created_at"`
+	Description       string                                             `json:"description"`
 
 	// DiskSize Use node_pools[].disk_size.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-	DiskSize                     *int                               `json:"disk_size,omitempty"`
+	DiskSize                     nullable.Nullable[int]             `json:"disk_size,omitempty"`
 	EnableAutoBackup             bool                               `json:"enable_auto_backup"`
 	EnableAutoIncreaseVolumeSize bool                               `json:"enable_auto_increase_volume_size"`
 	EnablePitrBackup             bool                               `json:"enable_pitr_backup"`
@@ -969,7 +970,7 @@ type DBClusterSchema struct {
 	EngineVersion                NestedDBClusterEngineVersionSchema `json:"engine_version"`
 	ErrorMessage                 string                             `json:"error_message"`
 	Id                           core.UUID                          `json:"id"`
-	InitBackupId                 *core.UUID                         `json:"init_backup_id,omitempty"`
+	InitBackupId                 nullable.Nullable[core.UUID]       `json:"init_backup_id,omitempty"`
 	KeepBackup                   bool                               `json:"keep_backup"`
 	MaintenanceConfig            map[string]interface{}             `json:"maintenance_config"`
 	Metadata                     map[string]interface{}             `json:"metadata"`
@@ -983,14 +984,14 @@ type DBClusterSchema struct {
 	// ResourceConfig Use node_pools[].resource_config.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	ResourceConfig   NestedDBClusterResourceConfigSchema `json:"resource_config"`
-	RestoreTimestamp *time.Time                          `json:"restore_timestamp,omitempty"`
+	RestoreTimestamp nullable.Nullable[time.Time]        `json:"restore_timestamp,omitempty"`
 	Status           DBClusterStatus                     `json:"status"`
 
 	// StorageClass Use node_pools[].storage_class.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-	StorageClass *NestedDBClusterStorageClassSchema `json:"storage_class,omitempty"`
-	Subnet       NestedDBClusterSubnetSchema        `json:"subnet"`
-	Topology     DBClusterTopologyKind              `json:"topology"`
+	StorageClass nullable.Nullable[NestedDBClusterStorageClassSchema] `json:"storage_class,omitempty"`
+	Subnet       NestedDBClusterSubnetSchema                          `json:"subnet"`
+	Topology     DBClusterTopologyKind                                `json:"topology"`
 
 	// TopologyConfig Use node_pools and engine_config.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
@@ -999,9 +1000,9 @@ type DBClusterSchema struct {
 
 	// UsedDiskSize Use node_pools[].used_disk_size.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-	UsedDiskSize int               `json:"used_disk_size"`
-	Version      string            `json:"version"`
-	Zone         *NestedZoneSchema `json:"zone,omitempty"`
+	UsedDiskSize int                                 `json:"used_disk_size"`
+	Version      string                              `json:"version"`
+	Zone         nullable.Nullable[NestedZoneSchema] `json:"zone,omitempty"`
 }
 
 // DBClusterStatus defines model for DBClusterStatus.
@@ -1032,8 +1033,8 @@ type DBClusterVolumeSpeed string
 type DailyAutoBackupConfig struct {
 	BackupInterval   DailyAutoBackupConfigBackupInterval `json:"backup_interval"`
 	EnableAutoBackup bool                                `json:"enable_auto_backup"`
-	MaxAutoBackup    *int                                `json:"max_auto_backup,omitempty"`
-	RetentionDays    *int                                `json:"retention_days,omitempty"`
+	MaxAutoBackup    nullable.Nullable[int]              `json:"max_auto_backup,omitempty"`
+	RetentionDays    nullable.Nullable[int]              `json:"retention_days,omitempty"`
 	StartHour        int                                 `json:"start_hour"`
 }
 
@@ -1055,8 +1056,8 @@ type DisabledAutoBackupConfigEnableAutoBackup bool
 type EnabledDailyAutoBackupConfig struct {
 	BackupInterval   EnabledDailyAutoBackupConfigBackupInterval   `json:"backup_interval"`
 	EnableAutoBackup EnabledDailyAutoBackupConfigEnableAutoBackup `json:"enable_auto_backup"`
-	MaxAutoBackup    *int                                         `json:"max_auto_backup,omitempty"`
-	RetentionDays    *int                                         `json:"retention_days,omitempty"`
+	MaxAutoBackup    nullable.Nullable[int]                       `json:"max_auto_backup,omitempty"`
+	RetentionDays    nullable.Nullable[int]                       `json:"retention_days,omitempty"`
 	StartHour        int                                          `json:"start_hour"`
 }
 
@@ -1071,8 +1072,8 @@ type EnabledWeeklyAutoBackupConfig struct {
 	BackupInterval   EnabledWeeklyAutoBackupConfigBackupInterval   `json:"backup_interval"`
 	DayOfWeek        DayOfWeek                                     `json:"day_of_week"`
 	EnableAutoBackup EnabledWeeklyAutoBackupConfigEnableAutoBackup `json:"enable_auto_backup"`
-	MaxAutoBackup    *int                                          `json:"max_auto_backup,omitempty"`
-	RetentionDays    *int                                          `json:"retention_days,omitempty"`
+	MaxAutoBackup    nullable.Nullable[int]                        `json:"max_auto_backup,omitempty"`
+	RetentionDays    nullable.Nullable[int]                        `json:"retention_days,omitempty"`
 	StartHour        int                                           `json:"start_hour"`
 }
 
@@ -1084,8 +1085,8 @@ type EnabledWeeklyAutoBackupConfigEnableAutoBackup bool
 
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
-	Errors    []ErrorSchema `json:"errors"`
-	RequestId *string       `json:"request_id"`
+	Errors    []ErrorSchema             `json:"errors"`
+	RequestId nullable.Nullable[string] `json:"request_id"`
 }
 
 // ErrorSchema defines model for ErrorSchema.
@@ -1129,7 +1130,7 @@ type NestedDBClusterEngineVersionSchema struct {
 
 // NestedDBClusterNodePoolSchema defines model for NestedDBClusterNodePoolSchema.
 type NestedDBClusterNodePoolSchema struct {
-	DiskSize       *int                                `json:"disk_size,omitempty"`
+	DiskSize       nullable.Nullable[int]              `json:"disk_size,omitempty"`
 	EngineRoles    []string                            `json:"engine_roles"`
 	Id             core.UUID                           `json:"id"`
 	Name           string                              `json:"name"`
@@ -1145,9 +1146,9 @@ type NestedDBClusterNodePoolSchema struct {
 	// DBClusterEngineType or DBClusterTopologyKind value — the pool carries no
 	// `kind` discriminator, so a role read out of context must still be
 	// unambiguous.
-	Role         DBClusterNodeRole                  `json:"role"`
-	StorageClass *NestedDBClusterStorageClassSchema `json:"storage_class,omitempty"`
-	UsedDiskSize int                                `json:"used_disk_size"`
+	Role         DBClusterNodeRole                                    `json:"role"`
+	StorageClass nullable.Nullable[NestedDBClusterStorageClassSchema] `json:"storage_class,omitempty"`
+	UsedDiskSize int                                                  `json:"used_disk_size"`
 }
 
 // NestedDBClusterPluginSchema defines model for NestedDBClusterPluginSchema.
@@ -1230,57 +1231,57 @@ type OpenSearchTopologyConfigKind string
 
 // PagedDBClusterBackupSchema defines model for PagedDBClusterBackupSchema.
 type PagedDBClusterBackupSchema struct {
-	Count    int                     `json:"count"`
-	Next     *string                 `json:"next,omitempty"`
-	Previous *string                 `json:"previous,omitempty"`
-	Results  []DBClusterBackupSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []DBClusterBackupSchema   `json:"results"`
 }
 
 // PagedDBClusterEngineVersionSchema defines model for PagedDBClusterEngineVersionSchema.
 type PagedDBClusterEngineVersionSchema struct {
 	Count    int                            `json:"count"`
-	Next     *string                        `json:"next,omitempty"`
-	Previous *string                        `json:"previous,omitempty"`
+	Next     nullable.Nullable[string]      `json:"next,omitempty"`
+	Previous nullable.Nullable[string]      `json:"previous,omitempty"`
 	Results  []DBClusterEngineVersionSchema `json:"results"`
 }
 
 // PagedDBClusterListSchema defines model for PagedDBClusterListSchema.
 type PagedDBClusterListSchema struct {
-	Count    int                   `json:"count"`
-	Next     *string               `json:"next,omitempty"`
-	Previous *string               `json:"previous,omitempty"`
-	Results  []DBClusterListSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []DBClusterListSchema     `json:"results"`
 }
 
 // PagedDBClusterNodePoolSchema defines model for PagedDBClusterNodePoolSchema.
 type PagedDBClusterNodePoolSchema struct {
 	Count    int                       `json:"count"`
-	Next     *string                   `json:"next,omitempty"`
-	Previous *string                   `json:"previous,omitempty"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
 	Results  []DBClusterNodePoolSchema `json:"results"`
 }
 
 // PagedDBClusterPluginCatalogSchema defines model for PagedDBClusterPluginCatalogSchema.
 type PagedDBClusterPluginCatalogSchema struct {
 	Count    int                            `json:"count"`
-	Next     *string                        `json:"next,omitempty"`
-	Previous *string                        `json:"previous,omitempty"`
+	Next     nullable.Nullable[string]      `json:"next,omitempty"`
+	Previous nullable.Nullable[string]      `json:"previous,omitempty"`
 	Results  []DBClusterPluginCatalogSchema `json:"results"`
 }
 
 // PagedDBClusterResourcePackageSchema defines model for PagedDBClusterResourcePackageSchema.
 type PagedDBClusterResourcePackageSchema struct {
 	Count    int                              `json:"count"`
-	Next     *string                          `json:"next,omitempty"`
-	Previous *string                          `json:"previous,omitempty"`
+	Next     nullable.Nullable[string]        `json:"next,omitempty"`
+	Previous nullable.Nullable[string]        `json:"previous,omitempty"`
 	Results  []DBClusterResourcePackageSchema `json:"results"`
 }
 
 // PagedDBClusterStorageClassSchema defines model for PagedDBClusterStorageClassSchema.
 type PagedDBClusterStorageClassSchema struct {
 	Count    int                           `json:"count"`
-	Next     *string                       `json:"next,omitempty"`
-	Previous *string                       `json:"previous,omitempty"`
+	Next     nullable.Nullable[string]     `json:"next,omitempty"`
+	Previous nullable.Nullable[string]     `json:"previous,omitempty"`
 	Results  []DBClusterStorageClassSchema `json:"results"`
 }
 
@@ -1307,8 +1308,8 @@ type WeeklyAutoBackupConfig struct {
 	BackupInterval   WeeklyAutoBackupConfigBackupInterval `json:"backup_interval"`
 	DayOfWeek        DayOfWeek                            `json:"day_of_week"`
 	EnableAutoBackup bool                                 `json:"enable_auto_backup"`
-	MaxAutoBackup    *int                                 `json:"max_auto_backup,omitempty"`
-	RetentionDays    *int                                 `json:"retention_days,omitempty"`
+	MaxAutoBackup    nullable.Nullable[int]               `json:"max_auto_backup,omitempty"`
+	RetentionDays    nullable.Nullable[int]               `json:"retention_days,omitempty"`
 	StartHour        int                                  `json:"start_hour"`
 }
 

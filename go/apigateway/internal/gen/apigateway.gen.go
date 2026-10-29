@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/oapi-codegen/nullable"
 	core "github.com/viettelcloud-oss/sdks/go/core"
 	runtime "github.com/viettelcloud-oss/sdks/go/internal/oapi"
 )
@@ -144,46 +145,46 @@ func (e UpstreamType) Valid() bool {
 
 // APIBaseSchema defines model for APIBaseSchema.
 type APIBaseSchema struct {
-	CorsConfig          *NestedCORSConfigSchema `json:"cors_config,omitempty"`
-	CreatedAt           time.Time               `json:"created_at"`
-	Description         string                  `json:"description"`
-	GatewayUrl          string                  `json:"gateway_url"`
-	Id                  core.UUID               `json:"id"`
-	LastSyncMetricsTime *time.Time              `json:"last_sync_metrics_time,omitempty"`
-	Name                string                  `json:"name"`
-	Owner               *NestedUserSchema       `json:"owner"`
-	Project             NestedProjectSchema     `json:"project"`
-	Region              NestedRegionSchema      `json:"region"`
-	Slug                string                  `json:"slug"`
-	TotalRequests       int                     `json:"total_requests"`
-	UpdatedAt           time.Time               `json:"updated_at"`
+	CorsConfig          nullable.Nullable[NestedCORSConfigSchema] `json:"cors_config,omitempty"`
+	CreatedAt           time.Time                                 `json:"created_at"`
+	Description         string                                    `json:"description"`
+	GatewayUrl          string                                    `json:"gateway_url"`
+	Id                  core.UUID                                 `json:"id"`
+	LastSyncMetricsTime nullable.Nullable[time.Time]              `json:"last_sync_metrics_time,omitempty"`
+	Name                string                                    `json:"name"`
+	Owner               nullable.Nullable[NestedUserSchema]       `json:"owner"`
+	Project             NestedProjectSchema                       `json:"project"`
+	Region              NestedRegionSchema                        `json:"region"`
+	Slug                string                                    `json:"slug"`
+	TotalRequests       int                                       `json:"total_requests"`
+	UpdatedAt           time.Time                                 `json:"updated_at"`
 }
 
 // APICreateSchema defines model for APICreateSchema.
 type APICreateSchema struct {
-	Description *string   `json:"description,omitempty"`
-	Name        string    `json:"name"`
-	RegionId    core.UUID `json:"region_id"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Name        string                    `json:"name"`
+	RegionId    core.UUID                 `json:"region_id"`
 }
 
 // APIDetailSchema defines model for APIDetailSchema.
 type APIDetailSchema struct {
-	CorsConfig                       *NestedCORSConfigSchema `json:"cors_config,omitempty"`
-	CreatedAt                        time.Time               `json:"created_at"`
-	Description                      string                  `json:"description"`
-	GatewayUrl                       string                  `json:"gateway_url"`
-	Id                               core.UUID               `json:"id"`
-	LastSyncMetricsTime              *time.Time              `json:"last_sync_metrics_time,omitempty"`
-	Name                             string                  `json:"name"`
-	ObservabilityDashboardTemplateId *string                 `json:"observability_dashboard_template_id,omitempty"`
-	ObservabilityLoggingParams       *[]map[string]string    `json:"observability_logging_params,omitempty"`
-	ObservabilityMonitoringParams    *[]map[string]string    `json:"observability_monitoring_params,omitempty"`
-	Owner                            *NestedUserSchema       `json:"owner"`
-	Project                          NestedProjectSchema     `json:"project"`
-	Region                           NestedRegionSchema      `json:"region"`
-	Slug                             string                  `json:"slug"`
-	TotalRequests                    int                     `json:"total_requests"`
-	UpdatedAt                        time.Time               `json:"updated_at"`
+	CorsConfig                       nullable.Nullable[NestedCORSConfigSchema] `json:"cors_config,omitempty"`
+	CreatedAt                        time.Time                                 `json:"created_at"`
+	Description                      string                                    `json:"description"`
+	GatewayUrl                       string                                    `json:"gateway_url"`
+	Id                               core.UUID                                 `json:"id"`
+	LastSyncMetricsTime              nullable.Nullable[time.Time]              `json:"last_sync_metrics_time,omitempty"`
+	Name                             string                                    `json:"name"`
+	ObservabilityDashboardTemplateId nullable.Nullable[string]                 `json:"observability_dashboard_template_id,omitempty"`
+	ObservabilityLoggingParams       nullable.Nullable[[]map[string]string]    `json:"observability_logging_params,omitempty"`
+	ObservabilityMonitoringParams    nullable.Nullable[[]map[string]string]    `json:"observability_monitoring_params,omitempty"`
+	Owner                            nullable.Nullable[NestedUserSchema]       `json:"owner"`
+	Project                          NestedProjectSchema                       `json:"project"`
+	Region                           NestedRegionSchema                        `json:"region"`
+	Slug                             string                                    `json:"slug"`
+	TotalRequests                    int                                       `json:"total_requests"`
+	UpdatedAt                        time.Time                                 `json:"updated_at"`
 }
 
 // AuthOptions AuthOptions is exactly one of: BasicAuthConfig, KeyAuthConfig, JWTAuthConfig. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
@@ -196,42 +197,42 @@ type AuthenticatorCreateSchema struct {
 	ApiId core.UUID `json:"api_id"`
 
 	// AuthConfig AuthOptions is exactly one of: BasicAuthConfig, KeyAuthConfig, JWTAuthConfig. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
-	AuthConfig  AuthOptions `json:"auth_config"`
-	Description *string     `json:"description,omitempty"`
-	Name        string      `json:"name"`
+	AuthConfig  AuthOptions               `json:"auth_config"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Name        string                    `json:"name"`
 }
 
 // AuthenticatorDetailSchema defines model for AuthenticatorDetailSchema.
 type AuthenticatorDetailSchema struct {
-	Api         NestedAPISchema     `json:"api"`
-	CreatedAt   time.Time           `json:"created_at"`
-	Description string              `json:"description"`
-	Id          core.UUID           `json:"id"`
-	JwtKey      *string             `json:"jwt_key,omitempty"`
-	JwtSecret   *string             `json:"jwt_secret,omitempty"`
-	KeyAuth     *string             `json:"key_auth,omitempty"`
-	Name        string              `json:"name"`
-	Owner       *NestedUserSchema   `json:"owner"`
-	Password    *string             `json:"password,omitempty"`
-	Project     NestedProjectSchema `json:"project"`
-	Slug        string              `json:"slug"`
-	Type        string              `json:"type"`
-	UpdatedAt   time.Time           `json:"updated_at"`
-	Username    *string             `json:"username,omitempty"`
+	Api         NestedAPISchema                     `json:"api"`
+	CreatedAt   time.Time                           `json:"created_at"`
+	Description string                              `json:"description"`
+	Id          core.UUID                           `json:"id"`
+	JwtKey      nullable.Nullable[string]           `json:"jwt_key,omitempty"`
+	JwtSecret   nullable.Nullable[string]           `json:"jwt_secret,omitempty"`
+	KeyAuth     nullable.Nullable[string]           `json:"key_auth,omitempty"`
+	Name        string                              `json:"name"`
+	Owner       nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Password    nullable.Nullable[string]           `json:"password,omitempty"`
+	Project     NestedProjectSchema                 `json:"project"`
+	Slug        string                              `json:"slug"`
+	Type        string                              `json:"type"`
+	UpdatedAt   time.Time                           `json:"updated_at"`
+	Username    nullable.Nullable[string]           `json:"username,omitempty"`
 }
 
 // AuthenticatorSchema defines model for AuthenticatorSchema.
 type AuthenticatorSchema struct {
-	Api         NestedAPISchema     `json:"api"`
-	CreatedAt   time.Time           `json:"created_at"`
-	Description string              `json:"description"`
-	Id          core.UUID           `json:"id"`
-	Name        string              `json:"name"`
-	Owner       *NestedUserSchema   `json:"owner"`
-	Project     NestedProjectSchema `json:"project"`
-	Slug        string              `json:"slug"`
-	Type        string              `json:"type"`
-	UpdatedAt   time.Time           `json:"updated_at"`
+	Api         NestedAPISchema                     `json:"api"`
+	CreatedAt   time.Time                           `json:"created_at"`
+	Description string                              `json:"description"`
+	Id          core.UUID                           `json:"id"`
+	Name        string                              `json:"name"`
+	Owner       nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Project     NestedProjectSchema                 `json:"project"`
+	Slug        string                              `json:"slug"`
+	Type        string                              `json:"type"`
+	UpdatedAt   time.Time                           `json:"updated_at"`
 }
 
 // BasicAuthConfig defines model for BasicAuthConfig.
@@ -256,27 +257,27 @@ type CORSConfigPartialUpdateSchema struct {
 
 // CORSConfigSchema defines model for CORSConfigSchema.
 type CORSConfigSchema struct {
-	AllowCredential bool                `json:"allow_credential"`
-	AllowHeaders    []string            `json:"allow_headers"`
-	AllowMethods    []string            `json:"allow_methods"`
-	AllowOrigins    []string            `json:"allow_origins"`
-	Api             NestedAPISchema     `json:"api"`
-	CreatedAt       time.Time           `json:"created_at"`
-	ExposeHeaders   []string            `json:"expose_headers"`
-	Id              core.UUID           `json:"id"`
-	MaxAge          int                 `json:"max_age"`
-	Owner           *NestedUserSchema   `json:"owner"`
-	Project         NestedProjectSchema `json:"project"`
-	UpdatedAt       time.Time           `json:"updated_at"`
+	AllowCredential bool                                `json:"allow_credential"`
+	AllowHeaders    []string                            `json:"allow_headers"`
+	AllowMethods    []string                            `json:"allow_methods"`
+	AllowOrigins    []string                            `json:"allow_origins"`
+	Api             NestedAPISchema                     `json:"api"`
+	CreatedAt       time.Time                           `json:"created_at"`
+	ExposeHeaders   []string                            `json:"expose_headers"`
+	Id              core.UUID                           `json:"id"`
+	MaxAge          int                                 `json:"max_age"`
+	Owner           nullable.Nullable[NestedUserSchema] `json:"owner"`
+	Project         NestedProjectSchema                 `json:"project"`
+	UpdatedAt       time.Time                           `json:"updated_at"`
 }
 
 // CustomDomainCreateSchema defines model for CustomDomainCreateSchema.
 type CustomDomainCreateSchema struct {
-	CertificateId core.UUID `json:"certificate_id"`
-	Description   *string   `json:"description,omitempty"`
-	Domain        string    `json:"domain"`
-	Name          string    `json:"name"`
-	RegionId      core.UUID `json:"region_id"`
+	CertificateId core.UUID                 `json:"certificate_id"`
+	Description   nullable.Nullable[string] `json:"description,omitempty"`
+	Domain        string                    `json:"domain"`
+	Name          string                    `json:"name"`
+	RegionId      core.UUID                 `json:"region_id"`
 }
 
 // CustomDomainPartialUpdateSchema defines model for CustomDomainPartialUpdateSchema.
@@ -302,8 +303,8 @@ type CustomDomainSchema struct {
 
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
-	Errors    []ErrorSchema `json:"errors"`
-	RequestId *string       `json:"request_id"`
+	Errors    []ErrorSchema             `json:"errors"`
+	RequestId nullable.Nullable[string] `json:"request_id"`
 }
 
 // ErrorSchema defines model for ErrorSchema.
@@ -360,12 +361,12 @@ type NestedCORSConfigSchema struct {
 
 // NestedCertificateSchema defines model for NestedCertificateSchema.
 type NestedCertificateSchema struct {
-	CommonName *string    `json:"common_name"`
-	CreatedAt  time.Time  `json:"created_at"`
-	ExpiresOn  *time.Time `json:"expires_on"`
-	Id         core.UUID  `json:"id"`
-	IssuedOn   *time.Time `json:"issued_on"`
-	Name       string     `json:"name"`
+	CommonName nullable.Nullable[string]    `json:"common_name"`
+	CreatedAt  time.Time                    `json:"created_at"`
+	ExpiresOn  nullable.Nullable[time.Time] `json:"expires_on"`
+	Id         core.UUID                    `json:"id"`
+	IssuedOn   nullable.Nullable[time.Time] `json:"issued_on"`
+	Name       string                       `json:"name"`
 }
 
 // NestedProjectSchema defines model for NestedProjectSchema.
@@ -403,151 +404,151 @@ type NestedUserSchema struct {
 
 // PagedAPIBaseSchema defines model for PagedAPIBaseSchema.
 type PagedAPIBaseSchema struct {
-	Count    int             `json:"count"`
-	Next     *string         `json:"next,omitempty"`
-	Previous *string         `json:"previous,omitempty"`
-	Results  []APIBaseSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []APIBaseSchema           `json:"results"`
 }
 
 // PagedAuthenticatorSchema defines model for PagedAuthenticatorSchema.
 type PagedAuthenticatorSchema struct {
-	Count    int                   `json:"count"`
-	Next     *string               `json:"next,omitempty"`
-	Previous *string               `json:"previous,omitempty"`
-	Results  []AuthenticatorSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []AuthenticatorSchema     `json:"results"`
 }
 
 // PagedCORSConfigSchema defines model for PagedCORSConfigSchema.
 type PagedCORSConfigSchema struct {
-	Count    int                `json:"count"`
-	Next     *string            `json:"next,omitempty"`
-	Previous *string            `json:"previous,omitempty"`
-	Results  []CORSConfigSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []CORSConfigSchema        `json:"results"`
 }
 
 // PagedCustomDomainSchema defines model for PagedCustomDomainSchema.
 type PagedCustomDomainSchema struct {
-	Count    int                  `json:"count"`
-	Next     *string              `json:"next,omitempty"`
-	Previous *string              `json:"previous,omitempty"`
-	Results  []CustomDomainSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []CustomDomainSchema      `json:"results"`
 }
 
 // PagedRouteSchema defines model for PagedRouteSchema.
 type PagedRouteSchema struct {
-	Count    int           `json:"count"`
-	Next     *string       `json:"next,omitempty"`
-	Previous *string       `json:"previous,omitempty"`
-	Results  []RouteSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []RouteSchema             `json:"results"`
 }
 
 // PagedStageSchema defines model for PagedStageSchema.
 type PagedStageSchema struct {
-	Count    int           `json:"count"`
-	Next     *string       `json:"next,omitempty"`
-	Previous *string       `json:"previous,omitempty"`
-	Results  []StageSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []StageSchema             `json:"results"`
 }
 
 // PagedUpstreamSchema defines model for PagedUpstreamSchema.
 type PagedUpstreamSchema struct {
-	Count    int              `json:"count"`
-	Next     *string          `json:"next,omitempty"`
-	Previous *string          `json:"previous,omitempty"`
-	Results  []UpstreamSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []UpstreamSchema          `json:"results"`
 }
 
 // RouteCreateSchema defines model for RouteCreateSchema.
 type RouteCreateSchema struct {
-	ApiId           core.UUID               `json:"api_id"`
-	AuthenticatorId *core.UUID              `json:"authenticator_id,omitempty"`
-	Description     *string                 `json:"description,omitempty"`
-	EnableRateLimit *bool                   `json:"enable_rate_limit,omitempty"`
-	Headers         *map[string]interface{} `json:"headers,omitempty"`
-	IsActive        *bool                   `json:"is_active,omitempty"`
-	Method          *[]MethodType           `json:"method"`
-	Name            string                  `json:"name"`
-	Path            string                  `json:"path"`
-	RatePerDay      *int                    `json:"rate_per_day,omitempty"`
-	RatePerHour     *int                    `json:"rate_per_hour,omitempty"`
-	RatePerMinute   *int                    `json:"rate_per_minute,omitempty"`
-	RatePerMonth    *int                    `json:"rate_per_month,omitempty"`
-	RatePerSecond   *int                    `json:"rate_per_second,omitempty"`
-	RatePerYear     *int                    `json:"rate_per_year,omitempty"`
-	ShowLimitHeader *bool                   `json:"show_limit_header,omitempty"`
-	UpstreamId      *core.UUID              `json:"upstream_id,omitempty"`
+	ApiId           core.UUID                                 `json:"api_id"`
+	AuthenticatorId nullable.Nullable[core.UUID]              `json:"authenticator_id,omitempty"`
+	Description     nullable.Nullable[string]                 `json:"description,omitempty"`
+	EnableRateLimit *bool                                     `json:"enable_rate_limit,omitempty"`
+	Headers         nullable.Nullable[map[string]interface{}] `json:"headers,omitempty"`
+	IsActive        *bool                                     `json:"is_active,omitempty"`
+	Method          nullable.Nullable[[]MethodType]           `json:"method"`
+	Name            string                                    `json:"name"`
+	Path            string                                    `json:"path"`
+	RatePerDay      *int                                      `json:"rate_per_day,omitempty"`
+	RatePerHour     *int                                      `json:"rate_per_hour,omitempty"`
+	RatePerMinute   *int                                      `json:"rate_per_minute,omitempty"`
+	RatePerMonth    *int                                      `json:"rate_per_month,omitempty"`
+	RatePerSecond   *int                                      `json:"rate_per_second,omitempty"`
+	RatePerYear     *int                                      `json:"rate_per_year,omitempty"`
+	ShowLimitHeader *bool                                     `json:"show_limit_header,omitempty"`
+	UpstreamId      nullable.Nullable[core.UUID]              `json:"upstream_id,omitempty"`
 }
 
 // RouteDetailSchema defines model for RouteDetailSchema.
 type RouteDetailSchema struct {
-	Api             NestedAPISchema            `json:"api"`
-	Authenticator   *NestedAuthenticatorSchema `json:"authenticator,omitempty"`
-	CreatedAt       time.Time                  `json:"created_at"`
-	Description     string                     `json:"description"`
-	EnableRateLimit bool                       `json:"enable_rate_limit"`
-	Headers         map[string]interface{}     `json:"headers"`
-	Id              core.UUID                  `json:"id"`
-	IsActive        bool                       `json:"is_active"`
-	Method          []string                   `json:"method"`
-	Name            string                     `json:"name"`
-	Owner           *NestedUserSchema          `json:"owner"`
-	Path            string                     `json:"path"`
-	Project         NestedProjectSchema        `json:"project"`
-	RatePerDay      int                        `json:"rate_per_day"`
-	RatePerHour     int                        `json:"rate_per_hour"`
-	RatePerMinute   int                        `json:"rate_per_minute"`
-	RatePerMonth    int                        `json:"rate_per_month"`
-	RatePerSecond   int                        `json:"rate_per_second"`
-	RatePerYear     int                        `json:"rate_per_year"`
-	ShowLimitHeader bool                       `json:"show_limit_header"`
-	UpdatedAt       time.Time                  `json:"updated_at"`
-	Upstream        *NestedUpstreamSchema      `json:"upstream,omitempty"`
+	Api             NestedAPISchema                              `json:"api"`
+	Authenticator   nullable.Nullable[NestedAuthenticatorSchema] `json:"authenticator,omitempty"`
+	CreatedAt       time.Time                                    `json:"created_at"`
+	Description     string                                       `json:"description"`
+	EnableRateLimit bool                                         `json:"enable_rate_limit"`
+	Headers         map[string]interface{}                       `json:"headers"`
+	Id              core.UUID                                    `json:"id"`
+	IsActive        bool                                         `json:"is_active"`
+	Method          []string                                     `json:"method"`
+	Name            string                                       `json:"name"`
+	Owner           nullable.Nullable[NestedUserSchema]          `json:"owner"`
+	Path            string                                       `json:"path"`
+	Project         NestedProjectSchema                          `json:"project"`
+	RatePerDay      int                                          `json:"rate_per_day"`
+	RatePerHour     int                                          `json:"rate_per_hour"`
+	RatePerMinute   int                                          `json:"rate_per_minute"`
+	RatePerMonth    int                                          `json:"rate_per_month"`
+	RatePerSecond   int                                          `json:"rate_per_second"`
+	RatePerYear     int                                          `json:"rate_per_year"`
+	ShowLimitHeader bool                                         `json:"show_limit_header"`
+	UpdatedAt       time.Time                                    `json:"updated_at"`
+	Upstream        nullable.Nullable[NestedUpstreamSchema]      `json:"upstream,omitempty"`
 }
 
 // RoutePartialUpdateSchema defines model for RoutePartialUpdateSchema.
 type RoutePartialUpdateSchema struct {
-	AuthenticatorId *core.UUID              `json:"authenticator_id,omitempty"`
-	Description     *string                 `json:"description,omitempty"`
-	EnableRateLimit *bool                   `json:"enable_rate_limit,omitempty"`
-	Headers         *map[string]interface{} `json:"headers,omitempty"`
-	IsActive        *bool                   `json:"is_active,omitempty"`
-	Method          *[]MethodType           `json:"method,omitempty"`
-	Name            *string                 `json:"name,omitempty"`
-	Path            *string                 `json:"path,omitempty"`
-	RatePerDay      *int                    `json:"rate_per_day,omitempty"`
-	RatePerHour     *int                    `json:"rate_per_hour,omitempty"`
-	RatePerMinute   *int                    `json:"rate_per_minute,omitempty"`
-	RatePerMonth    *int                    `json:"rate_per_month,omitempty"`
-	RatePerSecond   *int                    `json:"rate_per_second,omitempty"`
-	RatePerYear     *int                    `json:"rate_per_year,omitempty"`
-	ShowLimitHeader *bool                   `json:"show_limit_header,omitempty"`
-	UpstreamId      *core.UUID              `json:"upstream_id,omitempty"`
+	AuthenticatorId nullable.Nullable[core.UUID]              `json:"authenticator_id,omitempty"`
+	Description     *string                                   `json:"description,omitempty"`
+	EnableRateLimit *bool                                     `json:"enable_rate_limit,omitempty"`
+	Headers         nullable.Nullable[map[string]interface{}] `json:"headers,omitempty"`
+	IsActive        *bool                                     `json:"is_active,omitempty"`
+	Method          *[]MethodType                             `json:"method,omitempty"`
+	Name            *string                                   `json:"name,omitempty"`
+	Path            *string                                   `json:"path,omitempty"`
+	RatePerDay      *int                                      `json:"rate_per_day,omitempty"`
+	RatePerHour     *int                                      `json:"rate_per_hour,omitempty"`
+	RatePerMinute   *int                                      `json:"rate_per_minute,omitempty"`
+	RatePerMonth    *int                                      `json:"rate_per_month,omitempty"`
+	RatePerSecond   *int                                      `json:"rate_per_second,omitempty"`
+	RatePerYear     *int                                      `json:"rate_per_year,omitempty"`
+	ShowLimitHeader *bool                                     `json:"show_limit_header,omitempty"`
+	UpstreamId      nullable.Nullable[core.UUID]              `json:"upstream_id,omitempty"`
 }
 
 // RouteSchema defines model for RouteSchema.
 type RouteSchema struct {
-	Api             NestedAPISchema            `json:"api"`
-	Authenticator   *NestedAuthenticatorSchema `json:"authenticator,omitempty"`
-	CreatedAt       time.Time                  `json:"created_at"`
-	Description     string                     `json:"description"`
-	EnableRateLimit bool                       `json:"enable_rate_limit"`
-	Headers         map[string]interface{}     `json:"headers"`
-	Id              core.UUID                  `json:"id"`
-	IsActive        bool                       `json:"is_active"`
-	Method          []string                   `json:"method"`
-	Name            string                     `json:"name"`
-	Owner           *NestedUserSchema          `json:"owner"`
-	Path            string                     `json:"path"`
-	Project         NestedProjectSchema        `json:"project"`
-	RatePerDay      int                        `json:"rate_per_day"`
-	RatePerHour     int                        `json:"rate_per_hour"`
-	RatePerMinute   int                        `json:"rate_per_minute"`
-	RatePerMonth    int                        `json:"rate_per_month"`
-	RatePerSecond   int                        `json:"rate_per_second"`
-	RatePerYear     int                        `json:"rate_per_year"`
-	ShowLimitHeader bool                       `json:"show_limit_header"`
-	UpdatedAt       time.Time                  `json:"updated_at"`
-	Upstream        *NestedUpstreamSchema      `json:"upstream,omitempty"`
+	Api             NestedAPISchema                              `json:"api"`
+	Authenticator   nullable.Nullable[NestedAuthenticatorSchema] `json:"authenticator,omitempty"`
+	CreatedAt       time.Time                                    `json:"created_at"`
+	Description     string                                       `json:"description"`
+	EnableRateLimit bool                                         `json:"enable_rate_limit"`
+	Headers         map[string]interface{}                       `json:"headers"`
+	Id              core.UUID                                    `json:"id"`
+	IsActive        bool                                         `json:"is_active"`
+	Method          []string                                     `json:"method"`
+	Name            string                                       `json:"name"`
+	Owner           nullable.Nullable[NestedUserSchema]          `json:"owner"`
+	Path            string                                       `json:"path"`
+	Project         NestedProjectSchema                          `json:"project"`
+	RatePerDay      int                                          `json:"rate_per_day"`
+	RatePerHour     int                                          `json:"rate_per_hour"`
+	RatePerMinute   int                                          `json:"rate_per_minute"`
+	RatePerMonth    int                                          `json:"rate_per_month"`
+	RatePerSecond   int                                          `json:"rate_per_second"`
+	RatePerYear     int                                          `json:"rate_per_year"`
+	ShowLimitHeader bool                                         `json:"show_limit_header"`
+	UpdatedAt       time.Time                                    `json:"updated_at"`
+	Upstream        nullable.Nullable[NestedUpstreamSchema]      `json:"upstream,omitempty"`
 }
 
 // SchemaType defines model for SchemaType.
@@ -555,37 +556,37 @@ type SchemaType string
 
 // StageCreateSchema defines model for StageCreateSchema.
 type StageCreateSchema struct {
-	ApiId       core.UUID `json:"api_id"`
-	AutoDeploy  *bool     `json:"auto_deploy,omitempty"`
-	Description *string   `json:"description,omitempty"`
-	Name        string    `json:"name"`
+	ApiId       core.UUID                 `json:"api_id"`
+	AutoDeploy  *bool                     `json:"auto_deploy,omitempty"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Name        string                    `json:"name"`
 }
 
 // StageSchema defines model for StageSchema.
 type StageSchema struct {
-	Api          NestedAPISchema         `json:"api"`
-	AutoDeploy   bool                    `json:"auto_deploy"`
-	BaseUrl      string                  `json:"base_url"`
-	CreatedAt    time.Time               `json:"created_at"`
-	Description  string                  `json:"description"`
-	Id           core.UUID               `json:"id"`
-	LastDeployed *time.Time              `json:"last_deployed,omitempty"`
-	Name         string                  `json:"name"`
-	Owner        *NestedUserSchema       `json:"owner"`
-	Project      NestedProjectSchema     `json:"project"`
-	RevisionData *map[string]interface{} `json:"revision_data,omitempty"`
-	Status       string                  `json:"status"`
-	UpdatedAt    time.Time               `json:"updated_at"`
+	Api          NestedAPISchema                           `json:"api"`
+	AutoDeploy   bool                                      `json:"auto_deploy"`
+	BaseUrl      string                                    `json:"base_url"`
+	CreatedAt    time.Time                                 `json:"created_at"`
+	Description  string                                    `json:"description"`
+	Id           core.UUID                                 `json:"id"`
+	LastDeployed nullable.Nullable[time.Time]              `json:"last_deployed,omitempty"`
+	Name         string                                    `json:"name"`
+	Owner        nullable.Nullable[NestedUserSchema]       `json:"owner"`
+	Project      NestedProjectSchema                       `json:"project"`
+	RevisionData nullable.Nullable[map[string]interface{}] `json:"revision_data,omitempty"`
+	Status       string                                    `json:"status"`
+	UpdatedAt    time.Time                                 `json:"updated_at"`
 }
 
 // UpstreamCreateSchema defines model for UpstreamCreateSchema.
 type UpstreamCreateSchema struct {
 	ApiId        core.UUID                 `json:"api_id"`
-	Description  *string                   `json:"description,omitempty"`
+	Description  nullable.Nullable[string] `json:"description,omitempty"`
 	Hosts        []UpstreamHostBodySchema  `json:"hosts"`
 	Name         string                    `json:"name"`
-	Retries      *int                      `json:"retries,omitempty"`
-	RetryTimeout *int                      `json:"retry_timeout,omitempty"`
+	Retries      nullable.Nullable[int]    `json:"retries,omitempty"`
+	RetryTimeout nullable.Nullable[int]    `json:"retry_timeout,omitempty"`
 	Scheme       SchemaType                `json:"scheme"`
 	Timeout      UpstreamTimeoutBodySchema `json:"timeout"`
 	Type         UpstreamType              `json:"type"`
@@ -593,10 +594,10 @@ type UpstreamCreateSchema struct {
 
 // UpstreamHostBodySchema defines model for UpstreamHostBodySchema.
 type UpstreamHostBodySchema struct {
-	Host   string     `json:"host"`
-	Id     *core.UUID `json:"id,omitempty"`
-	Port   int        `json:"port"`
-	Weight *int       `json:"weight,omitempty"`
+	Host   string                       `json:"host"`
+	Id     nullable.Nullable[core.UUID] `json:"id,omitempty"`
+	Port   int                          `json:"port"`
+	Weight *int                         `json:"weight,omitempty"`
 }
 
 // UpstreamHostSchema defines model for UpstreamHostSchema.
@@ -612,8 +613,8 @@ type UpstreamPartialUpdateSchema struct {
 	Description  *string                    `json:"description,omitempty"`
 	Hosts        *[]UpstreamHostBodySchema  `json:"hosts,omitempty"`
 	Name         *string                    `json:"name,omitempty"`
-	Retries      *int                       `json:"retries,omitempty"`
-	RetryTimeout *int                       `json:"retry_timeout,omitempty"`
+	Retries      nullable.Nullable[int]     `json:"retries,omitempty"`
+	RetryTimeout nullable.Nullable[int]     `json:"retry_timeout,omitempty"`
 	Scheme       *SchemaType                `json:"scheme,omitempty"`
 	Timeout      *UpstreamTimeoutBodySchema `json:"timeout,omitempty"`
 	Type         *UpstreamType              `json:"type,omitempty"`
@@ -621,20 +622,20 @@ type UpstreamPartialUpdateSchema struct {
 
 // UpstreamSchema defines model for UpstreamSchema.
 type UpstreamSchema struct {
-	Api          NestedAPISchema        `json:"api"`
-	CreatedAt    time.Time              `json:"created_at"`
-	Description  string                 `json:"description"`
-	Hosts        *[]UpstreamHostSchema  `json:"hosts,omitempty"`
-	Id           core.UUID              `json:"id"`
-	Name         string                 `json:"name"`
-	Owner        *NestedUserSchema      `json:"owner"`
-	Project      NestedProjectSchema    `json:"project"`
-	Retries      *int                   `json:"retries,omitempty"`
-	RetryTimeout *int                   `json:"retry_timeout,omitempty"`
-	Scheme       string                 `json:"scheme"`
-	Timeout      *UpstreamTimeoutSchema `json:"timeout,omitempty"`
-	Type         string                 `json:"type"`
-	UpdatedAt    time.Time              `json:"updated_at"`
+	Api          NestedAPISchema                          `json:"api"`
+	CreatedAt    time.Time                                `json:"created_at"`
+	Description  string                                   `json:"description"`
+	Hosts        nullable.Nullable[[]UpstreamHostSchema]  `json:"hosts,omitempty"`
+	Id           core.UUID                                `json:"id"`
+	Name         string                                   `json:"name"`
+	Owner        nullable.Nullable[NestedUserSchema]      `json:"owner"`
+	Project      NestedProjectSchema                      `json:"project"`
+	Retries      nullable.Nullable[int]                   `json:"retries,omitempty"`
+	RetryTimeout nullable.Nullable[int]                   `json:"retry_timeout,omitempty"`
+	Scheme       string                                   `json:"scheme"`
+	Timeout      nullable.Nullable[UpstreamTimeoutSchema] `json:"timeout,omitempty"`
+	Type         string                                   `json:"type"`
+	UpdatedAt    time.Time                                `json:"updated_at"`
 }
 
 // UpstreamTimeoutBodySchema defines model for UpstreamTimeoutBodySchema.

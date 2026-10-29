@@ -59,6 +59,10 @@ oapi_codegen:
     compatibility:
       always-prefix-enum-values: true
     output-options:
+      # A spec field declared `anyOf: [T, null]` generates as core.Nullable[T]
+      # (unset / explicit null / value) instead of *T. With *T a nil pointer is
+      # omitted, so a client can never send the `null` that clears a field.
+      nullable-type: true
       skip-client-response-content-type: true
       skip-response-body-getters: true
 

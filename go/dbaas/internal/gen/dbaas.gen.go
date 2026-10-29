@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/oapi-codegen/nullable"
 	core "github.com/viettelcloud-oss/sdks/go/core"
 	runtime "github.com/viettelcloud-oss/sdks/go/internal/oapi"
 )
@@ -534,28 +535,28 @@ type DBInstanceBackupPolicySchema struct {
 
 // DBInstanceBackupSchema defines model for DBInstanceBackupSchema.
 type DBInstanceBackupSchema struct {
-	BackupInfo            string                  `json:"backup_info"`
-	BackupPlanId          *core.UUID              `json:"backup_plan_id,omitempty"`
-	BackupTimestamp       *time.Time              `json:"backup_timestamp,omitempty"`
-	BackupType            BackupType              `json:"backup_type"`
-	CreatedAt             time.Time               `json:"created_at"`
-	DatabaseType          DatabaseType            `json:"database_type"`
-	DbInstance            *NestedDBInstanceSchema `json:"db_instance,omitempty"`
-	DbVersion             NestedDBVersionSchema   `json:"db_version"`
-	Description           string                  `json:"description"`
-	EndRestoreTimestamp   *time.Time              `json:"end_restore_timestamp,omitempty"`
-	ErrorMessage          string                  `json:"error_message"`
-	Id                    core.UUID               `json:"id"`
-	Name                  string                  `json:"name"`
-	OwnerId               core.UUID               `json:"owner_id"`
-	ProjectId             core.UUID               `json:"project_id"`
-	Region                NestedRegionSchema      `json:"region"`
-	RequiredVolumeSize    int                     `json:"required_volume_size"`
-	Size                  int                     `json:"size"`
-	StartRestoreTimestamp *time.Time              `json:"start_restore_timestamp,omitempty"`
-	Status                BackupStatus            `json:"status"`
-	UpdatedAt             time.Time               `json:"updated_at"`
-	ZoneId                *core.UUID              `json:"zone_id,omitempty"`
+	BackupInfo            string                                    `json:"backup_info"`
+	BackupPlanId          nullable.Nullable[core.UUID]              `json:"backup_plan_id,omitempty"`
+	BackupTimestamp       nullable.Nullable[time.Time]              `json:"backup_timestamp,omitempty"`
+	BackupType            BackupType                                `json:"backup_type"`
+	CreatedAt             time.Time                                 `json:"created_at"`
+	DatabaseType          DatabaseType                              `json:"database_type"`
+	DbInstance            nullable.Nullable[NestedDBInstanceSchema] `json:"db_instance,omitempty"`
+	DbVersion             NestedDBVersionSchema                     `json:"db_version"`
+	Description           string                                    `json:"description"`
+	EndRestoreTimestamp   nullable.Nullable[time.Time]              `json:"end_restore_timestamp,omitempty"`
+	ErrorMessage          string                                    `json:"error_message"`
+	Id                    core.UUID                                 `json:"id"`
+	Name                  string                                    `json:"name"`
+	OwnerId               core.UUID                                 `json:"owner_id"`
+	ProjectId             core.UUID                                 `json:"project_id"`
+	Region                NestedRegionSchema                        `json:"region"`
+	RequiredVolumeSize    int                                       `json:"required_volume_size"`
+	Size                  int                                       `json:"size"`
+	StartRestoreTimestamp nullable.Nullable[time.Time]              `json:"start_restore_timestamp,omitempty"`
+	Status                BackupStatus                              `json:"status"`
+	UpdatedAt             time.Time                                 `json:"updated_at"`
+	ZoneId                nullable.Nullable[core.UUID]              `json:"zone_id,omitempty"`
 }
 
 // DBInstanceBackupUpdateSchema defines model for DBInstanceBackupUpdateSchema.
@@ -567,23 +568,23 @@ type DBInstanceBackupUpdateSchema struct {
 // DBInstanceCreateSchema defines model for DBInstanceCreateSchema.
 type DBInstanceCreateSchema struct {
 	// BackupPolicy DBInstanceBackupPolicySchema is exactly one of: EnableAutoBackupSchema, DisableAutoBackupSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
-	BackupPolicy       *DBInstanceBackupPolicySchema `json:"backup_policy,omitempty"`
-	DatabaseType       DatabaseType                  `json:"database_type"`
-	DbVersionId        core.UUID                     `json:"db_version_id"`
-	Description        *string                       `json:"description,omitempty"`
-	DiskSize           int                           `json:"disk_size"`
-	EnablePublicAccess *bool                         `json:"enable_public_access,omitempty"`
-	FlavorId           core.UUID                     `json:"flavor_id"`
-	MDow               *DayOfWeek                    `json:"m_dow,omitempty"`
-	MStartHour         *int                          `json:"m_start_hour,omitempty"`
-	Metadata           *DBMetadataCreateSchema       `json:"metadata,omitempty"`
-	Name               string                        `json:"name"`
-	RegionId           core.UUID                     `json:"region_id"`
-	Restore            *DBInstanceRestoreSchema      `json:"restore,omitempty"`
-	RootPassword       *string                       `json:"root_password,omitempty"`
-	Solution           Solution                      `json:"solution"`
-	SubnetId           core.UUID                     `json:"subnet_id"`
-	VolumeTypeId       core.UUID                     `json:"volume_type_id"`
+	BackupPolicy       *DBInstanceBackupPolicySchema              `json:"backup_policy,omitempty"`
+	DatabaseType       DatabaseType                               `json:"database_type"`
+	DbVersionId        core.UUID                                  `json:"db_version_id"`
+	Description        *string                                    `json:"description,omitempty"`
+	DiskSize           int                                        `json:"disk_size"`
+	EnablePublicAccess *bool                                      `json:"enable_public_access,omitempty"`
+	FlavorId           core.UUID                                  `json:"flavor_id"`
+	MDow               *DayOfWeek                                 `json:"m_dow,omitempty"`
+	MStartHour         *int                                       `json:"m_start_hour,omitempty"`
+	Metadata           nullable.Nullable[DBMetadataCreateSchema]  `json:"metadata,omitempty"`
+	Name               string                                     `json:"name"`
+	RegionId           core.UUID                                  `json:"region_id"`
+	Restore            nullable.Nullable[DBInstanceRestoreSchema] `json:"restore,omitempty"`
+	RootPassword       *string                                    `json:"root_password,omitempty"`
+	Solution           Solution                                   `json:"solution"`
+	SubnetId           core.UUID                                  `json:"subnet_id"`
+	VolumeTypeId       core.UUID                                  `json:"volume_type_id"`
 }
 
 // DBInstanceFlavorUpdateSchema defines model for DBInstanceFlavorUpdateSchema.
@@ -620,24 +621,24 @@ type DBInstanceReplicaPartialUpdateSchema struct {
 
 // DBInstanceReplicaSchema defines model for DBInstanceReplicaSchema.
 type DBInstanceReplicaSchema struct {
-	CreatedAt          time.Time               `json:"created_at"`
-	DbInstance         NestedDBInstanceSchema  `json:"db_instance"`
-	Description        string                  `json:"description"`
-	DiskSize           int                     `json:"disk_size"`
-	EnablePublicAccess bool                    `json:"enable_public_access"`
-	ErrorMessage       string                  `json:"error_message"`
-	Id                 core.UUID               `json:"id"`
-	Name               string                  `json:"name"`
-	OwnerId            *core.UUID              `json:"owner_id,omitempty"`
-	Port               int                     `json:"port"`
-	PrivateHost        string                  `json:"private_host"`
-	ProjectId          core.UUID               `json:"project_id"`
-	PublicHost         string                  `json:"public_host"`
-	Region             NestedRegionSchema      `json:"region"`
-	Status             DBInstanceReplicaStatus `json:"status"`
-	UpdatedAt          time.Time               `json:"updated_at"`
-	UsedDiskSize       int                     `json:"used_disk_size"`
-	Zone               *NestedZoneSchema       `json:"zone,omitempty"`
+	CreatedAt          time.Time                           `json:"created_at"`
+	DbInstance         NestedDBInstanceSchema              `json:"db_instance"`
+	Description        string                              `json:"description"`
+	DiskSize           int                                 `json:"disk_size"`
+	EnablePublicAccess bool                                `json:"enable_public_access"`
+	ErrorMessage       string                              `json:"error_message"`
+	Id                 core.UUID                           `json:"id"`
+	Name               string                              `json:"name"`
+	OwnerId            nullable.Nullable[core.UUID]        `json:"owner_id,omitempty"`
+	Port               int                                 `json:"port"`
+	PrivateHost        string                              `json:"private_host"`
+	ProjectId          core.UUID                           `json:"project_id"`
+	PublicHost         string                              `json:"public_host"`
+	Region             NestedRegionSchema                  `json:"region"`
+	Status             DBInstanceReplicaStatus             `json:"status"`
+	UpdatedAt          time.Time                           `json:"updated_at"`
+	UsedDiskSize       int                                 `json:"used_disk_size"`
+	Zone               nullable.Nullable[NestedZoneSchema] `json:"zone,omitempty"`
 }
 
 // DBInstanceReplicaStatus defines model for DBInstanceReplicaStatus.
@@ -651,46 +652,46 @@ type DBInstanceReplicaUpdateSchema struct {
 
 // DBInstanceRestoreSchema defines model for DBInstanceRestoreSchema.
 type DBInstanceRestoreSchema struct {
-	BackupId  core.UUID  `json:"backup_id"`
-	Timestamp *time.Time `json:"timestamp,omitempty"`
+	BackupId  core.UUID                    `json:"backup_id"`
+	Timestamp nullable.Nullable[time.Time] `json:"timestamp,omitempty"`
 }
 
 // DBInstanceSchema defines model for DBInstanceSchema.
 type DBInstanceSchema struct {
-	AllowedCidrs                 []string                                  `json:"allowed_cidrs"`
-	AutoBackupConfig             *NestedAutoBackupConfigSchema             `json:"auto_backup_config,omitempty"`
-	AutoIncreaseVolumeSizeConfig *NestedAutoIncreaseVolumeSizeConfigSchema `json:"auto_increase_volume_size_config,omitempty"`
-	CreatedAt                    time.Time                                 `json:"created_at"`
-	DatabaseType                 DatabaseType                              `json:"database_type"`
-	DbVersion                    NestedDBVersionSchema                     `json:"db_version"`
-	Description                  string                                    `json:"description"`
-	DiskFull                     bool                                      `json:"disk_full"`
-	DiskSize                     int                                       `json:"disk_size"`
-	EnableAutoBackup             bool                                      `json:"enable_auto_backup"`
-	EnableAutoIncreaseVolumeSize bool                                      `json:"enable_auto_increase_volume_size"`
-	EnablePublicAccess           bool                                      `json:"enable_public_access"`
-	EnableSsl                    bool                                      `json:"enable_ssl"`
-	ErrorMessage                 string                                    `json:"error_message"`
-	Flavor                       NestedDBaaSRegionFlavorSchema             `json:"flavor"`
-	Id                           core.UUID                                 `json:"id"`
-	InitBackupId                 *core.UUID                                `json:"init_backup_id,omitempty"`
-	KeepBackup                   bool                                      `json:"keep_backup"`
-	MDow                         DayOfWeek                                 `json:"m_dow"`
-	MStartHour                   int                                       `json:"m_start_hour"`
-	Metadata                     *DBMetadataSchema                         `json:"metadata,omitempty"`
-	Name                         string                                    `json:"name"`
-	OperationalStatus            DBInstanceOperationalStatus               `json:"operational_status"`
-	Port                         int                                       `json:"port"`
-	PrivateUrl                   string                                    `json:"private_url"`
-	ProjectId                    core.UUID                                 `json:"project_id"`
-	PublicUrl                    string                                    `json:"public_url"`
-	Region                       NestedRegionSchema                        `json:"region"`
-	Solution                     Solution                                  `json:"solution"`
-	Status                       DBInstanceStatus                          `json:"status"`
-	Subnet                       NestedDBaaSSubnetSchema                   `json:"subnet"`
-	UpdatedAt                    time.Time                                 `json:"updated_at"`
-	UsedDiskSize                 int                                       `json:"used_disk_size"`
-	VolumeType                   NestedDBaaSRegionVolumeTypeSchema         `json:"volume_type"`
+	AllowedCidrs                 []string                                                    `json:"allowed_cidrs"`
+	AutoBackupConfig             nullable.Nullable[NestedAutoBackupConfigSchema]             `json:"auto_backup_config,omitempty"`
+	AutoIncreaseVolumeSizeConfig nullable.Nullable[NestedAutoIncreaseVolumeSizeConfigSchema] `json:"auto_increase_volume_size_config,omitempty"`
+	CreatedAt                    time.Time                                                   `json:"created_at"`
+	DatabaseType                 DatabaseType                                                `json:"database_type"`
+	DbVersion                    NestedDBVersionSchema                                       `json:"db_version"`
+	Description                  string                                                      `json:"description"`
+	DiskFull                     bool                                                        `json:"disk_full"`
+	DiskSize                     int                                                         `json:"disk_size"`
+	EnableAutoBackup             bool                                                        `json:"enable_auto_backup"`
+	EnableAutoIncreaseVolumeSize bool                                                        `json:"enable_auto_increase_volume_size"`
+	EnablePublicAccess           bool                                                        `json:"enable_public_access"`
+	EnableSsl                    bool                                                        `json:"enable_ssl"`
+	ErrorMessage                 string                                                      `json:"error_message"`
+	Flavor                       NestedDBaaSRegionFlavorSchema                               `json:"flavor"`
+	Id                           core.UUID                                                   `json:"id"`
+	InitBackupId                 nullable.Nullable[core.UUID]                                `json:"init_backup_id,omitempty"`
+	KeepBackup                   bool                                                        `json:"keep_backup"`
+	MDow                         DayOfWeek                                                   `json:"m_dow"`
+	MStartHour                   int                                                         `json:"m_start_hour"`
+	Metadata                     nullable.Nullable[DBMetadataSchema]                         `json:"metadata,omitempty"`
+	Name                         string                                                      `json:"name"`
+	OperationalStatus            DBInstanceOperationalStatus                                 `json:"operational_status"`
+	Port                         int                                                         `json:"port"`
+	PrivateUrl                   string                                                      `json:"private_url"`
+	ProjectId                    core.UUID                                                   `json:"project_id"`
+	PublicUrl                    string                                                      `json:"public_url"`
+	Region                       NestedRegionSchema                                          `json:"region"`
+	Solution                     Solution                                                    `json:"solution"`
+	Status                       DBInstanceStatus                                            `json:"status"`
+	Subnet                       NestedDBaaSSubnetSchema                                     `json:"subnet"`
+	UpdatedAt                    time.Time                                                   `json:"updated_at"`
+	UsedDiskSize                 int                                                         `json:"used_disk_size"`
+	VolumeType                   NestedDBaaSRegionVolumeTypeSchema                           `json:"volume_type"`
 }
 
 // DBInstanceStatus defines model for DBInstanceStatus.
@@ -728,27 +729,27 @@ type DBMetadataVolumeTypeZoneSchema struct {
 // DBVersionAdvancedConfigParamListSchema A page of the advanced configuration parameters a DB version accepts.
 type DBVersionAdvancedConfigParamListSchema struct {
 	Count    int                                  `json:"count"`
-	Next     *string                              `json:"next,omitempty"`
-	Previous *string                              `json:"previous,omitempty"`
+	Next     nullable.Nullable[string]            `json:"next,omitempty"`
+	Previous nullable.Nullable[string]            `json:"previous,omitempty"`
 	Results  []DBVersionAdvancedConfigParamSchema `json:"results"`
 }
 
 // DBVersionAdvancedConfigParamSchema defines model for DBVersionAdvancedConfigParamSchema.
 type DBVersionAdvancedConfigParamSchema struct {
-	DefaultValue    *string `json:"default_value,omitempty"`
-	Description     string  `json:"description"`
-	Name            string  `json:"name"`
-	RestartRequired bool    `json:"restart_required"`
-	Type            string  `json:"type"`
-	ValueRange      string  `json:"value_range"`
+	DefaultValue    nullable.Nullable[string] `json:"default_value,omitempty"`
+	Description     string                    `json:"description"`
+	Name            string                    `json:"name"`
+	RestartRequired bool                      `json:"restart_required"`
+	Type            string                    `json:"type"`
+	ValueRange      string                    `json:"value_range"`
 }
 
 // DBaaSPgPoolListSchema A page of the connection pools configured on a PostgreSQL instance.
 type DBaaSPgPoolListSchema struct {
-	Count    int                 `json:"count"`
-	Next     *string             `json:"next,omitempty"`
-	Previous *string             `json:"previous,omitempty"`
-	Results  []DBaaSPgPoolSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []DBaaSPgPoolSchema       `json:"results"`
 }
 
 // DBaaSPgPoolSchema defines model for DBaaSPgPoolSchema.
@@ -828,7 +829,7 @@ type DiskType string
 // EnableAutoBackupSchema defines model for EnableAutoBackupSchema.
 type EnableAutoBackupSchema struct {
 	BackupInterval   BackupInterval                         `json:"backup_interval"`
-	DayOfWeek        *DayOfWeek                             `json:"day_of_week,omitempty"`
+	DayOfWeek        nullable.Nullable[DayOfWeek]           `json:"day_of_week,omitempty"`
 	EnableAutoBackup EnableAutoBackupSchemaEnableAutoBackup `json:"enable_auto_backup"`
 	MaxAutoBackup    int                                    `json:"max_auto_backup"`
 	StartHour        int                                    `json:"start_hour"`
@@ -849,8 +850,8 @@ type EnableAutoIncreaseVolumeSizeSchemaEnableAutoIncreaseVolumeSize bool
 
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
-	Errors    []ErrorSchema `json:"errors"`
-	RequestId *string       `json:"request_id"`
+	Errors    []ErrorSchema             `json:"errors"`
+	RequestId nullable.Nullable[string] `json:"request_id"`
 }
 
 // ErrorSchema defines model for ErrorSchema.
@@ -872,10 +873,10 @@ type FlavorMappingSchema struct {
 
 // NestedAutoBackupConfigSchema defines model for NestedAutoBackupConfigSchema.
 type NestedAutoBackupConfigSchema struct {
-	BackupInterval BackupInterval `json:"backup_interval"`
-	DayOfWeek      *DayOfWeek     `json:"day_of_week,omitempty"`
-	MaxAutoBackup  int            `json:"max_auto_backup"`
-	StartHour      int            `json:"start_hour"`
+	BackupInterval BackupInterval               `json:"backup_interval"`
+	DayOfWeek      nullable.Nullable[DayOfWeek] `json:"day_of_week,omitempty"`
+	MaxAutoBackup  int                          `json:"max_auto_backup"`
+	StartHour      int                          `json:"start_hour"`
 }
 
 // NestedAutoIncreaseVolumeSizeConfigSchema defines model for NestedAutoIncreaseVolumeSizeConfigSchema.
@@ -956,8 +957,8 @@ type NestedRegionSchema struct {
 
 // NestedUserDbCreateSchema A database entry in the create-user request body.
 type NestedUserDbCreateSchema struct {
-	Name      string         `json:"name"`
-	Privilege *UserPrivilege `json:"privilege,omitempty"`
+	Name      string                           `json:"name"`
+	Privilege nullable.Nullable[UserPrivilege] `json:"privilege,omitempty"`
 }
 
 // NestedVPCSchema defines model for NestedVPCSchema.
@@ -976,73 +977,73 @@ type NestedZoneSchema struct {
 
 // PagedDBInstanceBackupSchema defines model for PagedDBInstanceBackupSchema.
 type PagedDBInstanceBackupSchema struct {
-	Count    int                      `json:"count"`
-	Next     *string                  `json:"next,omitempty"`
-	Previous *string                  `json:"previous,omitempty"`
-	Results  []DBInstanceBackupSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []DBInstanceBackupSchema  `json:"results"`
 }
 
 // PagedDBInstanceReplicaSchema defines model for PagedDBInstanceReplicaSchema.
 type PagedDBInstanceReplicaSchema struct {
 	Count    int                       `json:"count"`
-	Next     *string                   `json:"next,omitempty"`
-	Previous *string                   `json:"previous,omitempty"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
 	Results  []DBInstanceReplicaSchema `json:"results"`
 }
 
 // PagedDBInstanceSchema defines model for PagedDBInstanceSchema.
 type PagedDBInstanceSchema struct {
-	Count    int                `json:"count"`
-	Next     *string            `json:"next,omitempty"`
-	Previous *string            `json:"previous,omitempty"`
-	Results  []DBInstanceSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []DBInstanceSchema        `json:"results"`
 }
 
 // PagedDBaaSRegionFlavorSchema defines model for PagedDBaaSRegionFlavorSchema.
 type PagedDBaaSRegionFlavorSchema struct {
 	Count    int                       `json:"count"`
-	Next     *string                   `json:"next,omitempty"`
-	Previous *string                   `json:"previous,omitempty"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
 	Results  []DBaaSRegionFlavorSchema `json:"results"`
 }
 
 // PagedDBaaSRegionVolumeTypeSchema defines model for PagedDBaaSRegionVolumeTypeSchema.
 type PagedDBaaSRegionVolumeTypeSchema struct {
 	Count    int                           `json:"count"`
-	Next     *string                       `json:"next,omitempty"`
-	Previous *string                       `json:"previous,omitempty"`
+	Next     nullable.Nullable[string]     `json:"next,omitempty"`
+	Previous nullable.Nullable[string]     `json:"previous,omitempty"`
 	Results  []DBaaSRegionVolumeTypeSchema `json:"results"`
 }
 
 // PagedDBaaSVersionSchema defines model for PagedDBaaSVersionSchema.
 type PagedDBaaSVersionSchema struct {
-	Count    int                  `json:"count"`
-	Next     *string              `json:"next,omitempty"`
-	Previous *string              `json:"previous,omitempty"`
-	Results  []DBaaSVersionSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []DBaaSVersionSchema      `json:"results"`
 }
 
 // PagedDBaaSZoneSchema defines model for PagedDBaaSZoneSchema.
 type PagedDBaaSZoneSchema struct {
-	Count    int               `json:"count"`
-	Next     *string           `json:"next,omitempty"`
-	Previous *string           `json:"previous,omitempty"`
-	Results  []DBaaSZoneSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []DBaaSZoneSchema         `json:"results"`
 }
 
 // PagedFlavorMappingSchema defines model for PagedFlavorMappingSchema.
 type PagedFlavorMappingSchema struct {
-	Count    int                   `json:"count"`
-	Next     *string               `json:"next,omitempty"`
-	Previous *string               `json:"previous,omitempty"`
-	Results  []FlavorMappingSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []FlavorMappingSchema     `json:"results"`
 }
 
 // PagedVolumeTypeMappingSchema defines model for PagedVolumeTypeMappingSchema.
 type PagedVolumeTypeMappingSchema struct {
 	Count    int                       `json:"count"`
-	Next     *string                   `json:"next,omitempty"`
-	Previous *string                   `json:"previous,omitempty"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
 	Results  []VolumeTypeMappingSchema `json:"results"`
 }
 
@@ -1072,9 +1073,9 @@ type PrivilegeDatabaseCreateSchema struct {
 
 // PrivilegeDatabaseListItemSchema defines model for PrivilegeDatabaseListItemSchema.
 type PrivilegeDatabaseListItemSchema struct {
-	CharacterSet *string `json:"character_set,omitempty"`
-	Collate      *string `json:"collate,omitempty"`
-	Name         string  `json:"name"`
+	CharacterSet nullable.Nullable[string] `json:"character_set,omitempty"`
+	Collate      nullable.Nullable[string] `json:"collate,omitempty"`
+	Name         string                    `json:"name"`
 }
 
 // PrivilegeDatabaseListSchema A page of the databases defined on a database instance.
@@ -1085,9 +1086,9 @@ type PrivilegeDatabaseListSchema struct {
 
 // PrivilegeGrantDatabaseSchema defines model for PrivilegeGrantDatabaseSchema.
 type PrivilegeGrantDatabaseSchema struct {
-	Databases []string      `json:"databases"`
-	Host      *string       `json:"host,omitempty"`
-	Privilege UserPrivilege `json:"privilege"`
+	Databases []string                  `json:"databases"`
+	Host      nullable.Nullable[string] `json:"host,omitempty"`
+	Privilege UserPrivilege             `json:"privilege"`
 }
 
 // PrivilegeMessageSchema defines model for PrivilegeMessageSchema.
@@ -1106,10 +1107,10 @@ type PrivilegeUserCreateSchema struct {
 
 // PrivilegeUserDatabaseItemSchema defines model for PrivilegeUserDatabaseItemSchema.
 type PrivilegeUserDatabaseItemSchema struct {
-	CharacterSet *string        `json:"character_set,omitempty"`
-	Collate      *string        `json:"collate,omitempty"`
-	Name         string         `json:"name"`
-	Privilege    *UserPrivilege `json:"privilege,omitempty"`
+	CharacterSet nullable.Nullable[string]        `json:"character_set,omitempty"`
+	Collate      nullable.Nullable[string]        `json:"collate,omitempty"`
+	Name         string                           `json:"name"`
+	Privilege    nullable.Nullable[UserPrivilege] `json:"privilege,omitempty"`
 }
 
 // PrivilegeUserDatabaseListSchema A page of the databases a database user has been granted access to.
@@ -1121,7 +1122,7 @@ type PrivilegeUserDatabaseListSchema struct {
 // PrivilegeUserListItemSchema defines model for PrivilegeUserListItemSchema.
 type PrivilegeUserListItemSchema struct {
 	Databases *[]PrivilegeUserDatabaseItemSchema `json:"databases,omitempty"`
-	Host      *string                            `json:"host,omitempty"`
+	Host      nullable.Nullable[string]          `json:"host,omitempty"`
 	Name      string                             `json:"name"`
 }
 

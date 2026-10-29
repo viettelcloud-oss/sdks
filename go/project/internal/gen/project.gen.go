@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/oapi-codegen/nullable"
 	core "github.com/viettelcloud-oss/sdks/go/core"
 	runtime "github.com/viettelcloud-oss/sdks/go/internal/oapi"
 )
@@ -107,8 +108,8 @@ type CustomRoleSchema struct {
 
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
-	Errors    []ErrorSchema `json:"errors"`
-	RequestId *string       `json:"request_id"`
+	Errors    []ErrorSchema             `json:"errors"`
+	RequestId nullable.Nullable[string] `json:"request_id"`
 }
 
 // ErrorSchema defines model for ErrorSchema.
@@ -170,12 +171,12 @@ type NestedOrganizationSchema struct {
 
 // NestedProjectServiceSchema defines model for NestedProjectServiceSchema.
 type NestedProjectServiceSchema struct {
-	Description *string   `json:"description,omitempty"`
-	Icon        *string   `json:"icon,omitempty"`
-	Id          core.UUID `json:"id"`
-	Name        string    `json:"name"`
-	Title       string    `json:"title"`
-	Url         string    `json:"url"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Icon        nullable.Nullable[string] `json:"icon,omitempty"`
+	Id          core.UUID                 `json:"id"`
+	Name        string                    `json:"name"`
+	Title       string                    `json:"title"`
+	Url         string                    `json:"url"`
 }
 
 // NestedProjectUserRoleSchema defines model for NestedProjectUserRoleSchema.
@@ -203,10 +204,10 @@ type NestedServiceFeatureSchema struct {
 
 // PagedCustomRoleSchema defines model for PagedCustomRoleSchema.
 type PagedCustomRoleSchema struct {
-	Count    int                `json:"count"`
-	Next     *string            `json:"next,omitempty"`
-	Previous *string            `json:"previous,omitempty"`
-	Results  []CustomRoleSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []CustomRoleSchema        `json:"results"`
 }
 
 // PagedProjectAllowedActionSchema defines model for PagedProjectAllowedActionSchema.
@@ -217,34 +218,34 @@ type PagedProjectAllowedActionSchema struct {
 
 // PagedProjectMemberSchema defines model for PagedProjectMemberSchema.
 type PagedProjectMemberSchema struct {
-	Count    int                   `json:"count"`
-	Next     *string               `json:"next,omitempty"`
-	Previous *string               `json:"previous,omitempty"`
-	Results  []ProjectMemberSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []ProjectMemberSchema     `json:"results"`
 }
 
 // PagedProjectRegionSchema defines model for PagedProjectRegionSchema.
 type PagedProjectRegionSchema struct {
-	Count    int                   `json:"count"`
-	Next     *string               `json:"next,omitempty"`
-	Previous *string               `json:"previous,omitempty"`
-	Results  []ProjectRegionSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []ProjectRegionSchema     `json:"results"`
 }
 
 // PagedProjectSchema defines model for PagedProjectSchema.
 type PagedProjectSchema struct {
-	Count    int             `json:"count"`
-	Next     *string         `json:"next,omitempty"`
-	Previous *string         `json:"previous,omitempty"`
-	Results  []ProjectSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []ProjectSchema           `json:"results"`
 }
 
 // PagedProjectZoneSchema defines model for PagedProjectZoneSchema.
 type PagedProjectZoneSchema struct {
-	Count    int                 `json:"count"`
-	Next     *string             `json:"next,omitempty"`
-	Previous *string             `json:"previous,omitempty"`
-	Results  []ProjectZoneSchema `json:"results"`
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []ProjectZoneSchema       `json:"results"`
 }
 
 // ProjectAllowedActionSchema defines model for ProjectAllowedActionSchema.
@@ -291,9 +292,9 @@ type ProjectSchema struct {
 	Id                  core.UUID `json:"id"`
 
 	// IsPoc Whether the project has an active VRP plan created by an operator
-	IsPoc        bool                      `json:"is_poc"`
-	Name         string                    `json:"name"`
-	Organization *NestedOrganizationSchema `json:"organization,omitempty"`
+	IsPoc        bool                                        `json:"is_poc"`
+	Name         string                                      `json:"name"`
+	Organization nullable.Nullable[NestedOrganizationSchema] `json:"organization,omitempty"`
 
 	// Path Breadcrumb of ancestor directories, from root to the project's directory
 	Path   []NestedDirectorySchema `json:"path"`
