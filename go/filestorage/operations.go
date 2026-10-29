@@ -362,7 +362,7 @@ func (c *Client) ListFilesystemSnapshotIter(ctx context.Context, params ListFile
 	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[FilesystemSnapshotSchema], error) {
 		p := params
 		p.PageNumber = &page
-		p.Size = &size
+		p.PageSize = &size
 		pageResult, err := c.ListFilesystemSnapshot(ctx, p)
 		if err != nil {
 			return core.Page[FilesystemSnapshotSchema]{}, err

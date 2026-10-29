@@ -360,8 +360,12 @@ type NestedCORSConfigSchema struct {
 
 // NestedCertificateSchema defines model for NestedCertificateSchema.
 type NestedCertificateSchema struct {
-	Id   core.UUID `json:"id"`
-	Name string    `json:"name"`
+	CommonName *string    `json:"common_name"`
+	CreatedAt  time.Time  `json:"created_at"`
+	ExpiresOn  *time.Time `json:"expires_on"`
+	Id         core.UUID  `json:"id"`
+	IssuedOn   *time.Time `json:"issued_on"`
+	Name       string     `json:"name"`
 }
 
 // NestedProjectSchema defines model for NestedProjectSchema.

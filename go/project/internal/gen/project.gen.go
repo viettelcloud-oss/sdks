@@ -4,12 +4,15 @@
 package gen
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	core "github.com/viettelcloud-oss/sdks/go/core"
 	runtime "github.com/viettelcloud-oss/sdks/go/internal/oapi"
@@ -57,6 +60,51 @@ func (e ZoneNetworkScope) Valid() bool {
 	}
 }
 
+// CustomRoleCreateSchema defines model for CustomRoleCreateSchema.
+type CustomRoleCreateSchema struct {
+	// ActionUrns Actions the role grants; each must be a project action
+	ActionUrns  []string `json:"action_urns"`
+	Description *string  `json:"description,omitempty"`
+
+	// DisplayName The role's `name` is derived from it on create and never changes
+	DisplayName string `json:"display_name"`
+	Enabled     *bool  `json:"enabled,omitempty"`
+}
+
+// CustomRoleDetailSchema defines model for CustomRoleDetailSchema.
+type CustomRoleDetailSchema struct {
+	Actions     []NestedActionSchema `json:"actions"`
+	CreatedAt   time.Time            `json:"created_at"`
+	Description string               `json:"description"`
+	DisplayName string               `json:"display_name"`
+	Enabled     bool                 `json:"enabled"`
+	Id          core.UUID            `json:"id"`
+	Name        string               `json:"name"`
+	UpdatedAt   time.Time            `json:"updated_at"`
+	Urn         string               `json:"urn"`
+}
+
+// CustomRolePartialUpdateSchema defines model for CustomRolePartialUpdateSchema.
+type CustomRolePartialUpdateSchema struct {
+	// ActionUrns Replaces the role's actions; each must be a project action
+	ActionUrns  *[]string `json:"action_urns,omitempty"`
+	Description *string   `json:"description,omitempty"`
+	DisplayName *string   `json:"display_name,omitempty"`
+	Enabled     *bool     `json:"enabled,omitempty"`
+}
+
+// CustomRoleSchema defines model for CustomRoleSchema.
+type CustomRoleSchema struct {
+	CreatedAt   time.Time `json:"created_at"`
+	Description string    `json:"description"`
+	DisplayName string    `json:"display_name"`
+	Enabled     bool      `json:"enabled"`
+	Id          core.UUID `json:"id"`
+	Name        string    `json:"name"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	Urn         string    `json:"urn"`
+}
+
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
 	Errors    []ErrorSchema `json:"errors"`
@@ -76,11 +124,41 @@ type LabeledZoneNetworkScope struct {
 	Value ZoneNetworkScope `json:"value"`
 }
 
+// MemberRoleAssignmentSchema defines model for MemberRoleAssignmentSchema.
+type MemberRoleAssignmentSchema struct {
+	Enabled *bool  `json:"enabled,omitempty"`
+	Urn     string `json:"urn"`
+}
+
+// NestedActionSchema defines model for NestedActionSchema.
+type NestedActionSchema struct {
+	Description string `json:"description"`
+	DisplayName string `json:"display_name"`
+	Urn         string `json:"urn"`
+}
+
+// NestedAssignedRoleSchema A role carrying its own `enabled`, so a caller can tell when a grant
+// confers nothing because the role itself is switched off.
+type NestedAssignedRoleSchema struct {
+	Description string `json:"description"`
+	DisplayName string `json:"display_name"`
+	Enabled     bool   `json:"enabled"`
+	Type        string `json:"type"`
+	Urn         string `json:"urn"`
+}
+
 // NestedDirectorySchema defines model for NestedDirectorySchema.
 type NestedDirectorySchema struct {
 	Description string    `json:"description"`
 	Id          core.UUID `json:"id"`
 	Name        string    `json:"name"`
+}
+
+// NestedMemberUserSchema defines model for NestedMemberUserSchema.
+type NestedMemberUserSchema struct {
+	Email    string    `json:"email"`
+	Id       core.UUID `json:"id"`
+	Username string    `json:"username"`
 }
 
 // NestedOrganizationSchema defines model for NestedOrganizationSchema.
@@ -100,6 +178,16 @@ type NestedProjectServiceSchema struct {
 	Url         string    `json:"url"`
 }
 
+// NestedProjectUserRoleSchema defines model for NestedProjectUserRoleSchema.
+type NestedProjectUserRoleSchema struct {
+	Enabled bool      `json:"enabled"`
+	Id      core.UUID `json:"id"`
+
+	// Role A role carrying its own `enabled`, so a caller can tell when a grant
+	// confers nothing because the role itself is switched off.
+	Role NestedAssignedRoleSchema `json:"role"`
+}
+
 // NestedRegionSchema defines model for NestedRegionSchema.
 type NestedRegionSchema struct {
 	Description string    `json:"description"`
@@ -113,10 +201,26 @@ type NestedServiceFeatureSchema struct {
 	Feature string `json:"feature"`
 }
 
+// PagedCustomRoleSchema defines model for PagedCustomRoleSchema.
+type PagedCustomRoleSchema struct {
+	Count    int                `json:"count"`
+	Next     *string            `json:"next,omitempty"`
+	Previous *string            `json:"previous,omitempty"`
+	Results  []CustomRoleSchema `json:"results"`
+}
+
 // PagedProjectAllowedActionSchema defines model for PagedProjectAllowedActionSchema.
 type PagedProjectAllowedActionSchema struct {
 	Count   int                          `json:"count"`
 	Results []ProjectAllowedActionSchema `json:"results"`
+}
+
+// PagedProjectMemberSchema defines model for PagedProjectMemberSchema.
+type PagedProjectMemberSchema struct {
+	Count    int                   `json:"count"`
+	Next     *string               `json:"next,omitempty"`
+	Previous *string               `json:"previous,omitempty"`
+	Results  []ProjectMemberSchema `json:"results"`
 }
 
 // PagedProjectRegionSchema defines model for PagedProjectRegionSchema.
@@ -147,6 +251,24 @@ type PagedProjectZoneSchema struct {
 type ProjectAllowedActionSchema struct {
 	Billable bool   `json:"billable"`
 	Urn      string `json:"urn"`
+}
+
+// ProjectMemberPartialUpdateSchema defines model for ProjectMemberPartialUpdateSchema.
+type ProjectMemberPartialUpdateSchema struct {
+	IsAdmin *bool `json:"is_admin,omitempty"`
+
+	// Roles Replace the member's role assignments; the list is the complete set. Omit to leave unchanged, pass [] to remove all.
+	Roles *[]MemberRoleAssignmentSchema `json:"roles,omitempty"`
+}
+
+// ProjectMemberSchema defines model for ProjectMemberSchema.
+type ProjectMemberSchema struct {
+	CreatedAt time.Time                     `json:"created_at"`
+	Id        core.UUID                     `json:"id"`
+	IsAdmin   bool                          `json:"is_admin"`
+	Roles     []NestedProjectUserRoleSchema `json:"roles"`
+	UpdatedAt time.Time                     `json:"updated_at"`
+	User      NestedMemberUserSchema        `json:"user"`
 }
 
 // ProjectRegionSchema defines model for ProjectRegionSchema.
@@ -234,13 +356,43 @@ type ListProjectsParams struct {
 	// DirectAccess True: only projects the user directly belongs to. False: only projects inherited via group/directory membership.
 	DirectAccess *bool `form:"direct_access,omitempty" json:"direct_access,omitempty"`
 	IsPoc        *bool `form:"is_poc,omitempty" json:"is_poc,omitempty"`
-	PageSize     *int  `form:"page_size,omitempty" json:"page_size,omitempty"`
-	PageNumber   *int  `form:"page_number,omitempty" json:"page_number,omitempty"`
+
+	// DirectoryId Only projects in this directory
+	DirectoryId *core.UUID `form:"directory_id,omitempty" json:"directory_id,omitempty"`
+
+	// IncludeSubtree With directory_id, also the projects in its subdirectories
+	IncludeSubtree *bool `form:"include_subtree,omitempty" json:"include_subtree,omitempty"`
+	PageSize       *int  `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber     *int  `form:"page_number,omitempty" json:"page_number,omitempty"`
 }
 
 // ListAllowedActionsParams defines parameters for ListAllowedActions.
 type ListAllowedActionsParams struct {
 	ResourceUrn *string `form:"resource_urn,omitempty" json:"resource_urn,omitempty"`
+}
+
+// ListCustomRolesParams defines parameters for ListCustomRoles.
+type ListCustomRolesParams struct {
+	Name       *string `form:"name,omitempty" json:"name,omitempty"`
+	PageSize   *int    `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber *int    `form:"page_number,omitempty" json:"page_number,omitempty"`
+}
+
+// ListProjectMembersParams defines parameters for ListProjectMembers.
+type ListProjectMembersParams struct {
+	// UserId Filter by the member's user ID
+	UserId *core.UUID `form:"user_id,omitempty" json:"user_id,omitempty"`
+
+	// Username Filter by the member's username
+	Username *string `form:"username,omitempty" json:"username,omitempty"`
+
+	// Email Filter by the member's email
+	Email *string `form:"email,omitempty" json:"email,omitempty"`
+
+	// IsAdmin Filter by whether the member is a project admin
+	IsAdmin    *bool `form:"is_admin,omitempty" json:"is_admin,omitempty"`
+	PageSize   *int  `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber *int  `form:"page_number,omitempty" json:"page_number,omitempty"`
 }
 
 // ListProjectRegionsParams defines parameters for ListProjectRegions.
@@ -257,6 +409,15 @@ type ListProjectZonesParams struct {
 	PageSize   *int       `form:"page_size,omitempty" json:"page_size,omitempty"`
 	PageNumber *int       `form:"page_number,omitempty" json:"page_number,omitempty"`
 }
+
+// CreateCustomRoleJSONRequestBody defines body for CreateCustomRole for application/json ContentType.
+type CreateCustomRoleJSONRequestBody = CustomRoleCreateSchema
+
+// UpdateCustomRoleJSONRequestBody defines body for UpdateCustomRole for application/json ContentType.
+type UpdateCustomRoleJSONRequestBody = CustomRolePartialUpdateSchema
+
+// UpdateProjectMemberJSONRequestBody defines body for UpdateProjectMember for application/json ContentType.
+type UpdateProjectMemberJSONRequestBody = ProjectMemberPartialUpdateSchema
 
 // RequestEditorFn is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -342,6 +503,117 @@ type ClientInterface interface {
 	// Corresponds with GET /v2/projects/{project_id}/allowed-actions/ (the `ListAllowedActions` operationId).
 	ListAllowedActions(ctx context.Context, projectId core.UUID, params *ListAllowedActionsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListCustomRoles List Custom Roles
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:custom_role:list`
+	//
+	// Corresponds with GET /v2/projects/{project_id}/custom-roles/ (the `ListCustomRoles` operationId).
+	ListCustomRoles(ctx context.Context, projectId core.UUID, params *ListCustomRolesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateCustomRoleWithBody Create Custom Role
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:custom_role:create`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v2/projects/{project_id}/custom-roles/ (the `CreateCustomRole` operationId).
+	CreateCustomRoleWithBody(ctx context.Context, projectId core.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateCustomRole Create Custom Role
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:custom_role:create`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v2/projects/{project_id}/custom-roles/ (the `CreateCustomRole` operationId).
+	CreateCustomRole(ctx context.Context, projectId core.UUID, body CreateCustomRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteCustomRole Delete Custom Role
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:custom_role:delete`
+	//
+	// Corresponds with DELETE /v2/projects/{project_id}/custom-roles/{role_id}/ (the `DeleteCustomRole` operationId).
+	DeleteCustomRole(ctx context.Context, projectId core.UUID, roleId core.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetCustomRole Get Custom Role
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:custom_role:get`
+	//
+	// Corresponds with GET /v2/projects/{project_id}/custom-roles/{role_id}/ (the `GetCustomRole` operationId).
+	GetCustomRole(ctx context.Context, projectId core.UUID, roleId core.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateCustomRoleWithBody Update Custom Role
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:custom_role:update`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PATCH /v2/projects/{project_id}/custom-roles/{role_id}/ (the `UpdateCustomRole` operationId).
+	UpdateCustomRoleWithBody(ctx context.Context, projectId core.UUID, roleId core.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateCustomRole Update Custom Role
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:custom_role:update`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PATCH /v2/projects/{project_id}/custom-roles/{role_id}/ (the `UpdateCustomRole` operationId).
+	UpdateCustomRole(ctx context.Context, projectId core.UUID, roleId core.UUID, body UpdateCustomRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListProjectMembers List Project Members
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:member:list`
+	//
+	// Corresponds with GET /v2/projects/{project_id}/members/ (the `ListProjectMembers` operationId).
+	ListProjectMembers(ctx context.Context, projectId core.UUID, params *ListProjectMembersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetProjectMember Get Project Member
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:member:get`
+	//
+	// Corresponds with GET /v2/projects/{project_id}/members/{project_user_id}/ (the `GetProjectMember` operationId).
+	GetProjectMember(ctx context.Context, projectId core.UUID, projectUserId core.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateProjectMemberWithBody Update Project Member
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:member:update`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PATCH /v2/projects/{project_id}/members/{project_user_id}/ (the `UpdateProjectMember` operationId).
+	UpdateProjectMemberWithBody(ctx context.Context, projectId core.UUID, projectUserId core.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateProjectMember Update Project Member
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:member:update`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PATCH /v2/projects/{project_id}/members/{project_user_id}/ (the `UpdateProjectMember` operationId).
+	UpdateProjectMember(ctx context.Context, projectId core.UUID, projectUserId core.UUID, body UpdateProjectMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListProjectRegions List Project Regions
 	//
 	// **Required permissions:**
@@ -381,6 +653,227 @@ func (c *Client) ListProjects(ctx context.Context, params *ListProjectsParams, r
 // Corresponds with GET /v2/projects/{project_id}/allowed-actions/ (the `ListAllowedActions` operationId).
 func (c *Client) ListAllowedActions(ctx context.Context, projectId core.UUID, params *ListAllowedActionsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListAllowedActionsRequest(c.Server, projectId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListCustomRoles List Custom Roles
+//
+// **Required permissions:**
+//
+// - `urn:action:project:custom_role:list`
+//
+// Corresponds with GET /v2/projects/{project_id}/custom-roles/ (the `ListCustomRoles` operationId).
+func (c *Client) ListCustomRoles(ctx context.Context, projectId core.UUID, params *ListCustomRolesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListCustomRolesRequest(c.Server, projectId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateCustomRoleWithBody Create Custom Role
+//
+// **Required permissions:**
+//
+// - `urn:action:project:custom_role:create`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/projects/{project_id}/custom-roles/ (the `CreateCustomRole` operationId).
+func (c *Client) CreateCustomRoleWithBody(ctx context.Context, projectId core.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateCustomRoleRequestWithBody(c.Server, projectId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateCustomRole Create Custom Role
+//
+// **Required permissions:**
+//
+// - `urn:action:project:custom_role:create`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/projects/{project_id}/custom-roles/ (the `CreateCustomRole` operationId).
+func (c *Client) CreateCustomRole(ctx context.Context, projectId core.UUID, body CreateCustomRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateCustomRoleRequest(c.Server, projectId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteCustomRole Delete Custom Role
+//
+// **Required permissions:**
+//
+// - `urn:action:project:custom_role:delete`
+//
+// Corresponds with DELETE /v2/projects/{project_id}/custom-roles/{role_id}/ (the `DeleteCustomRole` operationId).
+func (c *Client) DeleteCustomRole(ctx context.Context, projectId core.UUID, roleId core.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteCustomRoleRequest(c.Server, projectId, roleId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetCustomRole Get Custom Role
+//
+// **Required permissions:**
+//
+// - `urn:action:project:custom_role:get`
+//
+// Corresponds with GET /v2/projects/{project_id}/custom-roles/{role_id}/ (the `GetCustomRole` operationId).
+func (c *Client) GetCustomRole(ctx context.Context, projectId core.UUID, roleId core.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCustomRoleRequest(c.Server, projectId, roleId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateCustomRoleWithBody Update Custom Role
+//
+// **Required permissions:**
+//
+// - `urn:action:project:custom_role:update`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PATCH /v2/projects/{project_id}/custom-roles/{role_id}/ (the `UpdateCustomRole` operationId).
+func (c *Client) UpdateCustomRoleWithBody(ctx context.Context, projectId core.UUID, roleId core.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateCustomRoleRequestWithBody(c.Server, projectId, roleId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateCustomRole Update Custom Role
+//
+// **Required permissions:**
+//
+// - `urn:action:project:custom_role:update`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PATCH /v2/projects/{project_id}/custom-roles/{role_id}/ (the `UpdateCustomRole` operationId).
+func (c *Client) UpdateCustomRole(ctx context.Context, projectId core.UUID, roleId core.UUID, body UpdateCustomRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateCustomRoleRequest(c.Server, projectId, roleId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListProjectMembers List Project Members
+//
+// **Required permissions:**
+//
+// - `urn:action:project:member:list`
+//
+// Corresponds with GET /v2/projects/{project_id}/members/ (the `ListProjectMembers` operationId).
+func (c *Client) ListProjectMembers(ctx context.Context, projectId core.UUID, params *ListProjectMembersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListProjectMembersRequest(c.Server, projectId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetProjectMember Get Project Member
+//
+// **Required permissions:**
+//
+// - `urn:action:project:member:get`
+//
+// Corresponds with GET /v2/projects/{project_id}/members/{project_user_id}/ (the `GetProjectMember` operationId).
+func (c *Client) GetProjectMember(ctx context.Context, projectId core.UUID, projectUserId core.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetProjectMemberRequest(c.Server, projectId, projectUserId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateProjectMemberWithBody Update Project Member
+//
+// **Required permissions:**
+//
+// - `urn:action:project:member:update`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PATCH /v2/projects/{project_id}/members/{project_user_id}/ (the `UpdateProjectMember` operationId).
+func (c *Client) UpdateProjectMemberWithBody(ctx context.Context, projectId core.UUID, projectUserId core.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateProjectMemberRequestWithBody(c.Server, projectId, projectUserId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateProjectMember Update Project Member
+//
+// **Required permissions:**
+//
+// - `urn:action:project:member:update`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PATCH /v2/projects/{project_id}/members/{project_user_id}/ (the `UpdateProjectMember` operationId).
+func (c *Client) UpdateProjectMember(ctx context.Context, projectId core.UUID, projectUserId core.UUID, body UpdateProjectMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateProjectMemberRequest(c.Server, projectId, projectUserId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -529,6 +1022,30 @@ func NewListProjectsRequest(server string, params *ListProjectsParams) (*http.Re
 
 		}
 
+		if params.DirectoryId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "directory_id", *params.DirectoryId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.IncludeSubtree != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "include_subtree", *params.IncludeSubtree, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "boolean", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.PageSize != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
@@ -624,6 +1141,490 @@ func NewListAllowedActionsRequest(server string, projectId core.UUID, params *Li
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewListCustomRolesRequest constructs an http.Request for the ListCustomRoles method
+func NewListCustomRolesRequest(server string, projectId core.UUID, params *ListCustomRolesParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "project_id", projectId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/projects/%s/custom-roles/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Name != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "name", *params.Name, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateCustomRoleRequest calls the generic CreateCustomRole builder with application/json body
+func NewCreateCustomRoleRequest(server string, projectId core.UUID, body CreateCustomRoleJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateCustomRoleRequestWithBody(server, projectId, "application/json", bodyReader)
+}
+
+// NewCreateCustomRoleRequestWithBody constructs an http.Request for the CreateCustomRole method, with any body, and a specified content type
+func NewCreateCustomRoleRequestWithBody(server string, projectId core.UUID, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "project_id", projectId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/projects/%s/custom-roles/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteCustomRoleRequest constructs an http.Request for the DeleteCustomRole method
+func NewDeleteCustomRoleRequest(server string, projectId core.UUID, roleId core.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "project_id", projectId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "role_id", roleId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/projects/%s/custom-roles/%s/", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetCustomRoleRequest constructs an http.Request for the GetCustomRole method
+func NewGetCustomRoleRequest(server string, projectId core.UUID, roleId core.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "project_id", projectId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "role_id", roleId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/projects/%s/custom-roles/%s/", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateCustomRoleRequest calls the generic UpdateCustomRole builder with application/json body
+func NewUpdateCustomRoleRequest(server string, projectId core.UUID, roleId core.UUID, body UpdateCustomRoleJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateCustomRoleRequestWithBody(server, projectId, roleId, "application/json", bodyReader)
+}
+
+// NewUpdateCustomRoleRequestWithBody constructs an http.Request for the UpdateCustomRole method, with any body, and a specified content type
+func NewUpdateCustomRoleRequestWithBody(server string, projectId core.UUID, roleId core.UUID, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "project_id", projectId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "role_id", roleId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/projects/%s/custom-roles/%s/", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListProjectMembersRequest constructs an http.Request for the ListProjectMembers method
+func NewListProjectMembersRequest(server string, projectId core.UUID, params *ListProjectMembersParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "project_id", projectId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/projects/%s/members/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.UserId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "user_id", *params.UserId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Username != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "username", *params.Username, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Email != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "email", *params.Email, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.IsAdmin != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "is_admin", *params.IsAdmin, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetProjectMemberRequest constructs an http.Request for the GetProjectMember method
+func NewGetProjectMemberRequest(server string, projectId core.UUID, projectUserId core.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "project_id", projectId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "project_user_id", projectUserId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/projects/%s/members/%s/", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateProjectMemberRequest calls the generic UpdateProjectMember builder with application/json body
+func NewUpdateProjectMemberRequest(server string, projectId core.UUID, projectUserId core.UUID, body UpdateProjectMemberJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateProjectMemberRequestWithBody(server, projectId, projectUserId, "application/json", bodyReader)
+}
+
+// NewUpdateProjectMemberRequestWithBody constructs an http.Request for the UpdateProjectMember method, with any body, and a specified content type
+func NewUpdateProjectMemberRequestWithBody(server string, projectId core.UUID, projectUserId core.UUID, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "project_id", projectId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "project_user_id", projectUserId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/projects/%s/members/%s/", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -868,6 +1869,127 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /v2/projects/{project_id}/allowed-actions/ (the `ListAllowedActions` operationId).
 	ListAllowedActionsWithResponse(ctx context.Context, projectId core.UUID, params *ListAllowedActionsParams, reqEditors ...RequestEditorFn) (*ListAllowedActionsResponse, error)
 
+	// ListCustomRolesWithResponse List Custom Roles
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:custom_role:list`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/projects/{project_id}/custom-roles/ (the `ListCustomRoles` operationId).
+	ListCustomRolesWithResponse(ctx context.Context, projectId core.UUID, params *ListCustomRolesParams, reqEditors ...RequestEditorFn) (*ListCustomRolesResponse, error)
+
+	// CreateCustomRoleWithBodyWithResponse Create Custom Role
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:custom_role:create`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/projects/{project_id}/custom-roles/ (the `CreateCustomRole` operationId).
+	CreateCustomRoleWithBodyWithResponse(ctx context.Context, projectId core.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateCustomRoleResponse, error)
+
+	// CreateCustomRoleWithResponse Create Custom Role
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:custom_role:create`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/projects/{project_id}/custom-roles/ (the `CreateCustomRole` operationId).
+	CreateCustomRoleWithResponse(ctx context.Context, projectId core.UUID, body CreateCustomRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateCustomRoleResponse, error)
+
+	// DeleteCustomRoleWithResponse Delete Custom Role
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:custom_role:delete`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v2/projects/{project_id}/custom-roles/{role_id}/ (the `DeleteCustomRole` operationId).
+	DeleteCustomRoleWithResponse(ctx context.Context, projectId core.UUID, roleId core.UUID, reqEditors ...RequestEditorFn) (*DeleteCustomRoleResponse, error)
+
+	// GetCustomRoleWithResponse Get Custom Role
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:custom_role:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/projects/{project_id}/custom-roles/{role_id}/ (the `GetCustomRole` operationId).
+	GetCustomRoleWithResponse(ctx context.Context, projectId core.UUID, roleId core.UUID, reqEditors ...RequestEditorFn) (*GetCustomRoleResponse, error)
+
+	// UpdateCustomRoleWithBodyWithResponse Update Custom Role
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:custom_role:update`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /v2/projects/{project_id}/custom-roles/{role_id}/ (the `UpdateCustomRole` operationId).
+	UpdateCustomRoleWithBodyWithResponse(ctx context.Context, projectId core.UUID, roleId core.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateCustomRoleResponse, error)
+
+	// UpdateCustomRoleWithResponse Update Custom Role
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:custom_role:update`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /v2/projects/{project_id}/custom-roles/{role_id}/ (the `UpdateCustomRole` operationId).
+	UpdateCustomRoleWithResponse(ctx context.Context, projectId core.UUID, roleId core.UUID, body UpdateCustomRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCustomRoleResponse, error)
+
+	// ListProjectMembersWithResponse List Project Members
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:member:list`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/projects/{project_id}/members/ (the `ListProjectMembers` operationId).
+	ListProjectMembersWithResponse(ctx context.Context, projectId core.UUID, params *ListProjectMembersParams, reqEditors ...RequestEditorFn) (*ListProjectMembersResponse, error)
+
+	// GetProjectMemberWithResponse Get Project Member
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:member:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/projects/{project_id}/members/{project_user_id}/ (the `GetProjectMember` operationId).
+	GetProjectMemberWithResponse(ctx context.Context, projectId core.UUID, projectUserId core.UUID, reqEditors ...RequestEditorFn) (*GetProjectMemberResponse, error)
+
+	// UpdateProjectMemberWithBodyWithResponse Update Project Member
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:member:update`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /v2/projects/{project_id}/members/{project_user_id}/ (the `UpdateProjectMember` operationId).
+	UpdateProjectMemberWithBodyWithResponse(ctx context.Context, projectId core.UUID, projectUserId core.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateProjectMemberResponse, error)
+
+	// UpdateProjectMemberWithResponse Update Project Member
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:project:member:update`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /v2/projects/{project_id}/members/{project_user_id}/ (the `UpdateProjectMember` operationId).
+	UpdateProjectMemberWithResponse(ctx context.Context, projectId core.UUID, projectUserId core.UUID, body UpdateProjectMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateProjectMemberResponse, error)
+
 	// ListProjectRegionsWithResponse List Project Regions
 	//
 	// **Required permissions:**
@@ -951,6 +2073,276 @@ func (r ListAllowedActionsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r ListAllowedActionsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListCustomRolesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedCustomRoleSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListCustomRolesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListCustomRolesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateCustomRoleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *CustomRoleDetailSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateCustomRoleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateCustomRoleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteCustomRoleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponseSchema
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteCustomRoleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteCustomRoleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCustomRoleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *CustomRoleDetailSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCustomRoleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCustomRoleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateCustomRoleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *CustomRoleDetailSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateCustomRoleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateCustomRoleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListProjectMembersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedProjectMemberSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListProjectMembersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListProjectMembersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetProjectMemberResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ProjectMemberSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetProjectMemberResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetProjectMemberResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateProjectMemberResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ProjectMemberSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateProjectMemberResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateProjectMemberResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1047,6 +2439,193 @@ func (c *ClientWithResponses) ListAllowedActionsWithResponse(ctx context.Context
 		return nil, err
 	}
 	return ParseListAllowedActionsResponse(rsp)
+}
+
+// ListCustomRolesWithResponse List Custom Roles
+//
+// **Required permissions:**
+//
+// - `urn:action:project:custom_role:list`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/projects/{project_id}/custom-roles/ (the `ListCustomRoles` operationId).
+func (c *ClientWithResponses) ListCustomRolesWithResponse(ctx context.Context, projectId core.UUID, params *ListCustomRolesParams, reqEditors ...RequestEditorFn) (*ListCustomRolesResponse, error) {
+	rsp, err := c.ListCustomRoles(ctx, projectId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListCustomRolesResponse(rsp)
+}
+
+// CreateCustomRoleWithBodyWithResponse Create Custom Role
+//
+// **Required permissions:**
+//
+// - `urn:action:project:custom_role:create`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/projects/{project_id}/custom-roles/ (the `CreateCustomRole` operationId).
+func (c *ClientWithResponses) CreateCustomRoleWithBodyWithResponse(ctx context.Context, projectId core.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateCustomRoleResponse, error) {
+	rsp, err := c.CreateCustomRoleWithBody(ctx, projectId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateCustomRoleResponse(rsp)
+}
+
+// CreateCustomRoleWithResponse Create Custom Role
+//
+// **Required permissions:**
+//
+// - `urn:action:project:custom_role:create`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/projects/{project_id}/custom-roles/ (the `CreateCustomRole` operationId).
+func (c *ClientWithResponses) CreateCustomRoleWithResponse(ctx context.Context, projectId core.UUID, body CreateCustomRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateCustomRoleResponse, error) {
+	rsp, err := c.CreateCustomRole(ctx, projectId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateCustomRoleResponse(rsp)
+}
+
+// DeleteCustomRoleWithResponse Delete Custom Role
+//
+// **Required permissions:**
+//
+// - `urn:action:project:custom_role:delete`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v2/projects/{project_id}/custom-roles/{role_id}/ (the `DeleteCustomRole` operationId).
+func (c *ClientWithResponses) DeleteCustomRoleWithResponse(ctx context.Context, projectId core.UUID, roleId core.UUID, reqEditors ...RequestEditorFn) (*DeleteCustomRoleResponse, error) {
+	rsp, err := c.DeleteCustomRole(ctx, projectId, roleId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteCustomRoleResponse(rsp)
+}
+
+// GetCustomRoleWithResponse Get Custom Role
+//
+// **Required permissions:**
+//
+// - `urn:action:project:custom_role:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/projects/{project_id}/custom-roles/{role_id}/ (the `GetCustomRole` operationId).
+func (c *ClientWithResponses) GetCustomRoleWithResponse(ctx context.Context, projectId core.UUID, roleId core.UUID, reqEditors ...RequestEditorFn) (*GetCustomRoleResponse, error) {
+	rsp, err := c.GetCustomRole(ctx, projectId, roleId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCustomRoleResponse(rsp)
+}
+
+// UpdateCustomRoleWithBodyWithResponse Update Custom Role
+//
+// **Required permissions:**
+//
+// - `urn:action:project:custom_role:update`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /v2/projects/{project_id}/custom-roles/{role_id}/ (the `UpdateCustomRole` operationId).
+func (c *ClientWithResponses) UpdateCustomRoleWithBodyWithResponse(ctx context.Context, projectId core.UUID, roleId core.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateCustomRoleResponse, error) {
+	rsp, err := c.UpdateCustomRoleWithBody(ctx, projectId, roleId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateCustomRoleResponse(rsp)
+}
+
+// UpdateCustomRoleWithResponse Update Custom Role
+//
+// **Required permissions:**
+//
+// - `urn:action:project:custom_role:update`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /v2/projects/{project_id}/custom-roles/{role_id}/ (the `UpdateCustomRole` operationId).
+func (c *ClientWithResponses) UpdateCustomRoleWithResponse(ctx context.Context, projectId core.UUID, roleId core.UUID, body UpdateCustomRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCustomRoleResponse, error) {
+	rsp, err := c.UpdateCustomRole(ctx, projectId, roleId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateCustomRoleResponse(rsp)
+}
+
+// ListProjectMembersWithResponse List Project Members
+//
+// **Required permissions:**
+//
+// - `urn:action:project:member:list`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/projects/{project_id}/members/ (the `ListProjectMembers` operationId).
+func (c *ClientWithResponses) ListProjectMembersWithResponse(ctx context.Context, projectId core.UUID, params *ListProjectMembersParams, reqEditors ...RequestEditorFn) (*ListProjectMembersResponse, error) {
+	rsp, err := c.ListProjectMembers(ctx, projectId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListProjectMembersResponse(rsp)
+}
+
+// GetProjectMemberWithResponse Get Project Member
+//
+// **Required permissions:**
+//
+// - `urn:action:project:member:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/projects/{project_id}/members/{project_user_id}/ (the `GetProjectMember` operationId).
+func (c *ClientWithResponses) GetProjectMemberWithResponse(ctx context.Context, projectId core.UUID, projectUserId core.UUID, reqEditors ...RequestEditorFn) (*GetProjectMemberResponse, error) {
+	rsp, err := c.GetProjectMember(ctx, projectId, projectUserId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetProjectMemberResponse(rsp)
+}
+
+// UpdateProjectMemberWithBodyWithResponse Update Project Member
+//
+// **Required permissions:**
+//
+// - `urn:action:project:member:update`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /v2/projects/{project_id}/members/{project_user_id}/ (the `UpdateProjectMember` operationId).
+func (c *ClientWithResponses) UpdateProjectMemberWithBodyWithResponse(ctx context.Context, projectId core.UUID, projectUserId core.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateProjectMemberResponse, error) {
+	rsp, err := c.UpdateProjectMemberWithBody(ctx, projectId, projectUserId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateProjectMemberResponse(rsp)
+}
+
+// UpdateProjectMemberWithResponse Update Project Member
+//
+// **Required permissions:**
+//
+// - `urn:action:project:member:update`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /v2/projects/{project_id}/members/{project_user_id}/ (the `UpdateProjectMember` operationId).
+func (c *ClientWithResponses) UpdateProjectMemberWithResponse(ctx context.Context, projectId core.UUID, projectUserId core.UUID, body UpdateProjectMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateProjectMemberResponse, error) {
+	rsp, err := c.UpdateProjectMember(ctx, projectId, projectUserId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateProjectMemberResponse(rsp)
 }
 
 // ListProjectRegionsWithResponse List Project Regions
@@ -1160,6 +2739,518 @@ func ParseListAllowedActionsResponse(rsp *http.Response) (*ListAllowedActionsRes
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest PagedProjectAllowedActionSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListCustomRolesResponse parses an HTTP response from a ListCustomRolesWithResponse call
+func ParseListCustomRolesResponse(rsp *http.Response) (*ListCustomRolesResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListCustomRolesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedCustomRoleSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateCustomRoleResponse parses an HTTP response from a CreateCustomRoleWithResponse call
+func ParseCreateCustomRoleResponse(rsp *http.Response) (*CreateCustomRoleResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateCustomRoleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest CustomRoleDetailSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteCustomRoleResponse parses an HTTP response from a DeleteCustomRoleWithResponse call
+func ParseDeleteCustomRoleResponse(rsp *http.Response) (*DeleteCustomRoleResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteCustomRoleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetCustomRoleResponse parses an HTTP response from a GetCustomRoleWithResponse call
+func ParseGetCustomRoleResponse(rsp *http.Response) (*GetCustomRoleResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCustomRoleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CustomRoleDetailSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateCustomRoleResponse parses an HTTP response from a UpdateCustomRoleWithResponse call
+func ParseUpdateCustomRoleResponse(rsp *http.Response) (*UpdateCustomRoleResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateCustomRoleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CustomRoleDetailSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListProjectMembersResponse parses an HTTP response from a ListProjectMembersWithResponse call
+func ParseListProjectMembersResponse(rsp *http.Response) (*ListProjectMembersResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListProjectMembersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedProjectMemberSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetProjectMemberResponse parses an HTTP response from a GetProjectMemberWithResponse call
+func ParseGetProjectMemberResponse(rsp *http.Response) (*GetProjectMemberResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetProjectMemberResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ProjectMemberSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateProjectMemberResponse parses an HTTP response from a UpdateProjectMemberWithResponse call
+func ParseUpdateProjectMemberResponse(rsp *http.Response) (*UpdateProjectMemberResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateProjectMemberResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ProjectMemberSchema
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

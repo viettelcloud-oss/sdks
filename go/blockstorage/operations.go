@@ -350,7 +350,7 @@ func (c *Client) ListVolumeIter(ctx context.Context, params ListVolumeParams) it
 	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[VolumeSchema], error) {
 		p := params
 		p.PageNumber = &page
-		p.Size = &size
+		p.PageSize = &size
 		pageResult, err := c.ListVolume(ctx, p)
 		if err != nil {
 			return core.Page[VolumeSchema]{}, err
@@ -365,7 +365,7 @@ func (c *Client) ListVolumeBackupsIter(ctx context.Context, params ListVolumeBac
 	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[VolumeBackupSchema], error) {
 		p := params
 		p.PageNumber = &page
-		p.Size = &size
+		p.PageSize = &size
 		pageResult, err := c.ListVolumeBackups(ctx, p)
 		if err != nil {
 			return core.Page[VolumeBackupSchema]{}, err
@@ -395,7 +395,7 @@ func (c *Client) ListVolumeSnapshotsIter(ctx context.Context, params ListVolumeS
 	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[VolumeSnapshotSchema], error) {
 		p := params
 		p.PageNumber = &page
-		p.Size = &size
+		p.PageSize = &size
 		pageResult, err := c.ListVolumeSnapshots(ctx, p)
 		if err != nil {
 			return core.Page[VolumeSnapshotSchema]{}, err

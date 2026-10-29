@@ -6,6 +6,7 @@ import gen "github.com/viettelcloud-oss/sdks/go/dbaascluster/internal/gen"
 
 type AuthenticationError = gen.AuthenticationError
 type AutoBackupConfigSchema = gen.AutoBackupConfigSchema
+type AutoBackupConfigUpdateSchema = gen.AutoBackupConfigUpdateSchema
 type BackupInterval = gen.BackupInterval
 type BackupType = gen.BackupType
 type CassandraTopologyConfig = gen.CassandraTopologyConfig
@@ -49,6 +50,9 @@ type DailyAutoBackupConfig = gen.DailyAutoBackupConfig
 type DayOfWeek = gen.DayOfWeek
 type DeleteDbClusterBackupParams = gen.DeleteDbClusterBackupParams
 type DeleteDbClusterParams = gen.DeleteDbClusterParams
+type DisabledAutoBackupConfig = gen.DisabledAutoBackupConfig
+type EnabledDailyAutoBackupConfig = gen.EnabledDailyAutoBackupConfig
+type EnabledWeeklyAutoBackupConfig = gen.EnabledWeeklyAutoBackupConfig
 type ErrorResponseSchema = gen.ErrorResponseSchema
 type ErrorSchema = gen.ErrorSchema
 type GetDbClusterBackupParams = gen.GetDbClusterBackupParams

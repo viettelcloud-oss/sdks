@@ -842,3 +842,48 @@ func (c *Client) ListConnectionPoolsIter(ctx context.Context, InstanceID core.UU
 		return core.Page[DBaaSPgPoolSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
 	})
 }
+
+// ListPrivilegeUsersIter returns an iterator over all PrivilegeUserListItemSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListPrivilegeUsersIter(ctx context.Context, InstanceID core.UUID, params ListPrivilegeUsersParams) iter.Seq2[*PrivilegeUserListItemSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[PrivilegeUserListItemSchema], error) {
+		p := params
+		p.Page = &page
+		p.PageSize = &size
+		pageResult, err := c.ListPrivilegeUsers(ctx, InstanceID, p)
+		if err != nil {
+			return core.Page[PrivilegeUserListItemSchema]{}, err
+		}
+		return core.Page[PrivilegeUserListItemSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListPrivilegeDatabasesIter returns an iterator over all PrivilegeDatabaseListItemSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListPrivilegeDatabasesIter(ctx context.Context, InstanceID core.UUID, params ListPrivilegeDatabasesParams) iter.Seq2[*PrivilegeDatabaseListItemSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[PrivilegeDatabaseListItemSchema], error) {
+		p := params
+		p.Page = &page
+		p.PageSize = &size
+		pageResult, err := c.ListPrivilegeDatabases(ctx, InstanceID, p)
+		if err != nil {
+			return core.Page[PrivilegeDatabaseListItemSchema]{}, err
+		}
+		return core.Page[PrivilegeDatabaseListItemSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListPrivilegeUserDatabasesIter returns an iterator over all PrivilegeUserDatabaseItemSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListPrivilegeUserDatabasesIter(ctx context.Context, InstanceID core.UUID, UserName string, params ListPrivilegeUserDatabasesParams) iter.Seq2[*PrivilegeUserDatabaseItemSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[PrivilegeUserDatabaseItemSchema], error) {
+		p := params
+		p.Page = &page
+		p.PageSize = &size
+		pageResult, err := c.ListPrivilegeUserDatabases(ctx, InstanceID, UserName, p)
+		if err != nil {
+			return core.Page[PrivilegeUserDatabaseItemSchema]{}, err
+		}
+		return core.Page[PrivilegeUserDatabaseItemSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}

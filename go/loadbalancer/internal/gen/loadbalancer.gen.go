@@ -861,13 +861,13 @@ type LBListenerCreateSchema struct {
 	DefaultTlsCertId        *core.UUID                 `json:"default_tls_cert_id,omitempty"`
 	Description             *string                    `json:"description,omitempty"`
 	EnableH2                *bool                      `json:"enable_h2,omitempty"`
-	ListenerTimeout         *int                       `json:"listener_timeout"`
+	ListenerTimeout         *int                       `json:"listener_timeout,omitempty"`
 	Name                    string                     `json:"name"`
 	Protocol                ListenerProtocolType       `json:"protocol"`
 	ProtocolPort            int                        `json:"protocol_port"`
-	ServerConnectingTimeout *int                       `json:"server_connecting_timeout"`
+	ServerConnectingTimeout *int                       `json:"server_connecting_timeout,omitempty"`
 	ServerGroup             *LBServerGroupCreateSchema `json:"server_group"`
-	ServerTimeout           *int                       `json:"server_timeout"`
+	ServerTimeout           *int                       `json:"server_timeout,omitempty"`
 	SetXForwardedFor        *bool                      `json:"set_x_forwarded_for,omitempty"`
 	SetXForwardedPort       *bool                      `json:"set_x_forwarded_port,omitempty"`
 	SetXForwardedProto      *bool                      `json:"set_x_forwarded_proto,omitempty"`
@@ -1157,15 +1157,22 @@ type MetricSchema struct {
 
 // NestedCertificateSchema defines model for NestedCertificateSchema.
 type NestedCertificateSchema struct {
-	Id   core.UUID `json:"id"`
-	Name string    `json:"name"`
+	CommonName *string    `json:"common_name"`
+	CreatedAt  time.Time  `json:"created_at"`
+	ExpiresOn  *time.Time `json:"expires_on"`
+	Id         core.UUID  `json:"id"`
+	IssuedOn   *time.Time `json:"issued_on"`
+	Name       string     `json:"name"`
 }
 
 // NestedL7RuleSchema defines model for NestedL7RuleSchema.
 type NestedL7RuleSchema struct {
 	CompareType L7RuleCompareType `json:"compare_type"`
 	Id          core.UUID         `json:"id"`
+	Invert      bool              `json:"invert"`
+	Key         *string           `json:"key"`
 	Type        L7RuleType        `json:"type"`
+	Value       string            `json:"value"`
 }
 
 // NestedLoadBalancerSchema defines model for NestedLoadBalancerSchema.
