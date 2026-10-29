@@ -17,6 +17,7 @@ Usage (called by main.py, which supplies the tag from pipeline.yaml):
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -44,17 +45,71 @@ def ref_name(ref):
 # Spec helpers
 # ---------------------------------------------------------------------------
 
-def is_paged(name, schemas):
-    s = schemas.get(name, {})
-    props = s.get('properties', {})
-    return 'count' in props and 'results' in props and 'next' in props
+# The backend publishes how each list operation pages in this operation
+# extension, naming the query parameter and response field behind each role.
+PAGINATION_EXTENSION = 'x-pagination'
+
+# Pagination types an iterator is generated for. The backend also publishes
+# 'none' (one response holds the whole list) and 'cursor'; neither needs or has
+# a page-number iterator, so they get only the plain List* method.
+ITERABLE_PAGINATION = 'page_number'
+KNOWN_PAGINATION = {ITERABLE_PAGINATION, 'none', 'cursor'}
 
 
-def paged_item(name, schemas):
-    s = schemas.get(name, {})
-    items = s.get('properties', {}).get('results', {}).get('items', {})
-    ref = items.get('$ref', '')
-    return ref_name(ref) if ref else None
+def looks_paged(name, schemas):
+    """A response shaped like a list page: an array `results` next to `count`."""
+    props = schemas.get(name, {}).get('properties', {})
+    return 'count' in props and props.get('results', {}).get('type') == 'array'
+
+
+def apply_pagination(o, op, schemas):
+    """Set o's iterator fields from the operation's x-pagination.
+
+    Never guesses from names: `size` or `page` can be a filter, so a list
+    page without x-pagination is an error rather than a guess.
+    """
+    pagination = op.get(PAGINATION_EXTENSION)
+    if pagination is None:
+        if looks_paged(o.resp_schema, schemas):
+            _fail_response(o, 'the response is a list page but the operation '
+                           'has no %s. Generate from a backend spec that '
+                           'publishes it' % PAGINATION_EXTENSION)
+        return
+
+    kind = pagination.get('type')
+    if kind not in KNOWN_PAGINATION:
+        print('WARNING: %s %s (%s): unknown %s type %r; generating no iterator'
+              % (o.method, o.path, o.op_id, PAGINATION_EXTENSION, kind),
+              file=sys.stderr)
+        return
+    if kind != ITERABLE_PAGINATION:
+        return
+
+    request = pagination.get('request', {})
+    response = pagination.get('response', {})
+    query = {qp['param_name']: qp['go_name'] for qp in o.query_params}
+    for role in ('page', 'page_size'):
+        if request.get(role) not in query:
+            _fail_response(o, '%s request %s names %r, which is not a query '
+                           'parameter' % (PAGINATION_EXTENSION, role, request.get(role)))
+
+    props = schemas.get(o.resp_schema, {}).get('properties', {})
+    for role in ('items', 'total'):
+        if response.get(role) not in props:
+            _fail_response(o, '%s response %s names %r, which is not a field '
+                           'of %s' % (PAGINATION_EXTENSION, role, response.get(role),
+                                      o.resp_schema))
+    ref = props[response['items']].get('items', {}).get('$ref', '')
+    if not ref:
+        _fail_response(o, '%s response items %r is not an array of a schema '
+                       'reference' % (PAGINATION_EXTENSION, response['items']))
+
+    o.is_list = True
+    o.item_type = ref_name(ref)
+    o.page_param = query[request['page']]
+    o.size_param = query[request['page_size']]
+    o.items_field = go_field(response['items'])
+    o.total_field = go_field(response['total'])
 
 
 # ---------------------------------------------------------------------------
@@ -65,7 +120,8 @@ class Op:
     __slots__ = ('op_id', 'method', 'path', 'summary',
                  'path_params', 'query_params', 'header_params',
                  'body', 'resp_type', 'resp_schema', 'resp_codes',
-                 'is_list', 'item_type', 'no_body')
+                 'is_list', 'item_type', 'no_body',
+                 'page_param', 'size_param', 'items_field', 'total_field')
 
     def __init__(self):
         self.op_id = ''
@@ -82,6 +138,11 @@ class Op:
         self.is_list = False
         self.item_type = None
         self.no_body = False
+        # Go names x-pagination gives each role, set only when is_list.
+        self.page_param = None    # query param holding the page number
+        self.size_param = None    # query param holding the page size
+        self.items_field = None   # response field holding the page's items
+        self.total_field = None   # response field holding the total count
 
 
 class FacadeGenerationError(ValueError):
@@ -166,9 +227,7 @@ def parse_ops(spec, tag):
                     payload_ref = ref
                     o.resp_schema = ref_name(ref)
                     o.resp_type = pascal(o.op_id) + 'Response'
-                    if is_paged(o.resp_schema, schemas):
-                        o.is_list = True
-                        o.item_type = paged_item(o.resp_schema, schemas)
+                    apply_pagination(o, op, schemas)
                 elif ref != payload_ref:
                     _fail_response(o, 'success responses %s and %s use different '
                                    'JSON schema references. Extend the facade '
@@ -534,19 +593,17 @@ def gen_operations(svc, ops, module_path):
         lines.append('// Automatically advances pages until all results are exhausted.')
         lines.append('func (c *Client) ' + name + 'Iter(' + ', '.join(iter_sig) + ') iter.Seq2[*' + item + ', error] {')
         lines.append('\treturn core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[' + item + '], error) {')
-        if o.query_params or o.header_params:
-            lines.append('\t\tp := params')
-            page_param = next((qp['go_name'] for qp in o.query_params if qp['go_name'] in ('PageNumber', 'Page')), None)
-            size_param = next((qp['go_name'] for qp in o.query_params if qp['go_name'] in ('PageSize', 'Limit', 'Size')), None)
-            if page_param:
-                lines.append(f'\t\tp.{page_param} = &page')
-            if size_param:
-                lines.append(f'\t\tp.{size_param} = &size')
+        # x-pagination names both paging parameters, so a paged
+        # operation always has query params.
+        lines.append('\t\tp := params')
+        lines.append(f'\t\tp.{o.page_param} = &page')
+        lines.append(f'\t\tp.{o.size_param} = &size')
         lines.append('\t\tpageResult, err := c.' + name + '(' + ', '.join(inner_call) + ')')
         lines.append('\t\tif err != nil {')
         lines.append('\t\t\treturn core.Page[' + item + ']{}, err')
         lines.append('\t\t}')
-        lines.append('\t\treturn core.Page[' + item + ']{Count: pageResult.Count, Results: pageResult.Results}, nil')
+        lines.append('\t\treturn core.Page[' + item + ']{Count: pageResult.' + o.total_field
+                     + ', Results: pageResult.' + o.items_field + '}, nil')
         lines.append('\t})')
         lines.append('}')
         lines.append('')

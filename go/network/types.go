@@ -134,6 +134,7 @@ const (
 	ListDirectConnectsParamsStatusPendingCreate = gen.ListDirectConnectsParamsStatusPendingCreate
 	ListDirectConnectsParamsStatusPendingDelete = gen.ListDirectConnectsParamsStatusPendingDelete
 	ListDirectConnectsParamsStatusPendingUpdate = gen.ListDirectConnectsParamsStatusPendingUpdate
+	PrivateIPDeviceOwnerLoadbalancer            = gen.PrivateIPDeviceOwnerLoadbalancer
 	PrivateIPDeviceOwnerNetwork                 = gen.PrivateIPDeviceOwnerNetwork
 	PrivateIPDeviceOwnerService                 = gen.PrivateIPDeviceOwnerService
 	PrivateIPDeviceOwnerUser                    = gen.PrivateIPDeviceOwnerUser

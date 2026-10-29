@@ -205,3 +205,33 @@ func (c *Client) ListContainerGroupRevisionsIter(ctx context.Context, ContainerG
 		return core.Page[ContainerGroupRevisionSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
 	})
 }
+
+// ListRunningInstancesIter returns an iterator over all RunningInstanceSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListRunningInstancesIter(ctx context.Context, ContainerGroupID core.UUID, params ListRunningInstancesParams) iter.Seq2[*RunningInstanceSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[RunningInstanceSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListRunningInstances(ctx, ContainerGroupID, p)
+		if err != nil {
+			return core.Page[RunningInstanceSchema]{}, err
+		}
+		return core.Page[RunningInstanceSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListRevisionRunningInstancesIter returns an iterator over all RunningInstanceSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListRevisionRunningInstancesIter(ctx context.Context, ContainerGroupID core.UUID, RevisionID core.UUID, params ListRevisionRunningInstancesParams) iter.Seq2[*RunningInstanceSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[RunningInstanceSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListRevisionRunningInstances(ctx, ContainerGroupID, RevisionID, p)
+		if err != nil {
+			return core.Page[RunningInstanceSchema]{}, err
+		}
+		return core.Page[RunningInstanceSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}

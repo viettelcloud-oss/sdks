@@ -170,3 +170,9 @@ services:
         - "GET /v2/observability/metric-rule-templates/labels/"
         - "GET /v2/observability/incidents/"
         - "GET /v2/observability/log-dashboards/tags/"
+
+  - name: kms
+    folder: kms
+    tag: KMS
+    spec:
+      path: /v2/docs/api-v2/kms.json

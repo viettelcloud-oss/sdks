@@ -385,6 +385,81 @@ func (e DayOfWeek) Valid() bool {
 	}
 }
 
+// Defines values for DisabledAutoBackupConfigEnableAutoBackup.
+const (
+	DisabledAutoBackupConfigEnableAutoBackupFalse DisabledAutoBackupConfigEnableAutoBackup = false
+)
+
+// Valid indicates whether the value is a known member of the DisabledAutoBackupConfigEnableAutoBackup enum.
+func (e DisabledAutoBackupConfigEnableAutoBackup) Valid() bool {
+	switch e {
+	case DisabledAutoBackupConfigEnableAutoBackupFalse:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for EnabledDailyAutoBackupConfigBackupInterval.
+const (
+	EnabledDailyAutoBackupConfigBackupIntervalDaily EnabledDailyAutoBackupConfigBackupInterval = "daily"
+)
+
+// Valid indicates whether the value is a known member of the EnabledDailyAutoBackupConfigBackupInterval enum.
+func (e EnabledDailyAutoBackupConfigBackupInterval) Valid() bool {
+	switch e {
+	case EnabledDailyAutoBackupConfigBackupIntervalDaily:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for EnabledDailyAutoBackupConfigEnableAutoBackup.
+const (
+	EnabledDailyAutoBackupConfigEnableAutoBackupTrue EnabledDailyAutoBackupConfigEnableAutoBackup = true
+)
+
+// Valid indicates whether the value is a known member of the EnabledDailyAutoBackupConfigEnableAutoBackup enum.
+func (e EnabledDailyAutoBackupConfigEnableAutoBackup) Valid() bool {
+	switch e {
+	case EnabledDailyAutoBackupConfigEnableAutoBackupTrue:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for EnabledWeeklyAutoBackupConfigBackupInterval.
+const (
+	EnabledWeeklyAutoBackupConfigBackupIntervalWeekly EnabledWeeklyAutoBackupConfigBackupInterval = "weekly"
+)
+
+// Valid indicates whether the value is a known member of the EnabledWeeklyAutoBackupConfigBackupInterval enum.
+func (e EnabledWeeklyAutoBackupConfigBackupInterval) Valid() bool {
+	switch e {
+	case EnabledWeeklyAutoBackupConfigBackupIntervalWeekly:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for EnabledWeeklyAutoBackupConfigEnableAutoBackup.
+const (
+	EnabledWeeklyAutoBackupConfigEnableAutoBackupTrue EnabledWeeklyAutoBackupConfigEnableAutoBackup = true
+)
+
+// Valid indicates whether the value is a known member of the EnabledWeeklyAutoBackupConfigEnableAutoBackup enum.
+func (e EnabledWeeklyAutoBackupConfigEnableAutoBackup) Valid() bool {
+	switch e {
+	case EnabledWeeklyAutoBackupConfigEnableAutoBackupTrue:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for MongoRsTopologyConfigKind.
 const (
 	MongoRsTopologyConfigKindMongoRs MongoRsTopologyConfigKind = "mongo_rs"
@@ -504,6 +579,11 @@ type AutoBackupConfigSchema struct {
 	union json.RawMessage
 }
 
+// AutoBackupConfigUpdateSchema AutoBackupConfigUpdateSchema is exactly one of: DisabledAutoBackupConfig, EnabledDailyAutoBackupConfig, EnabledWeeklyAutoBackupConfig. Use the As*/From* helpers to read or set the active variant.
+type AutoBackupConfigUpdateSchema struct {
+	union json.RawMessage
+}
+
 // BackupInterval defines model for BackupInterval.
 type BackupInterval string
 
@@ -530,9 +610,9 @@ type DBClusterAutoBackupConfigSchema struct {
 
 // DBClusterAutoBackupConfigUpdateSchema defines model for DBClusterAutoBackupConfigUpdateSchema.
 type DBClusterAutoBackupConfigUpdateSchema struct {
-	// AutoBackupConfig AutoBackupConfigSchema is exactly one of: DailyAutoBackupConfig, WeeklyAutoBackupConfig. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
-	AutoBackupConfig AutoBackupConfigSchema `json:"auto_backup_config"`
-	EnablePitrBackup bool                   `json:"enable_pitr_backup"`
+	// AutoBackupConfig AutoBackupConfigUpdateSchema is exactly one of: DisabledAutoBackupConfig, EnabledDailyAutoBackupConfig, EnabledWeeklyAutoBackupConfig. Use the As*/From* helpers to read or set the active variant.
+	AutoBackupConfig AutoBackupConfigUpdateSchema `json:"auto_backup_config"`
+	EnablePitrBackup bool                         `json:"enable_pitr_backup"`
 }
 
 // DBClusterBackupCreateSchema defines model for DBClusterBackupCreateSchema.
@@ -962,6 +1042,45 @@ type DailyAutoBackupConfigBackupInterval string
 
 // DayOfWeek defines model for DayOfWeek.
 type DayOfWeek string
+
+// DisabledAutoBackupConfig Turns auto backup off; the stored schedule is kept and schedule fields sent along are ignored.
+type DisabledAutoBackupConfig struct {
+	EnableAutoBackup DisabledAutoBackupConfigEnableAutoBackup `json:"enable_auto_backup"`
+}
+
+// DisabledAutoBackupConfigEnableAutoBackup defines model for DisabledAutoBackupConfig.EnableAutoBackup.
+type DisabledAutoBackupConfigEnableAutoBackup bool
+
+// EnabledDailyAutoBackupConfig defines model for EnabledDailyAutoBackupConfig.
+type EnabledDailyAutoBackupConfig struct {
+	BackupInterval   EnabledDailyAutoBackupConfigBackupInterval   `json:"backup_interval"`
+	EnableAutoBackup EnabledDailyAutoBackupConfigEnableAutoBackup `json:"enable_auto_backup"`
+	MaxAutoBackup    *int                                         `json:"max_auto_backup,omitempty"`
+	RetentionDays    *int                                         `json:"retention_days,omitempty"`
+	StartHour        int                                          `json:"start_hour"`
+}
+
+// EnabledDailyAutoBackupConfigBackupInterval defines model for EnabledDailyAutoBackupConfig.BackupInterval.
+type EnabledDailyAutoBackupConfigBackupInterval string
+
+// EnabledDailyAutoBackupConfigEnableAutoBackup defines model for EnabledDailyAutoBackupConfig.EnableAutoBackup.
+type EnabledDailyAutoBackupConfigEnableAutoBackup bool
+
+// EnabledWeeklyAutoBackupConfig defines model for EnabledWeeklyAutoBackupConfig.
+type EnabledWeeklyAutoBackupConfig struct {
+	BackupInterval   EnabledWeeklyAutoBackupConfigBackupInterval   `json:"backup_interval"`
+	DayOfWeek        DayOfWeek                                     `json:"day_of_week"`
+	EnableAutoBackup EnabledWeeklyAutoBackupConfigEnableAutoBackup `json:"enable_auto_backup"`
+	MaxAutoBackup    *int                                          `json:"max_auto_backup,omitempty"`
+	RetentionDays    *int                                          `json:"retention_days,omitempty"`
+	StartHour        int                                           `json:"start_hour"`
+}
+
+// EnabledWeeklyAutoBackupConfigBackupInterval defines model for EnabledWeeklyAutoBackupConfig.BackupInterval.
+type EnabledWeeklyAutoBackupConfigBackupInterval string
+
+// EnabledWeeklyAutoBackupConfigEnableAutoBackup defines model for EnabledWeeklyAutoBackupConfig.EnableAutoBackup.
+type EnabledWeeklyAutoBackupConfigEnableAutoBackup bool
 
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
@@ -1477,6 +1596,94 @@ func (t AutoBackupConfigSchema) MarshalJSON() ([]byte, error) {
 }
 
 func (t *AutoBackupConfigSchema) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsDisabledAutoBackupConfig returns the union data inside the AutoBackupConfigUpdateSchema as a DisabledAutoBackupConfig
+func (t AutoBackupConfigUpdateSchema) AsDisabledAutoBackupConfig() (DisabledAutoBackupConfig, error) {
+	var body DisabledAutoBackupConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDisabledAutoBackupConfig overwrites any union data inside the AutoBackupConfigUpdateSchema as the provided DisabledAutoBackupConfig
+func (t *AutoBackupConfigUpdateSchema) FromDisabledAutoBackupConfig(v DisabledAutoBackupConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDisabledAutoBackupConfig performs a merge with any union data inside the AutoBackupConfigUpdateSchema, using the provided DisabledAutoBackupConfig
+func (t *AutoBackupConfigUpdateSchema) MergeDisabledAutoBackupConfig(v DisabledAutoBackupConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsEnabledDailyAutoBackupConfig returns the union data inside the AutoBackupConfigUpdateSchema as a EnabledDailyAutoBackupConfig
+func (t AutoBackupConfigUpdateSchema) AsEnabledDailyAutoBackupConfig() (EnabledDailyAutoBackupConfig, error) {
+	var body EnabledDailyAutoBackupConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromEnabledDailyAutoBackupConfig overwrites any union data inside the AutoBackupConfigUpdateSchema as the provided EnabledDailyAutoBackupConfig
+func (t *AutoBackupConfigUpdateSchema) FromEnabledDailyAutoBackupConfig(v EnabledDailyAutoBackupConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeEnabledDailyAutoBackupConfig performs a merge with any union data inside the AutoBackupConfigUpdateSchema, using the provided EnabledDailyAutoBackupConfig
+func (t *AutoBackupConfigUpdateSchema) MergeEnabledDailyAutoBackupConfig(v EnabledDailyAutoBackupConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsEnabledWeeklyAutoBackupConfig returns the union data inside the AutoBackupConfigUpdateSchema as a EnabledWeeklyAutoBackupConfig
+func (t AutoBackupConfigUpdateSchema) AsEnabledWeeklyAutoBackupConfig() (EnabledWeeklyAutoBackupConfig, error) {
+	var body EnabledWeeklyAutoBackupConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromEnabledWeeklyAutoBackupConfig overwrites any union data inside the AutoBackupConfigUpdateSchema as the provided EnabledWeeklyAutoBackupConfig
+func (t *AutoBackupConfigUpdateSchema) FromEnabledWeeklyAutoBackupConfig(v EnabledWeeklyAutoBackupConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeEnabledWeeklyAutoBackupConfig performs a merge with any union data inside the AutoBackupConfigUpdateSchema, using the provided EnabledWeeklyAutoBackupConfig
+func (t *AutoBackupConfigUpdateSchema) MergeEnabledWeeklyAutoBackupConfig(v EnabledWeeklyAutoBackupConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t AutoBackupConfigUpdateSchema) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *AutoBackupConfigUpdateSchema) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }

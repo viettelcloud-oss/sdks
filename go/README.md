@@ -172,6 +172,12 @@ for item, err := range c.ListVolumeIter(ctx, blockstorage.ListVolumeParams{
 Each iterator yields items one at a time and handles page transitions
 automatically. Single-page results are available via `List<Name>`.
 
+The generator adds an iterator only to an operation whose spec declares
+`x-pagination` with `type: page_number`. That extension names the query
+parameters holding the page and the page size, and the response fields holding
+the items and the total, so the generator never guesses them from names. A list
+answered in one response (`type: none`) gets no iterator.
+
 ### Error Handling
 
 API errors return `*APIError` (re-exported from `core`) with structured

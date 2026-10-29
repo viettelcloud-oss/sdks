@@ -601,6 +601,7 @@ type DBInstancePartialUpdateSchema struct {
 
 	// BackupPolicy DBInstanceBackupPolicySchema is exactly one of: EnableAutoBackupSchema, DisableAutoBackupSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
 	BackupPolicy *DBInstanceBackupPolicySchema `json:"backup_policy,omitempty"`
+	Description  *string                       `json:"description,omitempty"`
 	KeepBackup   *bool                         `json:"keep_backup,omitempty"`
 }
 

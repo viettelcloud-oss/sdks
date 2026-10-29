@@ -14,7 +14,7 @@ import (
 // SpecVersion is the info.version of the upstream OpenAPI spec this package
 // was generated from. Each service reads its own spec, so the value can differ
 // between packages.
-const SpecVersion = "8.45.0"
+const SpecVersion = "8.46.0"
 
 // ---------------------------------------------------------------------------
 // Client

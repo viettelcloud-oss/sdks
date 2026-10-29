@@ -1,3 +1,5 @@
+from contextlib import redirect_stderr
+import io
 import json
 from pathlib import Path
 import subprocess
@@ -123,61 +125,6 @@ class ParseSuccessResponsesTest(unittest.TestCase):
         spec = spec_with_responses({'2XX': json_response()})
         self.assertEqual(gen_facade.parse_ops(spec, 'Other'), [])
 
-    def test_preserves_pagination_for_uncommon_success_status(self):
-        spec = spec_with_responses({'203': json_response()})
-        spec['components']['schemas']['Payload'] = {
-            'type': 'object',
-            'properties': {
-                'count': {'type': 'integer'},
-                'next': {'type': 'string'},
-                'results': {'type': 'array',
-                            'items': {'$ref': '#/components/schemas/Item'}},
-            },
-        }
-
-        op = gen_facade.parse_ops(spec, 'Example')[0]
-
-        self.assertTrue(op.is_list)
-        self.assertEqual(op.item_type, 'Item')
-        self.assertEqual(op.resp_codes, ['203'])
-
-    def test_pagination_supports_page_and_page_number(self):
-        for param_name, field_name in (('page_number', 'PageNumber'), ('page', 'Page')):
-            with self.subTest(param_name=param_name):
-                spec = {
-                    'info': {'version': '1.0.0'},
-                    'paths': {
-                        '/items': {
-                            'get': {
-                                'operationId': 'list_items',
-                                'tags': ['Example'],
-                                'parameters': [
-                                    {'name': param_name, 'in': 'query', 'schema': {'type': 'integer'}},
-                                    {'name': 'page_size', 'in': 'query', 'schema': {'type': 'integer'}},
-                                ],
-                                'responses': {'200': json_response()},
-                            },
-                        },
-                    },
-                    'components': {
-                        'schemas': {
-                            'Payload': {
-                                'type': 'object',
-                                'properties': {
-                                    'count': {'type': 'integer'},
-                                    'next': {'type': 'string'},
-                                    'results': {'type': 'array', 'items': {'$ref': '#/components/schemas/Item'}},
-                                },
-                            },
-                            'Item': {'type': 'object'},
-                        },
-                    },
-                }
-                ops = gen_facade.parse_ops(spec, 'Example')
-                code = gen_facade.gen_operations('example', ops, 'example.com/sdk')
-                self.assertIn(f'p.{field_name} = &page', code)
-                self.assertIn('p.PageSize = &size', code)
-
     def test_cli_failure_preserves_existing_facade_files(self):
         spec = spec_with_responses({'200': json_response()})
         spec['paths']['/unsupported'] = {
@@ -205,6 +152,109 @@ class ParseSuccessResponsesTest(unittest.TestCase):
             self.assertNotIn('Traceback', result.stderr)
             for name in ('client.go', 'types.go', 'operations.go', 'error.go'):
                 self.assertEqual((target / name).read_text(), 'existing ' + name)
+
+
+def page_number_pagination(page='page_number', page_size='page_size',
+                           items='results', total='count'):
+    return {
+        'type': 'page_number',
+        'request': {'page': page, 'page_size': page_size},
+        'response': {'items': items, 'total': total},
+    }
+
+
+def paged_spec(pagination, query=('page_number', 'page_size'), code='200'):
+    """A list operation over Item, with the given x-pagination and query params."""
+    operation = {
+        'operationId': 'list_items',
+        'tags': ['Example'],
+        'parameters': [{'name': name, 'in': 'query', 'schema': {'type': 'integer'}}
+                       for name in query],
+        'responses': {code: json_response()},
+    }
+    if pagination is not None:
+        operation['x-pagination'] = pagination
+    return {
+        'info': {'version': '1.0.0'},
+        'paths': {'/items': {'get': operation}},
+        'components': {
+            'schemas': {
+                'Payload': {
+                    'type': 'object',
+                    'properties': {
+                        'count': {'type': 'integer'},
+                        'results': {'type': 'array',
+                                    'items': {'$ref': '#/components/schemas/Item'}},
+                    },
+                },
+                'Item': {'type': 'object'},
+            },
+        },
+    }
+
+
+class PaginationTest(unittest.TestCase):
+    def generate(self, spec):
+        ops = gen_facade.parse_ops(spec, 'Example')
+        return gen_facade.gen_operations('example', ops, 'example.com/sdk')
+
+    def test_iterator_sets_the_parameters_x_pagination_names(self):
+        for page, field in (('page_number', 'PageNumber'), ('page', 'Page')):
+            with self.subTest(page=page):
+                spec = paged_spec(page_number_pagination(page=page),
+                                  query=(page, 'page_size'))
+                code = self.generate(spec)
+                self.assertIn(f'p.{field} = &page', code)
+                self.assertIn('p.PageSize = &size', code)
+                self.assertIn('Count: pageResult.Count, Results: pageResult.Results', code)
+
+    def test_a_size_filter_is_never_taken_for_the_page_size(self):
+        """`size` is the volume size filter on block storage lists."""
+        spec = paged_spec(page_number_pagination(),
+                          query=('size', 'page', 'page_number', 'page_size'))
+        code = self.generate(spec)
+        self.assertIn('p.PageNumber = &page', code)
+        self.assertIn('p.PageSize = &size', code)
+        self.assertNotIn('p.Size =', code)
+        self.assertNotIn('p.Page =', code)
+
+    def test_pagination_survives_an_uncommon_success_status(self):
+        op = gen_facade.parse_ops(paged_spec(page_number_pagination(), code='203'),
+                                  'Example')[0]
+        self.assertTrue(op.is_list)
+        self.assertEqual(op.item_type, 'Item')
+        self.assertEqual(op.resp_codes, ['203'])
+
+    def test_a_list_answered_whole_gets_no_iterator(self):
+        spec = paged_spec({'type': 'none', 'request': {},
+                           'response': {'items': 'results', 'total': 'count'}}, query=())
+        op = gen_facade.parse_ops(spec, 'Example')[0]
+        self.assertFalse(op.is_list)
+        self.assertNotIn('ListItemsIter', self.generate(spec))
+
+    def test_an_unknown_type_gets_no_iterator_and_a_warning(self):
+        spec = paged_spec({'type': 'offset_limit', 'request': {}, 'response': {}})
+        with redirect_stderr(io.StringIO()) as stderr:
+            op = gen_facade.parse_ops(spec, 'Example')[0]
+        self.assertFalse(op.is_list)
+        self.assertIn("unknown x-pagination type 'offset_limit'", stderr.getvalue())
+
+    def test_a_list_page_without_x_pagination_is_an_error(self):
+        with self.assertRaisesRegex(gen_facade.FacadeGenerationError,
+                                    'list page but the operation has no x-pagination'):
+            gen_facade.parse_ops(paged_spec(None), 'Example')
+
+    def test_a_name_that_is_not_a_query_parameter_is_an_error(self):
+        spec = paged_spec(page_number_pagination(page='page'))
+        with self.assertRaisesRegex(gen_facade.FacadeGenerationError,
+                                    "request page names 'page', which is not a query"):
+            gen_facade.parse_ops(spec, 'Example')
+
+    def test_a_name_that_is_not_a_response_field_is_an_error(self):
+        spec = paged_spec(page_number_pagination(total='total'))
+        with self.assertRaisesRegex(gen_facade.FacadeGenerationError,
+                                    "response total names 'total', which is not a field"):
+            gen_facade.parse_ops(spec, 'Example')
 
 
 if __name__ == '__main__':

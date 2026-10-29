@@ -65,14 +65,17 @@ func (e ElasticIPStatus) Valid() bool {
 
 // Defines values for PrivateIPDeviceOwner.
 const (
-	PrivateIPDeviceOwnerNetwork PrivateIPDeviceOwner = "network"
-	PrivateIPDeviceOwnerService PrivateIPDeviceOwner = "service"
-	PrivateIPDeviceOwnerUser    PrivateIPDeviceOwner = "user"
+	PrivateIPDeviceOwnerLoadbalancer PrivateIPDeviceOwner = "loadbalancer"
+	PrivateIPDeviceOwnerNetwork      PrivateIPDeviceOwner = "network"
+	PrivateIPDeviceOwnerService      PrivateIPDeviceOwner = "service"
+	PrivateIPDeviceOwnerUser         PrivateIPDeviceOwner = "user"
 )
 
 // Valid indicates whether the value is a known member of the PrivateIPDeviceOwner enum.
 func (e PrivateIPDeviceOwner) Valid() bool {
 	switch e {
+	case PrivateIPDeviceOwnerLoadbalancer:
+		return true
 	case PrivateIPDeviceOwnerNetwork:
 		return true
 	case PrivateIPDeviceOwnerService:

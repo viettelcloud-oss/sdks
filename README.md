@@ -17,7 +17,7 @@ github.com/viettelcloud-oss/sdks/go
 | Network | `github.com/viettelcloud-oss/sdks/go/network` | Networks, subnets, routers and related resources |
 | Block Storage | `github.com/viettelcloud-oss/sdks/go/blockstorage` | Volumes, snapshots, backups and related resources |
 | Load Balancer | `github.com/viettelcloud-oss/sdks/go/loadbalancer` | Load balancers, listeners, pools and health monitors |
-| Project | `github.com/viettelcloud-oss/sdks/go/project` | Projects, regions and service quotas |
+| Project | `github.com/viettelcloud-oss/sdks/go/project` | Projects, regions, service quotas, project members and custom roles |
 | CaaS | `github.com/viettelcloud-oss/sdks/go/caas` | Container groups, revisions and container instances |
 | DBaaS | `github.com/viettelcloud-oss/sdks/go/dbaas` | Database instances, flavors and configurations |
 | DBaaS Cluster | `github.com/viettelcloud-oss/sdks/go/dbaascluster` | Database clusters, storage classes and resource packages |

@@ -57,6 +57,96 @@ func (c *Client) ListProjectZones(ctx context.Context, ProjectID core.UUID, para
 	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
 }
 
+// ListProjectMembers List Project Members
+//
+// GET /v2/projects/{project_id}/members/
+func (c *Client) ListProjectMembers(ctx context.Context, ProjectID core.UUID, params ListProjectMembersParams) (*PagedProjectMemberSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListProjectMembersWithResponse(ctx, ProjectID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// GetProjectMember Get Project Member
+//
+// GET /v2/projects/{project_id}/members/{project_user_id}/
+func (c *Client) GetProjectMember(ctx context.Context, ProjectID core.UUID, ProjectUserID core.UUID) (*ProjectMemberSchema, error) {
+	resp, err := c.gen.GetProjectMemberWithResponse(ctx, ProjectID, ProjectUserID)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// UpdateProjectMember Update Project Member
+//
+// PATCH /v2/projects/{project_id}/members/{project_user_id}/
+func (c *Client) UpdateProjectMember(ctx context.Context, ProjectID core.UUID, ProjectUserID core.UUID, body ProjectMemberPartialUpdateSchema) (*ProjectMemberSchema, error) {
+	resp, err := c.gen.UpdateProjectMemberWithResponse(ctx, ProjectID, ProjectUserID, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// ListCustomRoles List Custom Roles
+//
+// GET /v2/projects/{project_id}/custom-roles/
+func (c *Client) ListCustomRoles(ctx context.Context, ProjectID core.UUID, params ListCustomRolesParams) (*PagedCustomRoleSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListCustomRolesWithResponse(ctx, ProjectID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// CreateCustomRole Create Custom Role
+//
+// POST /v2/projects/{project_id}/custom-roles/
+func (c *Client) CreateCustomRole(ctx context.Context, ProjectID core.UUID, body CustomRoleCreateSchema) (*CustomRoleDetailSchema, error) {
+	resp, err := c.gen.CreateCustomRoleWithResponse(ctx, ProjectID, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON201, 201)
+}
+
+// GetCustomRole Get Custom Role
+//
+// GET /v2/projects/{project_id}/custom-roles/{role_id}/
+func (c *Client) GetCustomRole(ctx context.Context, ProjectID core.UUID, RoleID core.UUID) (*CustomRoleDetailSchema, error) {
+	resp, err := c.gen.GetCustomRoleWithResponse(ctx, ProjectID, RoleID)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// UpdateCustomRole Update Custom Role
+//
+// PATCH /v2/projects/{project_id}/custom-roles/{role_id}/
+func (c *Client) UpdateCustomRole(ctx context.Context, ProjectID core.UUID, RoleID core.UUID, body CustomRolePartialUpdateSchema) (*CustomRoleDetailSchema, error) {
+	resp, err := c.gen.UpdateCustomRoleWithResponse(ctx, ProjectID, RoleID, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// DeleteCustomRole Delete Custom Role
+//
+// DELETE /v2/projects/{project_id}/custom-roles/{role_id}/
+func (c *Client) DeleteCustomRole(ctx context.Context, ProjectID core.UUID, RoleID core.UUID) error {
+	resp, err := c.gen.DeleteCustomRoleWithResponse(ctx, ProjectID, RoleID)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
+}
+
 // ListProjectsIter returns an iterator over all ProjectSchema pages.
 // Automatically advances pages until all results are exhausted.
 func (c *Client) ListProjectsIter(ctx context.Context, params ListProjectsParams) iter.Seq2[*ProjectSchema, error] {
@@ -99,5 +189,35 @@ func (c *Client) ListProjectZonesIter(ctx context.Context, ProjectID core.UUID, 
 			return core.Page[ProjectZoneSchema]{}, err
 		}
 		return core.Page[ProjectZoneSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListProjectMembersIter returns an iterator over all ProjectMemberSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListProjectMembersIter(ctx context.Context, ProjectID core.UUID, params ListProjectMembersParams) iter.Seq2[*ProjectMemberSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[ProjectMemberSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListProjectMembers(ctx, ProjectID, p)
+		if err != nil {
+			return core.Page[ProjectMemberSchema]{}, err
+		}
+		return core.Page[ProjectMemberSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListCustomRolesIter returns an iterator over all CustomRoleSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListCustomRolesIter(ctx context.Context, ProjectID core.UUID, params ListCustomRolesParams) iter.Seq2[*CustomRoleSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[CustomRoleSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListCustomRoles(ctx, ProjectID, p)
+		if err != nil {
+			return core.Page[CustomRoleSchema]{}, err
+		}
+		return core.Page[CustomRoleSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
 	})
 }
