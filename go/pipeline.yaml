@@ -107,6 +107,30 @@ services:
     tag: Load Balancing
     spec:
       path: /v2/docs/api-v2/load-balancing.json
+
+  - name: caas
+    folder: caas
+    tag: CaaS
+    spec:
+      path: /v2/docs/api-v2/caas.json
+
+  - name: apigateway
+    folder: apigateway
+    tag: API Gateway
+    spec:
+      path: /v2/docs/api-v2/api-gateway.json
+
+  - name: dbaas
+    folder: dbaas
+    tag: DBaaS
+    spec:
+      path: /v2/docs/api-v2/dbaas.json
+
+  - name: dbaascluster
+    folder: dbaascluster
+    tag: DBaaS - Cluster
+    spec:
+      path: /v2/docs/api-v2/dbaas-cluster.json
     # Other optional per-service overrides:
     # config:
     #   output-options:
@@ -114,3 +138,35 @@ services:
     # policy:
     #   overrides:
     #     "*.foo": { type: string }
+
+  - name: filestorage
+    folder: filestorage
+    tag: File Storage
+    spec:
+      path: /v2/docs/api-v2/file-storage.json
+
+  - name: observability
+    folder: observability
+    tag: Observability
+    spec:
+      path: /v2/docs/api-v2/observability.json
+    # Minimal surface for Terraform's provisioning CRUD, not every operation
+    # the tag exposes (every public endpoint is a support commitment — see
+    # the still-unremovable v1 API). Dropped: project-info (unresolvable
+    # `anyOf: [ref, null]` response), get_*_template (clone_* resolves
+    # templates server-side by id; list_*_templates covers id discovery),
+    # *_template_labels and log-dashboard tags (UI autocomplete, unread by
+    # writes), incidents (read-only history). Not yet served but decided:
+    # drop log search/query and bulk/cascade delete on sight; keep clone_*
+    # when added, since that's the actual template-create mechanism.
+    policy:
+      drop_paths:
+        - "GET /v2/observability/project-info/"
+        - "GET /v2/observability/dashboard-templates/{dashboard_template_id}/"
+        - "GET /v2/observability/dashboard-templates/labels/"
+        - "GET /v2/observability/log-rule-templates/{log_rule_template_id}/"
+        - "GET /v2/observability/log-rule-templates/labels/"
+        - "GET /v2/observability/metric-rule-templates/{metric_rule_template_id}/"
+        - "GET /v2/observability/metric-rule-templates/labels/"
+        - "GET /v2/observability/incidents/"
+        - "GET /v2/observability/log-dashboards/tags/"

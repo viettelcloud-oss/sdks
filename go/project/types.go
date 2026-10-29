@@ -17,6 +17,7 @@ type NestedDirectorySchema = gen.NestedDirectorySchema
 type NestedOrganizationSchema = gen.NestedOrganizationSchema
 type NestedProjectServiceSchema = gen.NestedProjectServiceSchema
 type NestedRegionSchema = gen.NestedRegionSchema
+type NestedServiceFeatureSchema = gen.NestedServiceFeatureSchema
 type PagedProjectAllowedActionSchema = gen.PagedProjectAllowedActionSchema
 type PagedProjectRegionSchema = gen.PagedProjectRegionSchema
 type PagedProjectSchema = gen.PagedProjectSchema
@@ -29,7 +30,6 @@ type ProjectServiceRegionSchema = gen.ProjectServiceRegionSchema
 type ProjectStatus = gen.ProjectStatus
 type ProjectZoneSchema = gen.ProjectZoneSchema
 type ProviderError = gen.ProviderError
-type ServiceFeatureSchema = gen.ServiceFeatureSchema
 type ValidationError = gen.ValidationError
 type ZoneNetworkScope = gen.ZoneNetworkScope
 

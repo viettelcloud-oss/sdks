@@ -18,6 +18,33 @@ import (
 	runtime "github.com/viettelcloud-oss/sdks/go/internal/oapi"
 )
 
+// Defines values for DirectConnectStatus.
+const (
+	DirectConnectStatusActive        DirectConnectStatus = "active"
+	DirectConnectStatusError         DirectConnectStatus = "error"
+	DirectConnectStatusPendingCreate DirectConnectStatus = "pending_create"
+	DirectConnectStatusPendingDelete DirectConnectStatus = "pending_delete"
+	DirectConnectStatusPendingUpdate DirectConnectStatus = "pending_update"
+)
+
+// Valid indicates whether the value is a known member of the DirectConnectStatus enum.
+func (e DirectConnectStatus) Valid() bool {
+	switch e {
+	case DirectConnectStatusActive:
+		return true
+	case DirectConnectStatusError:
+		return true
+	case DirectConnectStatusPendingCreate:
+		return true
+	case DirectConnectStatusPendingDelete:
+		return true
+	case DirectConnectStatusPendingUpdate:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ElasticIPStatus.
 const (
 	ElasticIPStatusActive ElasticIPStatus = "active"
@@ -180,6 +207,74 @@ func (e SGRProtocol) Valid() bool {
 	}
 }
 
+// Defines values for ListDirectConnectsParamsStatus.
+const (
+	ListDirectConnectsParamsStatusActive        ListDirectConnectsParamsStatus = "active"
+	ListDirectConnectsParamsStatusError         ListDirectConnectsParamsStatus = "error"
+	ListDirectConnectsParamsStatusPendingCreate ListDirectConnectsParamsStatus = "pending_create"
+	ListDirectConnectsParamsStatusPendingDelete ListDirectConnectsParamsStatus = "pending_delete"
+	ListDirectConnectsParamsStatusPendingUpdate ListDirectConnectsParamsStatus = "pending_update"
+)
+
+// Valid indicates whether the value is a known member of the ListDirectConnectsParamsStatus enum.
+func (e ListDirectConnectsParamsStatus) Valid() bool {
+	switch e {
+	case ListDirectConnectsParamsStatusActive:
+		return true
+	case ListDirectConnectsParamsStatusError:
+		return true
+	case ListDirectConnectsParamsStatusPendingCreate:
+		return true
+	case ListDirectConnectsParamsStatusPendingDelete:
+		return true
+	case ListDirectConnectsParamsStatusPendingUpdate:
+		return true
+	default:
+		return false
+	}
+}
+
+// DirectConnectCreateSchema defines model for DirectConnectCreateSchema.
+type DirectConnectCreateSchema struct {
+	Description    *string   `json:"description,omitempty"`
+	DirectSubnetId core.UUID `json:"direct_subnet_id"`
+	LocalAs        int       `json:"local_as"`
+	Name           string    `json:"name"`
+	NeighborAs     int       `json:"neighbor_as"`
+	NeighborIp     string    `json:"neighbor_ip"`
+	RegionId       core.UUID `json:"region_id"`
+}
+
+// DirectConnectSchema defines model for DirectConnectSchema.
+type DirectConnectSchema struct {
+	CreatedAt      time.Time            `json:"created_at"`
+	Description    *string              `json:"description,omitempty"`
+	DirectSubnet   NestedSubnetSchema   `json:"direct_subnet"`
+	DisplayName    string               `json:"display_name"`
+	Id             core.UUID            `json:"id"`
+	LocalAs        int                  `json:"local_as"`
+	Name           string               `json:"name"`
+	NeighborAs     int                  `json:"neighbor_as"`
+	NeighborIp     string               `json:"neighbor_ip"`
+	PrivateSubnets []NestedSubnetSchema `json:"private_subnets"`
+	Project        NestedProjectSchema  `json:"project"`
+	Region         NestedRegionSchema   `json:"region"`
+	Status         DirectConnectStatus  `json:"status"`
+	UpdatedAt      time.Time            `json:"updated_at"`
+}
+
+// DirectConnectStatus defines model for DirectConnectStatus.
+type DirectConnectStatus string
+
+// DirectConnectUpdateSchema defines model for DirectConnectUpdateSchema.
+type DirectConnectUpdateSchema struct {
+	Description *string `json:"description,omitempty"`
+	LocalAs     int     `json:"local_as"`
+	Name        string  `json:"name"`
+	NeighborAs  int     `json:"neighbor_as"`
+	NeighborIp  string  `json:"neighbor_ip"`
+}
+
 // ElasticIPCreateSchema defines model for ElasticIPCreateSchema.
 type ElasticIPCreateSchema struct {
 	Description *string   `json:"description,omitempty"`
@@ -317,9 +412,10 @@ type NestedServerSchema struct {
 
 // NestedSubnetSchema defines model for NestedSubnetSchema.
 type NestedSubnetSchema struct {
-	Cidr string    `json:"cidr"`
-	Id   core.UUID `json:"id"`
-	Name string    `json:"name"`
+	Cidr  string    `json:"cidr"`
+	Id    core.UUID `json:"id"`
+	Name  string    `json:"name"`
+	VpcId core.UUID `json:"vpc_id"`
 }
 
 // NestedUserSchema defines model for NestedUserSchema.
@@ -342,6 +438,14 @@ type NestedZoneSchema struct {
 	Name        string    `json:"name"`
 }
 
+// PagedDirectConnectSchema defines model for PagedDirectConnectSchema.
+type PagedDirectConnectSchema struct {
+	Count    int                   `json:"count"`
+	Next     *string               `json:"next,omitempty"`
+	Previous *string               `json:"previous,omitempty"`
+	Results  []DirectConnectSchema `json:"results"`
+}
+
 // PagedElasticIPSchema defines model for PagedElasticIPSchema.
 type PagedElasticIPSchema struct {
 	Count    int               `json:"count"`
@@ -356,6 +460,22 @@ type PagedPrivateIPSchema struct {
 	Next     *string           `json:"next,omitempty"`
 	Previous *string           `json:"previous,omitempty"`
 	Results  []PrivateIPSchema `json:"results"`
+}
+
+// PagedRouteTableSchema defines model for PagedRouteTableSchema.
+type PagedRouteTableSchema struct {
+	Count    int                `json:"count"`
+	Next     *string            `json:"next,omitempty"`
+	Previous *string            `json:"previous,omitempty"`
+	Results  []RouteTableSchema `json:"results"`
+}
+
+// PagedRouteTableSubnetSchema defines model for PagedRouteTableSubnetSchema.
+type PagedRouteTableSubnetSchema struct {
+	Count    int                      `json:"count"`
+	Next     *string                  `json:"next,omitempty"`
+	Previous *string                  `json:"previous,omitempty"`
+	Results  []RouteTableSubnetSchema `json:"results"`
 }
 
 // PagedSecurityGroupRuleSchema defines model for PagedSecurityGroupRuleSchema.
@@ -435,6 +555,34 @@ type PrivateIPSchema struct {
 // PrivateIPUpdateSchema defines model for PrivateIPUpdateSchema.
 type PrivateIPUpdateSchema struct {
 	Description *string `json:"description,omitempty"`
+}
+
+// RouteTableInternetAccessUpdateSchema defines model for RouteTableInternetAccessUpdateSchema.
+type RouteTableInternetAccessUpdateSchema struct {
+	Enabled bool `json:"enabled"`
+}
+
+// RouteTableSchema defines model for RouteTableSchema.
+type RouteTableSchema struct {
+	CreatedAt      time.Time           `json:"created_at"`
+	Description    *string             `json:"description,omitempty"`
+	Id             core.UUID           `json:"id"`
+	InternetAccess bool                `json:"internet_access"`
+	IsDefault      bool                `json:"is_default"`
+	Name           string              `json:"name"`
+	Owner          *NestedUserSchema   `json:"owner,omitempty"`
+	Project        NestedProjectSchema `json:"project"`
+	Region         NestedRegionSchema  `json:"region"`
+	UpdatedAt      time.Time           `json:"updated_at"`
+	Vpc            NestedVPCSchema     `json:"vpc"`
+}
+
+// RouteTableSubnetSchema defines model for RouteTableSubnetSchema.
+type RouteTableSubnetSchema struct {
+	CreatedAt time.Time          `json:"created_at"`
+	Id        core.UUID          `json:"id"`
+	Subnet    NestedSubnetSchema `json:"subnet"`
+	UpdatedAt time.Time          `json:"updated_at"`
 }
 
 // SGRDirection defines model for SGRDirection.
@@ -605,6 +753,39 @@ type ProviderError = ErrorResponseSchema
 // ValidationError defines model for ValidationError.
 type ValidationError = ErrorResponseSchema
 
+// ListDirectConnectsParams defines parameters for ListDirectConnects.
+type ListDirectConnectsParams struct {
+	Region     *string                         `form:"region,omitempty" json:"region,omitempty"`
+	Name       *string                         `form:"name,omitempty" json:"name,omitempty"`
+	Status     *ListDirectConnectsParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+	PageSize   *int                            `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber *int                            `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID  core.UUID                       `json:"Project-ID"`
+}
+
+// ListDirectConnectsParamsStatus defines parameters for ListDirectConnects.
+type ListDirectConnectsParamsStatus string
+
+// CreateDirectConnectParams defines parameters for CreateDirectConnect.
+type CreateDirectConnectParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// DeleteDirectConnectParams defines parameters for DeleteDirectConnect.
+type DeleteDirectConnectParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// GetDirectConnectParams defines parameters for GetDirectConnect.
+type GetDirectConnectParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// UpdateDirectConnectParams defines parameters for UpdateDirectConnect.
+type UpdateDirectConnectParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
 // ListElasticIpsParams defines parameters for ListElasticIps.
 type ListElasticIpsParams struct {
 	RegionId    *core.UUID       `form:"region_id,omitempty" json:"region_id,omitempty"`
@@ -693,6 +874,34 @@ type UpdatePrivateIpParams struct {
 // UpdatePrivateIpAllowedVipsParams defines parameters for UpdatePrivateIpAllowedVips.
 type UpdatePrivateIpAllowedVipsParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// ListRouteTablesParams defines parameters for ListRouteTables.
+type ListRouteTablesParams struct {
+	Name       *string    `form:"name,omitempty" json:"name,omitempty"`
+	VpcId      *core.UUID `form:"vpc_id,omitempty" json:"vpc_id,omitempty"`
+	RegionId   *core.UUID `form:"region_id,omitempty" json:"region_id,omitempty"`
+	RegionName *string    `form:"region_name,omitempty" json:"region_name,omitempty"`
+	PageSize   *int       `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber *int       `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID  core.UUID  `json:"Project-ID"`
+}
+
+// GetRouteTableParams defines parameters for GetRouteTable.
+type GetRouteTableParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// UpdateRouteTableInternetAccessParams defines parameters for UpdateRouteTableInternetAccess.
+type UpdateRouteTableInternetAccessParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// ListRouteTableSubnetsParams defines parameters for ListRouteTableSubnets.
+type ListRouteTableSubnetsParams struct {
+	PageSize   *int      `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber *int      `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID  core.UUID `json:"Project-ID"`
 }
 
 // ListSecurityGroupRulesParams defines parameters for ListSecurityGroupRules.
@@ -808,13 +1017,15 @@ type UpdateSubnetParams struct {
 
 // ListVpcsParams defines parameters for ListVpcs.
 type ListVpcsParams struct {
-	RegionId    *core.UUID `form:"region_id,omitempty" json:"region_id,omitempty"`
-	ZoneId      *core.UUID `form:"zone_id,omitempty" json:"zone_id,omitempty"`
-	Name        *string    `form:"name,omitempty" json:"name,omitempty"`
-	IsSharedVpc *bool      `form:"is_shared_vpc,omitempty" json:"is_shared_vpc,omitempty"`
-	PageSize    *int       `form:"page_size,omitempty" json:"page_size,omitempty"`
-	PageNumber  *int       `form:"page_number,omitempty" json:"page_number,omitempty"`
-	ProjectID   core.UUID  `json:"Project-ID"`
+	RegionId       *core.UUID `form:"region_id,omitempty" json:"region_id,omitempty"`
+	ZoneId         *core.UUID `form:"zone_id,omitempty" json:"zone_id,omitempty"`
+	Name           *string    `form:"name,omitempty" json:"name,omitempty"`
+	HasNatGateway  *bool      `form:"has_nat_gateway,omitempty" json:"has_nat_gateway,omitempty"`
+	InternetAccess *bool      `form:"internet_access,omitempty" json:"internet_access,omitempty"`
+	IsSharedVpc    *bool      `form:"is_shared_vpc,omitempty" json:"is_shared_vpc,omitempty"`
+	PageSize       *int       `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber     *int       `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID      core.UUID  `json:"Project-ID"`
 }
 
 // CreateVpcParams defines parameters for CreateVpc.
@@ -847,6 +1058,12 @@ type UnshareVpcParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
+// CreateDirectConnectJSONRequestBody defines body for CreateDirectConnect for application/json ContentType.
+type CreateDirectConnectJSONRequestBody = DirectConnectCreateSchema
+
+// UpdateDirectConnectJSONRequestBody defines body for UpdateDirectConnect for application/json ContentType.
+type UpdateDirectConnectJSONRequestBody = DirectConnectUpdateSchema
+
 // CreateElasticIpJSONRequestBody defines body for CreateElasticIp for application/json ContentType.
 type CreateElasticIpJSONRequestBody = ElasticIPCreateSchema
 
@@ -870,6 +1087,9 @@ type UpdatePrivateIpJSONRequestBody = PrivateIPUpdateSchema
 
 // UpdatePrivateIpAllowedVipsJSONRequestBody defines body for UpdatePrivateIpAllowedVips for application/json ContentType.
 type UpdatePrivateIpAllowedVipsJSONRequestBody = PrivateIPAllowedVIPsUpdateSchema
+
+// UpdateRouteTableInternetAccessJSONRequestBody defines body for UpdateRouteTableInternetAccess for application/json ContentType.
+type UpdateRouteTableInternetAccessJSONRequestBody = RouteTableInternetAccessUpdateSchema
 
 // CreateSecurityGroupRuleJSONRequestBody defines body for CreateSecurityGroupRule for application/json ContentType.
 type CreateSecurityGroupRuleJSONRequestBody = SecurityGroupRuleCreateSchema
@@ -984,11 +1204,82 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 // The interface specification for the client above.
 type ClientInterface interface {
 
+	// ListDirectConnects List Direct Connects
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:direct_connect:list`
+	//
+	// Corresponds with GET /v2/network/direct-connects/ (the `ListDirectConnects` operationId).
+	ListDirectConnects(ctx context.Context, params *ListDirectConnectsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateDirectConnectWithBody Create Direct Connect
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:direct_connect:create`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v2/network/direct-connects/ (the `CreateDirectConnect` operationId).
+	CreateDirectConnectWithBody(ctx context.Context, params *CreateDirectConnectParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateDirectConnect Create Direct Connect
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:direct_connect:create`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v2/network/direct-connects/ (the `CreateDirectConnect` operationId).
+	CreateDirectConnect(ctx context.Context, params *CreateDirectConnectParams, body CreateDirectConnectJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteDirectConnect Delete Direct Connect
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:direct_connect:delete`
+	//
+	// Corresponds with DELETE /v2/network/direct-connects/{direct_connect_id}/ (the `DeleteDirectConnect` operationId).
+	DeleteDirectConnect(ctx context.Context, directConnectId core.UUID, params *DeleteDirectConnectParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetDirectConnect Get Direct Connect
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:direct_connect:get`
+	//
+	// Corresponds with GET /v2/network/direct-connects/{direct_connect_id}/ (the `GetDirectConnect` operationId).
+	GetDirectConnect(ctx context.Context, directConnectId core.UUID, params *GetDirectConnectParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateDirectConnectWithBody Update Direct Connect
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:direct_connect:update`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /v2/network/direct-connects/{direct_connect_id}/ (the `UpdateDirectConnect` operationId).
+	UpdateDirectConnectWithBody(ctx context.Context, directConnectId core.UUID, params *UpdateDirectConnectParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateDirectConnect Update Direct Connect
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:direct_connect:update`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /v2/network/direct-connects/{direct_connect_id}/ (the `UpdateDirectConnect` operationId).
+	UpdateDirectConnect(ctx context.Context, directConnectId core.UUID, params *UpdateDirectConnectParams, body UpdateDirectConnectJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListElasticIps List Elastic Ips
 	//
 	// List all Elastic IPs owned by the project (regional + zonal).
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:list`
 	//
@@ -999,7 +1290,7 @@ type ClientInterface interface {
 	//
 	// Create a new regional Elastic IP. Zonal EIPs are created automatically by the server creation flow.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:create`
 	//
@@ -1012,7 +1303,7 @@ type ClientInterface interface {
 	//
 	// Create a new regional Elastic IP. Zonal EIPs are created automatically by the server creation flow.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:create`
 	//
@@ -1043,7 +1334,7 @@ type ClientInterface interface {
 	//
 	// Delete an Elastic IP. Must not be attached to any server.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:delete`
 	//
@@ -1054,7 +1345,7 @@ type ClientInterface interface {
 	//
 	// Return a single Elastic IP owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:get`
 	//
@@ -1065,7 +1356,7 @@ type ClientInterface interface {
 	//
 	// Update the description of an Elastic IP.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:update`
 	//
@@ -1078,7 +1369,7 @@ type ClientInterface interface {
 	//
 	// Update the description of an Elastic IP.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:update`
 	//
@@ -1091,7 +1382,7 @@ type ClientInterface interface {
 	//
 	// Replace the description of an Elastic IP.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:update`
 	//
@@ -1104,7 +1395,7 @@ type ClientInterface interface {
 	//
 	// Replace the description of an Elastic IP.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:update`
 	//
@@ -1117,7 +1408,7 @@ type ClientInterface interface {
 	//
 	// List Private IPs owned by the project or living in a VPC shared into it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:list`
 	//
@@ -1128,7 +1419,7 @@ type ClientInterface interface {
 	//
 	// Allocate a new Private IP in a subnet owned by the project or shared into it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:create`
 	//
@@ -1141,7 +1432,7 @@ type ClientInterface interface {
 	//
 	// Allocate a new Private IP in a subnet owned by the project or shared into it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:create`
 	//
@@ -1154,7 +1445,7 @@ type ClientInterface interface {
 	//
 	// Delete a Private IP. Blocked while in use by a Load Balancer or as an allowed VIP.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:delete`
 	//
@@ -1165,7 +1456,7 @@ type ClientInterface interface {
 	//
 	// Return a Private IP owned by the project or living in a VPC shared into it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:get`
 	//
@@ -1176,7 +1467,7 @@ type ClientInterface interface {
 	//
 	// Update a Private IP's description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:update`
 	//
@@ -1189,7 +1480,7 @@ type ClientInterface interface {
 	//
 	// Update a Private IP's description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:update`
 	//
@@ -1202,7 +1493,7 @@ type ClientInterface interface {
 	//
 	// Update a Private IP's description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:update`
 	//
@@ -1215,7 +1506,7 @@ type ClientInterface interface {
 	//
 	// Update a Private IP's description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:update`
 	//
@@ -1228,7 +1519,7 @@ type ClientInterface interface {
 	//
 	// Replace the set of allowed VIPs on a Private IP owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:update_allowed_vips`
 	//
@@ -1241,7 +1532,7 @@ type ClientInterface interface {
 	//
 	// Replace the set of allowed VIPs on a Private IP owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:update_allowed_vips`
 	//
@@ -1250,11 +1541,70 @@ type ClientInterface interface {
 	// Corresponds with PUT /v2/network/private-ips/{private_ip_id}/allowed-vips/ (the `UpdatePrivateIpAllowedVips` operationId).
 	UpdatePrivateIpAllowedVips(ctx context.Context, privateIpId core.UUID, params *UpdatePrivateIpAllowedVipsParams, body UpdatePrivateIpAllowedVipsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListRouteTables List Route Tables
+	//
+	// List route tables owned by the project or living in a VPC shared into it.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route_table:list`
+	//
+	// Corresponds with GET /v2/network/route-tables/ (the `ListRouteTables` operationId).
+	ListRouteTables(ctx context.Context, params *ListRouteTablesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetRouteTable Get Route Table
+	//
+	// Return a route table owned by the project or living in a VPC shared into it.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route_table:get`
+	//
+	// Corresponds with GET /v2/network/route-tables/{route_table_id}/ (the `GetRouteTable` operationId).
+	GetRouteTable(ctx context.Context, routeTableId core.UUID, params *GetRouteTableParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateRouteTableInternetAccessWithBody Update Route Table Internet Access
+	//
+	// Turn internet access for the route table on or off.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route_table:update_internet_access`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /v2/network/route-tables/{route_table_id}/internet-access/ (the `UpdateRouteTableInternetAccess` operationId).
+	UpdateRouteTableInternetAccessWithBody(ctx context.Context, routeTableId core.UUID, params *UpdateRouteTableInternetAccessParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateRouteTableInternetAccess Update Route Table Internet Access
+	//
+	// Turn internet access for the route table on or off.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route_table:update_internet_access`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /v2/network/route-tables/{route_table_id}/internet-access/ (the `UpdateRouteTableInternetAccess` operationId).
+	UpdateRouteTableInternetAccess(ctx context.Context, routeTableId core.UUID, params *UpdateRouteTableInternetAccessParams, body UpdateRouteTableInternetAccessJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListRouteTableSubnets List Route Table Subnets
+	//
+	// List the subnets associated with a route table.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route_table:list_subnets`
+	//
+	// Corresponds with GET /v2/network/route-tables/{route_table_id}/subnets/ (the `ListRouteTableSubnets` operationId).
+	ListRouteTableSubnets(ctx context.Context, routeTableId core.UUID, params *ListRouteTableSubnetsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListSecurityGroupRules List Security Group Rules
 	//
 	// List the Security Group Rules owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:list`
 	//
@@ -1265,7 +1615,7 @@ type ClientInterface interface {
 	//
 	// Create a Security Group Rule in one of the project's Security Groups.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:create`
 	//
@@ -1278,7 +1628,7 @@ type ClientInterface interface {
 	//
 	// Create a Security Group Rule in one of the project's Security Groups.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:create`
 	//
@@ -1291,7 +1641,7 @@ type ClientInterface interface {
 	//
 	// Delete a Security Group Rule, including one in the default Security Group.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:delete`
 	//
@@ -1302,7 +1652,7 @@ type ClientInterface interface {
 	//
 	// Return a single Security Group Rule owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:get`
 	//
@@ -1313,7 +1663,7 @@ type ClientInterface interface {
 	//
 	// Update a Security Group Rule's description.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:update`
 	//
@@ -1326,7 +1676,7 @@ type ClientInterface interface {
 	//
 	// Update a Security Group Rule's description.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:update`
 	//
@@ -1342,7 +1692,7 @@ type ClientInterface interface {
 	// What the rule matches stays fixed: the provider has no update call for a
 	// rule, so changing it here would leave the two sides disagreeing.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:update`
 	//
@@ -1358,7 +1708,7 @@ type ClientInterface interface {
 	// What the rule matches stays fixed: the provider has no update call for a
 	// rule, so changing it here would leave the two sides disagreeing.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:update`
 	//
@@ -1371,7 +1721,7 @@ type ClientInterface interface {
 	//
 	// List security groups owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:list`
 	//
@@ -1382,7 +1732,7 @@ type ClientInterface interface {
 	//
 	// Create a security group in a region where the project has Network enabled.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:create`
 	//
@@ -1395,7 +1745,7 @@ type ClientInterface interface {
 	//
 	// Create a security group in a region where the project has Network enabled.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:create`
 	//
@@ -1408,7 +1758,7 @@ type ClientInterface interface {
 	//
 	// Delete a security group. The project's default group cannot be deleted.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:delete`
 	//
@@ -1419,7 +1769,7 @@ type ClientInterface interface {
 	//
 	// Return a single security group owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:get`
 	//
@@ -1430,7 +1780,7 @@ type ClientInterface interface {
 	//
 	// Update a security group's name or description.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:update`
 	//
@@ -1443,7 +1793,7 @@ type ClientInterface interface {
 	//
 	// Update a security group's name or description.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:update`
 	//
@@ -1456,7 +1806,7 @@ type ClientInterface interface {
 	//
 	// Update a security group's name and description.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:update`
 	//
@@ -1469,7 +1819,7 @@ type ClientInterface interface {
 	//
 	// Update a security group's name and description.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:update`
 	//
@@ -1482,7 +1832,7 @@ type ClientInterface interface {
 	//
 	// List subnets owned by the project or living in a VPC shared into it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:list`
 	//
@@ -1493,7 +1843,7 @@ type ClientInterface interface {
 	//
 	// Create a subnet in a regional VPC owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:create`
 	//
@@ -1506,7 +1856,7 @@ type ClientInterface interface {
 	//
 	// Create a subnet in a regional VPC owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:create`
 	//
@@ -1519,7 +1869,7 @@ type ClientInterface interface {
 	//
 	// Delete a subnet. Owner-only. Requires all user/service Private IPs to be deleted first.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:delete`
 	//
@@ -1530,7 +1880,7 @@ type ClientInterface interface {
 	//
 	// Return a subnet owned by the project or living in a VPC shared into it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:get`
 	//
@@ -1541,7 +1891,7 @@ type ClientInterface interface {
 	//
 	// Update subnet name or description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:update`
 	//
@@ -1554,7 +1904,7 @@ type ClientInterface interface {
 	//
 	// Update subnet name or description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:update`
 	//
@@ -1567,7 +1917,7 @@ type ClientInterface interface {
 	//
 	// Update subnet name and description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:update`
 	//
@@ -1580,7 +1930,7 @@ type ClientInterface interface {
 	//
 	// Update subnet name and description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:update`
 	//
@@ -1591,7 +1941,7 @@ type ClientInterface interface {
 
 	// ListVpcs List Vpcs
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:list`
 	//
@@ -1602,7 +1952,7 @@ type ClientInterface interface {
 	//
 	// Create a new regional VPC. Zonal VPCs are managed by the Baremetal service.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:create`
 	//
@@ -1615,7 +1965,7 @@ type ClientInterface interface {
 	//
 	// Create a new regional VPC. Zonal VPCs are managed by the Baremetal service.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:create`
 	//
@@ -1628,7 +1978,7 @@ type ClientInterface interface {
 	//
 	// Delete a VPC. Owner-only. Requires all subnets to be deleted first.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:delete`
 	//
@@ -1639,7 +1989,7 @@ type ClientInterface interface {
 	//
 	// Return a VPC owned by or shared into the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:get`
 	//
@@ -1650,7 +2000,7 @@ type ClientInterface interface {
 	//
 	// Update VPC name or description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:update`
 	//
@@ -1663,7 +2013,7 @@ type ClientInterface interface {
 	//
 	// Update VPC name or description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:update`
 	//
@@ -1676,7 +2026,7 @@ type ClientInterface interface {
 	//
 	// Share a regional VPC with other projects. Owner-only. Blocked for zonal VPCs.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:share`
 	//
@@ -1689,7 +2039,7 @@ type ClientInterface interface {
 	//
 	// Share a regional VPC with other projects. Owner-only. Blocked for zonal VPCs.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:share`
 	//
@@ -1702,7 +2052,7 @@ type ClientInterface interface {
 	//
 	// Remove share of a regional VPC from the specified projects. Owner-only. Blocked for zonal VPCs.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:unshare`
 	//
@@ -1715,7 +2065,7 @@ type ClientInterface interface {
 	//
 	// Remove share of a regional VPC from the specified projects. Owner-only. Blocked for zonal VPCs.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:unshare`
 	//
@@ -1725,11 +2075,152 @@ type ClientInterface interface {
 	UnshareVpc(ctx context.Context, vpcId core.UUID, params *UnshareVpcParams, body UnshareVpcJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
+// ListDirectConnects List Direct Connects
+//
+// **Required permissions:**
+//
+// - `urn:action:network:direct_connect:list`
+//
+// Corresponds with GET /v2/network/direct-connects/ (the `ListDirectConnects` operationId).
+func (c *Client) ListDirectConnects(ctx context.Context, params *ListDirectConnectsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListDirectConnectsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateDirectConnectWithBody Create Direct Connect
+//
+// **Required permissions:**
+//
+// - `urn:action:network:direct_connect:create`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/network/direct-connects/ (the `CreateDirectConnect` operationId).
+func (c *Client) CreateDirectConnectWithBody(ctx context.Context, params *CreateDirectConnectParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateDirectConnectRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateDirectConnect Create Direct Connect
+//
+// **Required permissions:**
+//
+// - `urn:action:network:direct_connect:create`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/network/direct-connects/ (the `CreateDirectConnect` operationId).
+func (c *Client) CreateDirectConnect(ctx context.Context, params *CreateDirectConnectParams, body CreateDirectConnectJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateDirectConnectRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteDirectConnect Delete Direct Connect
+//
+// **Required permissions:**
+//
+// - `urn:action:network:direct_connect:delete`
+//
+// Corresponds with DELETE /v2/network/direct-connects/{direct_connect_id}/ (the `DeleteDirectConnect` operationId).
+func (c *Client) DeleteDirectConnect(ctx context.Context, directConnectId core.UUID, params *DeleteDirectConnectParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteDirectConnectRequest(c.Server, directConnectId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetDirectConnect Get Direct Connect
+//
+// **Required permissions:**
+//
+// - `urn:action:network:direct_connect:get`
+//
+// Corresponds with GET /v2/network/direct-connects/{direct_connect_id}/ (the `GetDirectConnect` operationId).
+func (c *Client) GetDirectConnect(ctx context.Context, directConnectId core.UUID, params *GetDirectConnectParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetDirectConnectRequest(c.Server, directConnectId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateDirectConnectWithBody Update Direct Connect
+//
+// **Required permissions:**
+//
+// - `urn:action:network:direct_connect:update`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /v2/network/direct-connects/{direct_connect_id}/ (the `UpdateDirectConnect` operationId).
+func (c *Client) UpdateDirectConnectWithBody(ctx context.Context, directConnectId core.UUID, params *UpdateDirectConnectParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateDirectConnectRequestWithBody(c.Server, directConnectId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateDirectConnect Update Direct Connect
+//
+// **Required permissions:**
+//
+// - `urn:action:network:direct_connect:update`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /v2/network/direct-connects/{direct_connect_id}/ (the `UpdateDirectConnect` operationId).
+func (c *Client) UpdateDirectConnect(ctx context.Context, directConnectId core.UUID, params *UpdateDirectConnectParams, body UpdateDirectConnectJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateDirectConnectRequest(c.Server, directConnectId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // ListElasticIps List Elastic Ips
 //
 // List all Elastic IPs owned by the project (regional + zonal).
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:list`
 //
@@ -1750,7 +2241,7 @@ func (c *Client) ListElasticIps(ctx context.Context, params *ListElasticIpsParam
 //
 // Create a new regional Elastic IP. Zonal EIPs are created automatically by the server creation flow.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:create`
 //
@@ -1773,7 +2264,7 @@ func (c *Client) CreateElasticIpWithBody(ctx context.Context, params *CreateElas
 //
 // Create a new regional Elastic IP. Zonal EIPs are created automatically by the server creation flow.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:create`
 //
@@ -1834,7 +2325,7 @@ func (c *Client) EstimateElasticIpCost(ctx context.Context, params *EstimateElas
 //
 // Delete an Elastic IP. Must not be attached to any server.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:delete`
 //
@@ -1855,7 +2346,7 @@ func (c *Client) DeleteElasticIp(ctx context.Context, eipId core.UUID, params *D
 //
 // Return a single Elastic IP owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:get`
 //
@@ -1876,7 +2367,7 @@ func (c *Client) GetElasticIp(ctx context.Context, eipId core.UUID, params *GetE
 //
 // Update the description of an Elastic IP.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:update`
 //
@@ -1899,7 +2390,7 @@ func (c *Client) PartialUpdateElasticIpWithBody(ctx context.Context, eipId core.
 //
 // Update the description of an Elastic IP.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:update`
 //
@@ -1922,7 +2413,7 @@ func (c *Client) PartialUpdateElasticIp(ctx context.Context, eipId core.UUID, pa
 //
 // Replace the description of an Elastic IP.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:update`
 //
@@ -1945,7 +2436,7 @@ func (c *Client) UpdateElasticIpWithBody(ctx context.Context, eipId core.UUID, p
 //
 // Replace the description of an Elastic IP.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:update`
 //
@@ -1968,7 +2459,7 @@ func (c *Client) UpdateElasticIp(ctx context.Context, eipId core.UUID, params *U
 //
 // List Private IPs owned by the project or living in a VPC shared into it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:list`
 //
@@ -1989,7 +2480,7 @@ func (c *Client) ListPrivateIps(ctx context.Context, params *ListPrivateIpsParam
 //
 // Allocate a new Private IP in a subnet owned by the project or shared into it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:create`
 //
@@ -2012,7 +2503,7 @@ func (c *Client) CreatePrivateIpWithBody(ctx context.Context, params *CreatePriv
 //
 // Allocate a new Private IP in a subnet owned by the project or shared into it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:create`
 //
@@ -2035,7 +2526,7 @@ func (c *Client) CreatePrivateIp(ctx context.Context, params *CreatePrivateIpPar
 //
 // Delete a Private IP. Blocked while in use by a Load Balancer or as an allowed VIP.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:delete`
 //
@@ -2056,7 +2547,7 @@ func (c *Client) DeletePrivateIp(ctx context.Context, privateIpId core.UUID, par
 //
 // Return a Private IP owned by the project or living in a VPC shared into it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:get`
 //
@@ -2077,7 +2568,7 @@ func (c *Client) GetPrivateIp(ctx context.Context, privateIpId core.UUID, params
 //
 // Update a Private IP's description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:update`
 //
@@ -2100,7 +2591,7 @@ func (c *Client) PartialUpdatePrivateIpWithBody(ctx context.Context, privateIpId
 //
 // Update a Private IP's description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:update`
 //
@@ -2123,7 +2614,7 @@ func (c *Client) PartialUpdatePrivateIp(ctx context.Context, privateIpId core.UU
 //
 // Update a Private IP's description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:update`
 //
@@ -2146,7 +2637,7 @@ func (c *Client) UpdatePrivateIpWithBody(ctx context.Context, privateIpId core.U
 //
 // Update a Private IP's description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:update`
 //
@@ -2169,7 +2660,7 @@ func (c *Client) UpdatePrivateIp(ctx context.Context, privateIpId core.UUID, par
 //
 // Replace the set of allowed VIPs on a Private IP owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:update_allowed_vips`
 //
@@ -2192,7 +2683,7 @@ func (c *Client) UpdatePrivateIpAllowedVipsWithBody(ctx context.Context, private
 //
 // Replace the set of allowed VIPs on a Private IP owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:update_allowed_vips`
 //
@@ -2211,11 +2702,120 @@ func (c *Client) UpdatePrivateIpAllowedVips(ctx context.Context, privateIpId cor
 	return c.Client.Do(req)
 }
 
+// ListRouteTables List Route Tables
+//
+// List route tables owned by the project or living in a VPC shared into it.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route_table:list`
+//
+// Corresponds with GET /v2/network/route-tables/ (the `ListRouteTables` operationId).
+func (c *Client) ListRouteTables(ctx context.Context, params *ListRouteTablesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListRouteTablesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetRouteTable Get Route Table
+//
+// Return a route table owned by the project or living in a VPC shared into it.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route_table:get`
+//
+// Corresponds with GET /v2/network/route-tables/{route_table_id}/ (the `GetRouteTable` operationId).
+func (c *Client) GetRouteTable(ctx context.Context, routeTableId core.UUID, params *GetRouteTableParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetRouteTableRequest(c.Server, routeTableId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateRouteTableInternetAccessWithBody Update Route Table Internet Access
+//
+// Turn internet access for the route table on or off.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route_table:update_internet_access`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /v2/network/route-tables/{route_table_id}/internet-access/ (the `UpdateRouteTableInternetAccess` operationId).
+func (c *Client) UpdateRouteTableInternetAccessWithBody(ctx context.Context, routeTableId core.UUID, params *UpdateRouteTableInternetAccessParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateRouteTableInternetAccessRequestWithBody(c.Server, routeTableId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateRouteTableInternetAccess Update Route Table Internet Access
+//
+// Turn internet access for the route table on or off.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route_table:update_internet_access`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /v2/network/route-tables/{route_table_id}/internet-access/ (the `UpdateRouteTableInternetAccess` operationId).
+func (c *Client) UpdateRouteTableInternetAccess(ctx context.Context, routeTableId core.UUID, params *UpdateRouteTableInternetAccessParams, body UpdateRouteTableInternetAccessJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateRouteTableInternetAccessRequest(c.Server, routeTableId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListRouteTableSubnets List Route Table Subnets
+//
+// List the subnets associated with a route table.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route_table:list_subnets`
+//
+// Corresponds with GET /v2/network/route-tables/{route_table_id}/subnets/ (the `ListRouteTableSubnets` operationId).
+func (c *Client) ListRouteTableSubnets(ctx context.Context, routeTableId core.UUID, params *ListRouteTableSubnetsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListRouteTableSubnetsRequest(c.Server, routeTableId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // ListSecurityGroupRules List Security Group Rules
 //
 // List the Security Group Rules owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:list`
 //
@@ -2236,7 +2836,7 @@ func (c *Client) ListSecurityGroupRules(ctx context.Context, params *ListSecurit
 //
 // Create a Security Group Rule in one of the project's Security Groups.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:create`
 //
@@ -2259,7 +2859,7 @@ func (c *Client) CreateSecurityGroupRuleWithBody(ctx context.Context, params *Cr
 //
 // Create a Security Group Rule in one of the project's Security Groups.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:create`
 //
@@ -2282,7 +2882,7 @@ func (c *Client) CreateSecurityGroupRule(ctx context.Context, params *CreateSecu
 //
 // Delete a Security Group Rule, including one in the default Security Group.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:delete`
 //
@@ -2303,7 +2903,7 @@ func (c *Client) DeleteSecurityGroupRule(ctx context.Context, securityGroupRuleI
 //
 // Return a single Security Group Rule owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:get`
 //
@@ -2324,7 +2924,7 @@ func (c *Client) GetSecurityGroupRule(ctx context.Context, securityGroupRuleId c
 //
 // Update a Security Group Rule's description.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:update`
 //
@@ -2347,7 +2947,7 @@ func (c *Client) PartialUpdateSecurityGroupRuleWithBody(ctx context.Context, sec
 //
 // Update a Security Group Rule's description.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:update`
 //
@@ -2373,7 +2973,7 @@ func (c *Client) PartialUpdateSecurityGroupRule(ctx context.Context, securityGro
 // What the rule matches stays fixed: the provider has no update call for a
 // rule, so changing it here would leave the two sides disagreeing.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:update`
 //
@@ -2399,7 +2999,7 @@ func (c *Client) UpdateSecurityGroupRuleWithBody(ctx context.Context, securityGr
 // What the rule matches stays fixed: the provider has no update call for a
 // rule, so changing it here would leave the two sides disagreeing.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:update`
 //
@@ -2422,7 +3022,7 @@ func (c *Client) UpdateSecurityGroupRule(ctx context.Context, securityGroupRuleI
 //
 // List security groups owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:list`
 //
@@ -2443,7 +3043,7 @@ func (c *Client) ListSecurityGroups(ctx context.Context, params *ListSecurityGro
 //
 // Create a security group in a region where the project has Network enabled.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:create`
 //
@@ -2466,7 +3066,7 @@ func (c *Client) CreateSecurityGroupWithBody(ctx context.Context, params *Create
 //
 // Create a security group in a region where the project has Network enabled.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:create`
 //
@@ -2489,7 +3089,7 @@ func (c *Client) CreateSecurityGroup(ctx context.Context, params *CreateSecurity
 //
 // Delete a security group. The project's default group cannot be deleted.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:delete`
 //
@@ -2510,7 +3110,7 @@ func (c *Client) DeleteSecurityGroup(ctx context.Context, securityGroupId core.U
 //
 // Return a single security group owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:get`
 //
@@ -2531,7 +3131,7 @@ func (c *Client) GetSecurityGroup(ctx context.Context, securityGroupId core.UUID
 //
 // Update a security group's name or description.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:update`
 //
@@ -2554,7 +3154,7 @@ func (c *Client) PartialUpdateSecurityGroupWithBody(ctx context.Context, securit
 //
 // Update a security group's name or description.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:update`
 //
@@ -2577,7 +3177,7 @@ func (c *Client) PartialUpdateSecurityGroup(ctx context.Context, securityGroupId
 //
 // Update a security group's name and description.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:update`
 //
@@ -2600,7 +3200,7 @@ func (c *Client) UpdateSecurityGroupWithBody(ctx context.Context, securityGroupI
 //
 // Update a security group's name and description.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:update`
 //
@@ -2623,7 +3223,7 @@ func (c *Client) UpdateSecurityGroup(ctx context.Context, securityGroupId core.U
 //
 // List subnets owned by the project or living in a VPC shared into it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:list`
 //
@@ -2644,7 +3244,7 @@ func (c *Client) ListSubnets(ctx context.Context, params *ListSubnetsParams, req
 //
 // Create a subnet in a regional VPC owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:create`
 //
@@ -2667,7 +3267,7 @@ func (c *Client) CreateSubnetWithBody(ctx context.Context, params *CreateSubnetP
 //
 // Create a subnet in a regional VPC owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:create`
 //
@@ -2690,7 +3290,7 @@ func (c *Client) CreateSubnet(ctx context.Context, params *CreateSubnetParams, b
 //
 // Delete a subnet. Owner-only. Requires all user/service Private IPs to be deleted first.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:delete`
 //
@@ -2711,7 +3311,7 @@ func (c *Client) DeleteSubnet(ctx context.Context, subnetId core.UUID, params *D
 //
 // Return a subnet owned by the project or living in a VPC shared into it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:get`
 //
@@ -2732,7 +3332,7 @@ func (c *Client) GetSubnet(ctx context.Context, subnetId core.UUID, params *GetS
 //
 // Update subnet name or description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:update`
 //
@@ -2755,7 +3355,7 @@ func (c *Client) PartialUpdateSubnetWithBody(ctx context.Context, subnetId core.
 //
 // Update subnet name or description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:update`
 //
@@ -2778,7 +3378,7 @@ func (c *Client) PartialUpdateSubnet(ctx context.Context, subnetId core.UUID, pa
 //
 // Update subnet name and description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:update`
 //
@@ -2801,7 +3401,7 @@ func (c *Client) UpdateSubnetWithBody(ctx context.Context, subnetId core.UUID, p
 //
 // Update subnet name and description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:update`
 //
@@ -2822,7 +3422,7 @@ func (c *Client) UpdateSubnet(ctx context.Context, subnetId core.UUID, params *U
 
 // ListVpcs List Vpcs
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:list`
 //
@@ -2843,7 +3443,7 @@ func (c *Client) ListVpcs(ctx context.Context, params *ListVpcsParams, reqEditor
 //
 // Create a new regional VPC. Zonal VPCs are managed by the Baremetal service.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:create`
 //
@@ -2866,7 +3466,7 @@ func (c *Client) CreateVpcWithBody(ctx context.Context, params *CreateVpcParams,
 //
 // Create a new regional VPC. Zonal VPCs are managed by the Baremetal service.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:create`
 //
@@ -2889,7 +3489,7 @@ func (c *Client) CreateVpc(ctx context.Context, params *CreateVpcParams, body Cr
 //
 // Delete a VPC. Owner-only. Requires all subnets to be deleted first.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:delete`
 //
@@ -2910,7 +3510,7 @@ func (c *Client) DeleteVpc(ctx context.Context, vpcId core.UUID, params *DeleteV
 //
 // Return a VPC owned by or shared into the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:get`
 //
@@ -2931,7 +3531,7 @@ func (c *Client) GetVpc(ctx context.Context, vpcId core.UUID, params *GetVpcPara
 //
 // Update VPC name or description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:update`
 //
@@ -2954,7 +3554,7 @@ func (c *Client) UpdateVpcWithBody(ctx context.Context, vpcId core.UUID, params 
 //
 // Update VPC name or description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:update`
 //
@@ -2977,7 +3577,7 @@ func (c *Client) UpdateVpc(ctx context.Context, vpcId core.UUID, params *UpdateV
 //
 // Share a regional VPC with other projects. Owner-only. Blocked for zonal VPCs.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:share`
 //
@@ -3000,7 +3600,7 @@ func (c *Client) ShareVpcWithBody(ctx context.Context, vpcId core.UUID, params *
 //
 // Share a regional VPC with other projects. Owner-only. Blocked for zonal VPCs.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:share`
 //
@@ -3023,7 +3623,7 @@ func (c *Client) ShareVpc(ctx context.Context, vpcId core.UUID, params *ShareVpc
 //
 // Remove share of a regional VPC from the specified projects. Owner-only. Blocked for zonal VPCs.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:unshare`
 //
@@ -3046,7 +3646,7 @@ func (c *Client) UnshareVpcWithBody(ctx context.Context, vpcId core.UUID, params
 //
 // Remove share of a regional VPC from the specified projects. Owner-only. Blocked for zonal VPCs.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:unshare`
 //
@@ -3063,6 +3663,328 @@ func (c *Client) UnshareVpc(ctx context.Context, vpcId core.UUID, params *Unshar
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewListDirectConnectsRequest constructs an http.Request for the ListDirectConnects method
+func NewListDirectConnectsRequest(server string, params *ListDirectConnectsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/direct-connects/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Region != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "region", *params.Region, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Name != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "name", *params.Name, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Status != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "status", *params.Status, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewCreateDirectConnectRequest calls the generic CreateDirectConnect builder with application/json body
+func NewCreateDirectConnectRequest(server string, params *CreateDirectConnectParams, body CreateDirectConnectJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateDirectConnectRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCreateDirectConnectRequestWithBody constructs an http.Request for the CreateDirectConnect method, with any body, and a specified content type
+func NewCreateDirectConnectRequestWithBody(server string, params *CreateDirectConnectParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/direct-connects/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteDirectConnectRequest constructs an http.Request for the DeleteDirectConnect method
+func NewDeleteDirectConnectRequest(server string, directConnectId core.UUID, params *DeleteDirectConnectParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "direct_connect_id", directConnectId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/direct-connects/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetDirectConnectRequest constructs an http.Request for the GetDirectConnect method
+func NewGetDirectConnectRequest(server string, directConnectId core.UUID, params *GetDirectConnectParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "direct_connect_id", directConnectId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/direct-connects/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewUpdateDirectConnectRequest calls the generic UpdateDirectConnect builder with application/json body
+func NewUpdateDirectConnectRequest(server string, directConnectId core.UUID, params *UpdateDirectConnectParams, body UpdateDirectConnectJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateDirectConnectRequestWithBody(server, directConnectId, params, "application/json", bodyReader)
+}
+
+// NewUpdateDirectConnectRequestWithBody constructs an http.Request for the UpdateDirectConnect method, with any body, and a specified content type
+func NewUpdateDirectConnectRequestWithBody(server string, directConnectId core.UUID, params *UpdateDirectConnectParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "direct_connect_id", directConnectId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/direct-connects/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
 }
 
 // NewListElasticIpsRequest constructs an http.Request for the ListElasticIps method
@@ -4045,6 +4967,326 @@ func NewUpdatePrivateIpAllowedVipsRequestWithBody(server string, privateIpId cor
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListRouteTablesRequest constructs an http.Request for the ListRouteTables method
+func NewListRouteTablesRequest(server string, params *ListRouteTablesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/route-tables/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Name != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "name", *params.Name, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.VpcId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "vpc_id", *params.VpcId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RegionId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "region_id", *params.RegionId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RegionName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "region_name", *params.RegionName, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetRouteTableRequest constructs an http.Request for the GetRouteTable method
+func NewGetRouteTableRequest(server string, routeTableId core.UUID, params *GetRouteTableParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "route_table_id", routeTableId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/route-tables/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewUpdateRouteTableInternetAccessRequest calls the generic UpdateRouteTableInternetAccess builder with application/json body
+func NewUpdateRouteTableInternetAccessRequest(server string, routeTableId core.UUID, params *UpdateRouteTableInternetAccessParams, body UpdateRouteTableInternetAccessJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateRouteTableInternetAccessRequestWithBody(server, routeTableId, params, "application/json", bodyReader)
+}
+
+// NewUpdateRouteTableInternetAccessRequestWithBody constructs an http.Request for the UpdateRouteTableInternetAccess method, with any body, and a specified content type
+func NewUpdateRouteTableInternetAccessRequestWithBody(server string, routeTableId core.UUID, params *UpdateRouteTableInternetAccessParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "route_table_id", routeTableId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/route-tables/%s/internet-access/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListRouteTableSubnetsRequest constructs an http.Request for the ListRouteTableSubnets method
+func NewListRouteTableSubnetsRequest(server string, routeTableId core.UUID, params *ListRouteTableSubnetsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "route_table_id", routeTableId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/route-tables/%s/subnets/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	if params != nil {
 
@@ -5344,6 +6586,30 @@ func NewListVpcsRequest(server string, params *ListVpcsParams) (*http.Request, e
 
 		}
 
+		if params.HasNatGateway != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "has_nat_gateway", *params.HasNatGateway, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.InternetAccess != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "internet_access", *params.InternetAccess, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.IsSharedVpc != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "is_shared_vpc", *params.IsSharedVpc, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
@@ -5778,11 +7044,88 @@ func WithBaseURL(baseURL string) ClientOption {
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
 
+	// ListDirectConnectsWithResponse List Direct Connects
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:direct_connect:list`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/network/direct-connects/ (the `ListDirectConnects` operationId).
+	ListDirectConnectsWithResponse(ctx context.Context, params *ListDirectConnectsParams, reqEditors ...RequestEditorFn) (*ListDirectConnectsResponse, error)
+
+	// CreateDirectConnectWithBodyWithResponse Create Direct Connect
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:direct_connect:create`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/network/direct-connects/ (the `CreateDirectConnect` operationId).
+	CreateDirectConnectWithBodyWithResponse(ctx context.Context, params *CreateDirectConnectParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateDirectConnectResponse, error)
+
+	// CreateDirectConnectWithResponse Create Direct Connect
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:direct_connect:create`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/network/direct-connects/ (the `CreateDirectConnect` operationId).
+	CreateDirectConnectWithResponse(ctx context.Context, params *CreateDirectConnectParams, body CreateDirectConnectJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateDirectConnectResponse, error)
+
+	// DeleteDirectConnectWithResponse Delete Direct Connect
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:direct_connect:delete`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v2/network/direct-connects/{direct_connect_id}/ (the `DeleteDirectConnect` operationId).
+	DeleteDirectConnectWithResponse(ctx context.Context, directConnectId core.UUID, params *DeleteDirectConnectParams, reqEditors ...RequestEditorFn) (*DeleteDirectConnectResponse, error)
+
+	// GetDirectConnectWithResponse Get Direct Connect
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:direct_connect:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/network/direct-connects/{direct_connect_id}/ (the `GetDirectConnect` operationId).
+	GetDirectConnectWithResponse(ctx context.Context, directConnectId core.UUID, params *GetDirectConnectParams, reqEditors ...RequestEditorFn) (*GetDirectConnectResponse, error)
+
+	// UpdateDirectConnectWithBodyWithResponse Update Direct Connect
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:direct_connect:update`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v2/network/direct-connects/{direct_connect_id}/ (the `UpdateDirectConnect` operationId).
+	UpdateDirectConnectWithBodyWithResponse(ctx context.Context, directConnectId core.UUID, params *UpdateDirectConnectParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateDirectConnectResponse, error)
+
+	// UpdateDirectConnectWithResponse Update Direct Connect
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:direct_connect:update`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v2/network/direct-connects/{direct_connect_id}/ (the `UpdateDirectConnect` operationId).
+	UpdateDirectConnectWithResponse(ctx context.Context, directConnectId core.UUID, params *UpdateDirectConnectParams, body UpdateDirectConnectJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateDirectConnectResponse, error)
+
 	// ListElasticIpsWithResponse List Elastic Ips
 	//
 	// List all Elastic IPs owned by the project (regional + zonal).
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:list`
 	//
@@ -5795,7 +7138,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Create a new regional Elastic IP. Zonal EIPs are created automatically by the server creation flow.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:create`
 	//
@@ -5808,7 +7151,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Create a new regional Elastic IP. Zonal EIPs are created automatically by the server creation flow.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:create`
 	//
@@ -5839,7 +7182,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Delete an Elastic IP. Must not be attached to any server.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:delete`
 	//
@@ -5852,7 +7195,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Return a single Elastic IP owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:get`
 	//
@@ -5865,7 +7208,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update the description of an Elastic IP.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:update`
 	//
@@ -5878,7 +7221,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update the description of an Elastic IP.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:update`
 	//
@@ -5891,7 +7234,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Replace the description of an Elastic IP.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:update`
 	//
@@ -5904,7 +7247,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Replace the description of an Elastic IP.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:elastic_ip:update`
 	//
@@ -5917,7 +7260,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// List Private IPs owned by the project or living in a VPC shared into it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:list`
 	//
@@ -5930,7 +7273,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Allocate a new Private IP in a subnet owned by the project or shared into it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:create`
 	//
@@ -5943,7 +7286,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Allocate a new Private IP in a subnet owned by the project or shared into it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:create`
 	//
@@ -5956,7 +7299,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Delete a Private IP. Blocked while in use by a Load Balancer or as an allowed VIP.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:delete`
 	//
@@ -5969,7 +7312,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Return a Private IP owned by the project or living in a VPC shared into it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:get`
 	//
@@ -5982,7 +7325,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update a Private IP's description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:update`
 	//
@@ -5995,7 +7338,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update a Private IP's description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:update`
 	//
@@ -6008,7 +7351,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update a Private IP's description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:update`
 	//
@@ -6021,7 +7364,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update a Private IP's description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:update`
 	//
@@ -6034,7 +7377,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Replace the set of allowed VIPs on a Private IP owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:update_allowed_vips`
 	//
@@ -6047,7 +7390,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Replace the set of allowed VIPs on a Private IP owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:private_ip:update_allowed_vips`
 	//
@@ -6056,11 +7399,76 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with PUT /v2/network/private-ips/{private_ip_id}/allowed-vips/ (the `UpdatePrivateIpAllowedVips` operationId).
 	UpdatePrivateIpAllowedVipsWithResponse(ctx context.Context, privateIpId core.UUID, params *UpdatePrivateIpAllowedVipsParams, body UpdatePrivateIpAllowedVipsJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdatePrivateIpAllowedVipsResponse, error)
 
+	// ListRouteTablesWithResponse List Route Tables
+	//
+	// List route tables owned by the project or living in a VPC shared into it.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route_table:list`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/network/route-tables/ (the `ListRouteTables` operationId).
+	ListRouteTablesWithResponse(ctx context.Context, params *ListRouteTablesParams, reqEditors ...RequestEditorFn) (*ListRouteTablesResponse, error)
+
+	// GetRouteTableWithResponse Get Route Table
+	//
+	// Return a route table owned by the project or living in a VPC shared into it.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route_table:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/network/route-tables/{route_table_id}/ (the `GetRouteTable` operationId).
+	GetRouteTableWithResponse(ctx context.Context, routeTableId core.UUID, params *GetRouteTableParams, reqEditors ...RequestEditorFn) (*GetRouteTableResponse, error)
+
+	// UpdateRouteTableInternetAccessWithBodyWithResponse Update Route Table Internet Access
+	//
+	// Turn internet access for the route table on or off.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route_table:update_internet_access`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v2/network/route-tables/{route_table_id}/internet-access/ (the `UpdateRouteTableInternetAccess` operationId).
+	UpdateRouteTableInternetAccessWithBodyWithResponse(ctx context.Context, routeTableId core.UUID, params *UpdateRouteTableInternetAccessParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateRouteTableInternetAccessResponse, error)
+
+	// UpdateRouteTableInternetAccessWithResponse Update Route Table Internet Access
+	//
+	// Turn internet access for the route table on or off.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route_table:update_internet_access`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v2/network/route-tables/{route_table_id}/internet-access/ (the `UpdateRouteTableInternetAccess` operationId).
+	UpdateRouteTableInternetAccessWithResponse(ctx context.Context, routeTableId core.UUID, params *UpdateRouteTableInternetAccessParams, body UpdateRouteTableInternetAccessJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateRouteTableInternetAccessResponse, error)
+
+	// ListRouteTableSubnetsWithResponse List Route Table Subnets
+	//
+	// List the subnets associated with a route table.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route_table:list_subnets`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/network/route-tables/{route_table_id}/subnets/ (the `ListRouteTableSubnets` operationId).
+	ListRouteTableSubnetsWithResponse(ctx context.Context, routeTableId core.UUID, params *ListRouteTableSubnetsParams, reqEditors ...RequestEditorFn) (*ListRouteTableSubnetsResponse, error)
+
 	// ListSecurityGroupRulesWithResponse List Security Group Rules
 	//
 	// List the Security Group Rules owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:list`
 	//
@@ -6073,7 +7481,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Create a Security Group Rule in one of the project's Security Groups.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:create`
 	//
@@ -6086,7 +7494,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Create a Security Group Rule in one of the project's Security Groups.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:create`
 	//
@@ -6099,7 +7507,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Delete a Security Group Rule, including one in the default Security Group.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:delete`
 	//
@@ -6112,7 +7520,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Return a single Security Group Rule owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:get`
 	//
@@ -6125,7 +7533,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update a Security Group Rule's description.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:update`
 	//
@@ -6138,7 +7546,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update a Security Group Rule's description.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:update`
 	//
@@ -6154,7 +7562,7 @@ type ClientWithResponsesInterface interface {
 	// What the rule matches stays fixed: the provider has no update call for a
 	// rule, so changing it here would leave the two sides disagreeing.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:update`
 	//
@@ -6170,7 +7578,7 @@ type ClientWithResponsesInterface interface {
 	// What the rule matches stays fixed: the provider has no update call for a
 	// rule, so changing it here would leave the two sides disagreeing.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group_rule:update`
 	//
@@ -6183,7 +7591,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// List security groups owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:list`
 	//
@@ -6196,7 +7604,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Create a security group in a region where the project has Network enabled.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:create`
 	//
@@ -6209,7 +7617,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Create a security group in a region where the project has Network enabled.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:create`
 	//
@@ -6222,7 +7630,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Delete a security group. The project's default group cannot be deleted.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:delete`
 	//
@@ -6235,7 +7643,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Return a single security group owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:get`
 	//
@@ -6248,7 +7656,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update a security group's name or description.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:update`
 	//
@@ -6261,7 +7669,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update a security group's name or description.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:update`
 	//
@@ -6274,7 +7682,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update a security group's name and description.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:update`
 	//
@@ -6287,7 +7695,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update a security group's name and description.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:security_group:update`
 	//
@@ -6300,7 +7708,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// List subnets owned by the project or living in a VPC shared into it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:list`
 	//
@@ -6313,7 +7721,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Create a subnet in a regional VPC owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:create`
 	//
@@ -6326,7 +7734,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Create a subnet in a regional VPC owned by the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:create`
 	//
@@ -6339,7 +7747,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Delete a subnet. Owner-only. Requires all user/service Private IPs to be deleted first.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:delete`
 	//
@@ -6352,7 +7760,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Return a subnet owned by the project or living in a VPC shared into it.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:get`
 	//
@@ -6365,7 +7773,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update subnet name or description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:update`
 	//
@@ -6378,7 +7786,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update subnet name or description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:update`
 	//
@@ -6391,7 +7799,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update subnet name and description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:update`
 	//
@@ -6404,7 +7812,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update subnet name and description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:subnet:update`
 	//
@@ -6415,7 +7823,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListVpcsWithResponse List Vpcs
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:list`
 	//
@@ -6428,7 +7836,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Create a new regional VPC. Zonal VPCs are managed by the Baremetal service.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:create`
 	//
@@ -6441,7 +7849,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Create a new regional VPC. Zonal VPCs are managed by the Baremetal service.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:create`
 	//
@@ -6454,7 +7862,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Delete a VPC. Owner-only. Requires all subnets to be deleted first.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:delete`
 	//
@@ -6467,7 +7875,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Return a VPC owned by or shared into the project.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:get`
 	//
@@ -6480,7 +7888,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update VPC name or description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:update`
 	//
@@ -6493,7 +7901,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Update VPC name or description. Owner-only.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:update`
 	//
@@ -6506,7 +7914,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Share a regional VPC with other projects. Owner-only. Blocked for zonal VPCs.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:share`
 	//
@@ -6519,7 +7927,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Share a regional VPC with other projects. Owner-only. Blocked for zonal VPCs.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:share`
 	//
@@ -6532,7 +7940,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Remove share of a regional VPC from the specified projects. Owner-only. Blocked for zonal VPCs.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:unshare`
 	//
@@ -6545,7 +7953,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Remove share of a regional VPC from the specified projects. Owner-only. Blocked for zonal VPCs.
 	//
-	// **Required project permissions:**
+	// **Required permissions:**
 	//
 	// - `urn:action:network:vpc:unshare`
 	//
@@ -6553,6 +7961,169 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with POST /v2/network/vpcs/{vpc_id}/unshare/ (the `UnshareVpc` operationId).
 	UnshareVpcWithResponse(ctx context.Context, vpcId core.UUID, params *UnshareVpcParams, body UnshareVpcJSONRequestBody, reqEditors ...RequestEditorFn) (*UnshareVpcResponse, error)
+}
+
+type ListDirectConnectsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedDirectConnectSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListDirectConnectsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListDirectConnectsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateDirectConnectResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *DirectConnectSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateDirectConnectResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateDirectConnectResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteDirectConnectResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteDirectConnectResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteDirectConnectResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetDirectConnectResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *DirectConnectSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetDirectConnectResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetDirectConnectResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateDirectConnectResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *DirectConnectSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateDirectConnectResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateDirectConnectResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type ListElasticIpsResponse struct {
@@ -7007,6 +8578,138 @@ func (r UpdatePrivateIpAllowedVipsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdatePrivateIpAllowedVipsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListRouteTablesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedRouteTableSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListRouteTablesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListRouteTablesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetRouteTableResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *RouteTableSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetRouteTableResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetRouteTableResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateRouteTableInternetAccessResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *RouteTableSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateRouteTableInternetAccessResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateRouteTableInternetAccessResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListRouteTableSubnetsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedRouteTableSubnetSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListRouteTableSubnetsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListRouteTableSubnetsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -7830,11 +9533,130 @@ func (r UnshareVpcResponse) StatusCode() int {
 	return 0
 }
 
+// ListDirectConnectsWithResponse List Direct Connects
+//
+// **Required permissions:**
+//
+// - `urn:action:network:direct_connect:list`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/network/direct-connects/ (the `ListDirectConnects` operationId).
+func (c *ClientWithResponses) ListDirectConnectsWithResponse(ctx context.Context, params *ListDirectConnectsParams, reqEditors ...RequestEditorFn) (*ListDirectConnectsResponse, error) {
+	rsp, err := c.ListDirectConnects(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListDirectConnectsResponse(rsp)
+}
+
+// CreateDirectConnectWithBodyWithResponse Create Direct Connect
+//
+// **Required permissions:**
+//
+// - `urn:action:network:direct_connect:create`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/network/direct-connects/ (the `CreateDirectConnect` operationId).
+func (c *ClientWithResponses) CreateDirectConnectWithBodyWithResponse(ctx context.Context, params *CreateDirectConnectParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateDirectConnectResponse, error) {
+	rsp, err := c.CreateDirectConnectWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateDirectConnectResponse(rsp)
+}
+
+// CreateDirectConnectWithResponse Create Direct Connect
+//
+// **Required permissions:**
+//
+// - `urn:action:network:direct_connect:create`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/network/direct-connects/ (the `CreateDirectConnect` operationId).
+func (c *ClientWithResponses) CreateDirectConnectWithResponse(ctx context.Context, params *CreateDirectConnectParams, body CreateDirectConnectJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateDirectConnectResponse, error) {
+	rsp, err := c.CreateDirectConnect(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateDirectConnectResponse(rsp)
+}
+
+// DeleteDirectConnectWithResponse Delete Direct Connect
+//
+// **Required permissions:**
+//
+// - `urn:action:network:direct_connect:delete`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v2/network/direct-connects/{direct_connect_id}/ (the `DeleteDirectConnect` operationId).
+func (c *ClientWithResponses) DeleteDirectConnectWithResponse(ctx context.Context, directConnectId core.UUID, params *DeleteDirectConnectParams, reqEditors ...RequestEditorFn) (*DeleteDirectConnectResponse, error) {
+	rsp, err := c.DeleteDirectConnect(ctx, directConnectId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteDirectConnectResponse(rsp)
+}
+
+// GetDirectConnectWithResponse Get Direct Connect
+//
+// **Required permissions:**
+//
+// - `urn:action:network:direct_connect:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/network/direct-connects/{direct_connect_id}/ (the `GetDirectConnect` operationId).
+func (c *ClientWithResponses) GetDirectConnectWithResponse(ctx context.Context, directConnectId core.UUID, params *GetDirectConnectParams, reqEditors ...RequestEditorFn) (*GetDirectConnectResponse, error) {
+	rsp, err := c.GetDirectConnect(ctx, directConnectId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetDirectConnectResponse(rsp)
+}
+
+// UpdateDirectConnectWithBodyWithResponse Update Direct Connect
+//
+// **Required permissions:**
+//
+// - `urn:action:network:direct_connect:update`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v2/network/direct-connects/{direct_connect_id}/ (the `UpdateDirectConnect` operationId).
+func (c *ClientWithResponses) UpdateDirectConnectWithBodyWithResponse(ctx context.Context, directConnectId core.UUID, params *UpdateDirectConnectParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateDirectConnectResponse, error) {
+	rsp, err := c.UpdateDirectConnectWithBody(ctx, directConnectId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateDirectConnectResponse(rsp)
+}
+
+// UpdateDirectConnectWithResponse Update Direct Connect
+//
+// **Required permissions:**
+//
+// - `urn:action:network:direct_connect:update`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v2/network/direct-connects/{direct_connect_id}/ (the `UpdateDirectConnect` operationId).
+func (c *ClientWithResponses) UpdateDirectConnectWithResponse(ctx context.Context, directConnectId core.UUID, params *UpdateDirectConnectParams, body UpdateDirectConnectJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateDirectConnectResponse, error) {
+	rsp, err := c.UpdateDirectConnect(ctx, directConnectId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateDirectConnectResponse(rsp)
+}
+
 // ListElasticIpsWithResponse List Elastic Ips
 //
 // List all Elastic IPs owned by the project (regional + zonal).
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:list`
 //
@@ -7853,7 +9675,7 @@ func (c *ClientWithResponses) ListElasticIpsWithResponse(ctx context.Context, pa
 //
 // Create a new regional Elastic IP. Zonal EIPs are created automatically by the server creation flow.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:create`
 //
@@ -7872,7 +9694,7 @@ func (c *ClientWithResponses) CreateElasticIpWithBodyWithResponse(ctx context.Co
 //
 // Create a new regional Elastic IP. Zonal EIPs are created automatically by the server creation flow.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:create`
 //
@@ -7921,7 +9743,7 @@ func (c *ClientWithResponses) EstimateElasticIpCostWithResponse(ctx context.Cont
 //
 // Delete an Elastic IP. Must not be attached to any server.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:delete`
 //
@@ -7940,7 +9762,7 @@ func (c *ClientWithResponses) DeleteElasticIpWithResponse(ctx context.Context, e
 //
 // Return a single Elastic IP owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:get`
 //
@@ -7959,7 +9781,7 @@ func (c *ClientWithResponses) GetElasticIpWithResponse(ctx context.Context, eipI
 //
 // Update the description of an Elastic IP.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:update`
 //
@@ -7978,7 +9800,7 @@ func (c *ClientWithResponses) PartialUpdateElasticIpWithBodyWithResponse(ctx con
 //
 // Update the description of an Elastic IP.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:update`
 //
@@ -7997,7 +9819,7 @@ func (c *ClientWithResponses) PartialUpdateElasticIpWithResponse(ctx context.Con
 //
 // Replace the description of an Elastic IP.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:update`
 //
@@ -8016,7 +9838,7 @@ func (c *ClientWithResponses) UpdateElasticIpWithBodyWithResponse(ctx context.Co
 //
 // Replace the description of an Elastic IP.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:elastic_ip:update`
 //
@@ -8035,7 +9857,7 @@ func (c *ClientWithResponses) UpdateElasticIpWithResponse(ctx context.Context, e
 //
 // List Private IPs owned by the project or living in a VPC shared into it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:list`
 //
@@ -8054,7 +9876,7 @@ func (c *ClientWithResponses) ListPrivateIpsWithResponse(ctx context.Context, pa
 //
 // Allocate a new Private IP in a subnet owned by the project or shared into it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:create`
 //
@@ -8073,7 +9895,7 @@ func (c *ClientWithResponses) CreatePrivateIpWithBodyWithResponse(ctx context.Co
 //
 // Allocate a new Private IP in a subnet owned by the project or shared into it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:create`
 //
@@ -8092,7 +9914,7 @@ func (c *ClientWithResponses) CreatePrivateIpWithResponse(ctx context.Context, p
 //
 // Delete a Private IP. Blocked while in use by a Load Balancer or as an allowed VIP.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:delete`
 //
@@ -8111,7 +9933,7 @@ func (c *ClientWithResponses) DeletePrivateIpWithResponse(ctx context.Context, p
 //
 // Return a Private IP owned by the project or living in a VPC shared into it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:get`
 //
@@ -8130,7 +9952,7 @@ func (c *ClientWithResponses) GetPrivateIpWithResponse(ctx context.Context, priv
 //
 // Update a Private IP's description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:update`
 //
@@ -8149,7 +9971,7 @@ func (c *ClientWithResponses) PartialUpdatePrivateIpWithBodyWithResponse(ctx con
 //
 // Update a Private IP's description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:update`
 //
@@ -8168,7 +9990,7 @@ func (c *ClientWithResponses) PartialUpdatePrivateIpWithResponse(ctx context.Con
 //
 // Update a Private IP's description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:update`
 //
@@ -8187,7 +10009,7 @@ func (c *ClientWithResponses) UpdatePrivateIpWithBodyWithResponse(ctx context.Co
 //
 // Update a Private IP's description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:update`
 //
@@ -8206,7 +10028,7 @@ func (c *ClientWithResponses) UpdatePrivateIpWithResponse(ctx context.Context, p
 //
 // Replace the set of allowed VIPs on a Private IP owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:update_allowed_vips`
 //
@@ -8225,7 +10047,7 @@ func (c *ClientWithResponses) UpdatePrivateIpAllowedVipsWithBodyWithResponse(ctx
 //
 // Replace the set of allowed VIPs on a Private IP owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:private_ip:update_allowed_vips`
 //
@@ -8240,11 +10062,106 @@ func (c *ClientWithResponses) UpdatePrivateIpAllowedVipsWithResponse(ctx context
 	return ParseUpdatePrivateIpAllowedVipsResponse(rsp)
 }
 
+// ListRouteTablesWithResponse List Route Tables
+//
+// List route tables owned by the project or living in a VPC shared into it.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route_table:list`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/network/route-tables/ (the `ListRouteTables` operationId).
+func (c *ClientWithResponses) ListRouteTablesWithResponse(ctx context.Context, params *ListRouteTablesParams, reqEditors ...RequestEditorFn) (*ListRouteTablesResponse, error) {
+	rsp, err := c.ListRouteTables(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListRouteTablesResponse(rsp)
+}
+
+// GetRouteTableWithResponse Get Route Table
+//
+// Return a route table owned by the project or living in a VPC shared into it.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route_table:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/network/route-tables/{route_table_id}/ (the `GetRouteTable` operationId).
+func (c *ClientWithResponses) GetRouteTableWithResponse(ctx context.Context, routeTableId core.UUID, params *GetRouteTableParams, reqEditors ...RequestEditorFn) (*GetRouteTableResponse, error) {
+	rsp, err := c.GetRouteTable(ctx, routeTableId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetRouteTableResponse(rsp)
+}
+
+// UpdateRouteTableInternetAccessWithBodyWithResponse Update Route Table Internet Access
+//
+// Turn internet access for the route table on or off.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route_table:update_internet_access`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v2/network/route-tables/{route_table_id}/internet-access/ (the `UpdateRouteTableInternetAccess` operationId).
+func (c *ClientWithResponses) UpdateRouteTableInternetAccessWithBodyWithResponse(ctx context.Context, routeTableId core.UUID, params *UpdateRouteTableInternetAccessParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateRouteTableInternetAccessResponse, error) {
+	rsp, err := c.UpdateRouteTableInternetAccessWithBody(ctx, routeTableId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateRouteTableInternetAccessResponse(rsp)
+}
+
+// UpdateRouteTableInternetAccessWithResponse Update Route Table Internet Access
+//
+// Turn internet access for the route table on or off.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route_table:update_internet_access`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v2/network/route-tables/{route_table_id}/internet-access/ (the `UpdateRouteTableInternetAccess` operationId).
+func (c *ClientWithResponses) UpdateRouteTableInternetAccessWithResponse(ctx context.Context, routeTableId core.UUID, params *UpdateRouteTableInternetAccessParams, body UpdateRouteTableInternetAccessJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateRouteTableInternetAccessResponse, error) {
+	rsp, err := c.UpdateRouteTableInternetAccess(ctx, routeTableId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateRouteTableInternetAccessResponse(rsp)
+}
+
+// ListRouteTableSubnetsWithResponse List Route Table Subnets
+//
+// List the subnets associated with a route table.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route_table:list_subnets`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/network/route-tables/{route_table_id}/subnets/ (the `ListRouteTableSubnets` operationId).
+func (c *ClientWithResponses) ListRouteTableSubnetsWithResponse(ctx context.Context, routeTableId core.UUID, params *ListRouteTableSubnetsParams, reqEditors ...RequestEditorFn) (*ListRouteTableSubnetsResponse, error) {
+	rsp, err := c.ListRouteTableSubnets(ctx, routeTableId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListRouteTableSubnetsResponse(rsp)
+}
+
 // ListSecurityGroupRulesWithResponse List Security Group Rules
 //
 // List the Security Group Rules owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:list`
 //
@@ -8263,7 +10180,7 @@ func (c *ClientWithResponses) ListSecurityGroupRulesWithResponse(ctx context.Con
 //
 // Create a Security Group Rule in one of the project's Security Groups.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:create`
 //
@@ -8282,7 +10199,7 @@ func (c *ClientWithResponses) CreateSecurityGroupRuleWithBodyWithResponse(ctx co
 //
 // Create a Security Group Rule in one of the project's Security Groups.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:create`
 //
@@ -8301,7 +10218,7 @@ func (c *ClientWithResponses) CreateSecurityGroupRuleWithResponse(ctx context.Co
 //
 // Delete a Security Group Rule, including one in the default Security Group.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:delete`
 //
@@ -8320,7 +10237,7 @@ func (c *ClientWithResponses) DeleteSecurityGroupRuleWithResponse(ctx context.Co
 //
 // Return a single Security Group Rule owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:get`
 //
@@ -8339,7 +10256,7 @@ func (c *ClientWithResponses) GetSecurityGroupRuleWithResponse(ctx context.Conte
 //
 // Update a Security Group Rule's description.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:update`
 //
@@ -8358,7 +10275,7 @@ func (c *ClientWithResponses) PartialUpdateSecurityGroupRuleWithBodyWithResponse
 //
 // Update a Security Group Rule's description.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:update`
 //
@@ -8380,7 +10297,7 @@ func (c *ClientWithResponses) PartialUpdateSecurityGroupRuleWithResponse(ctx con
 // What the rule matches stays fixed: the provider has no update call for a
 // rule, so changing it here would leave the two sides disagreeing.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:update`
 //
@@ -8402,7 +10319,7 @@ func (c *ClientWithResponses) UpdateSecurityGroupRuleWithBodyWithResponse(ctx co
 // What the rule matches stays fixed: the provider has no update call for a
 // rule, so changing it here would leave the two sides disagreeing.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group_rule:update`
 //
@@ -8421,7 +10338,7 @@ func (c *ClientWithResponses) UpdateSecurityGroupRuleWithResponse(ctx context.Co
 //
 // List security groups owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:list`
 //
@@ -8440,7 +10357,7 @@ func (c *ClientWithResponses) ListSecurityGroupsWithResponse(ctx context.Context
 //
 // Create a security group in a region where the project has Network enabled.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:create`
 //
@@ -8459,7 +10376,7 @@ func (c *ClientWithResponses) CreateSecurityGroupWithBodyWithResponse(ctx contex
 //
 // Create a security group in a region where the project has Network enabled.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:create`
 //
@@ -8478,7 +10395,7 @@ func (c *ClientWithResponses) CreateSecurityGroupWithResponse(ctx context.Contex
 //
 // Delete a security group. The project's default group cannot be deleted.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:delete`
 //
@@ -8497,7 +10414,7 @@ func (c *ClientWithResponses) DeleteSecurityGroupWithResponse(ctx context.Contex
 //
 // Return a single security group owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:get`
 //
@@ -8516,7 +10433,7 @@ func (c *ClientWithResponses) GetSecurityGroupWithResponse(ctx context.Context, 
 //
 // Update a security group's name or description.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:update`
 //
@@ -8535,7 +10452,7 @@ func (c *ClientWithResponses) PartialUpdateSecurityGroupWithBodyWithResponse(ctx
 //
 // Update a security group's name or description.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:update`
 //
@@ -8554,7 +10471,7 @@ func (c *ClientWithResponses) PartialUpdateSecurityGroupWithResponse(ctx context
 //
 // Update a security group's name and description.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:update`
 //
@@ -8573,7 +10490,7 @@ func (c *ClientWithResponses) UpdateSecurityGroupWithBodyWithResponse(ctx contex
 //
 // Update a security group's name and description.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:security_group:update`
 //
@@ -8592,7 +10509,7 @@ func (c *ClientWithResponses) UpdateSecurityGroupWithResponse(ctx context.Contex
 //
 // List subnets owned by the project or living in a VPC shared into it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:list`
 //
@@ -8611,7 +10528,7 @@ func (c *ClientWithResponses) ListSubnetsWithResponse(ctx context.Context, param
 //
 // Create a subnet in a regional VPC owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:create`
 //
@@ -8630,7 +10547,7 @@ func (c *ClientWithResponses) CreateSubnetWithBodyWithResponse(ctx context.Conte
 //
 // Create a subnet in a regional VPC owned by the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:create`
 //
@@ -8649,7 +10566,7 @@ func (c *ClientWithResponses) CreateSubnetWithResponse(ctx context.Context, para
 //
 // Delete a subnet. Owner-only. Requires all user/service Private IPs to be deleted first.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:delete`
 //
@@ -8668,7 +10585,7 @@ func (c *ClientWithResponses) DeleteSubnetWithResponse(ctx context.Context, subn
 //
 // Return a subnet owned by the project or living in a VPC shared into it.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:get`
 //
@@ -8687,7 +10604,7 @@ func (c *ClientWithResponses) GetSubnetWithResponse(ctx context.Context, subnetI
 //
 // Update subnet name or description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:update`
 //
@@ -8706,7 +10623,7 @@ func (c *ClientWithResponses) PartialUpdateSubnetWithBodyWithResponse(ctx contex
 //
 // Update subnet name or description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:update`
 //
@@ -8725,7 +10642,7 @@ func (c *ClientWithResponses) PartialUpdateSubnetWithResponse(ctx context.Contex
 //
 // Update subnet name and description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:update`
 //
@@ -8744,7 +10661,7 @@ func (c *ClientWithResponses) UpdateSubnetWithBodyWithResponse(ctx context.Conte
 //
 // Update subnet name and description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:subnet:update`
 //
@@ -8761,7 +10678,7 @@ func (c *ClientWithResponses) UpdateSubnetWithResponse(ctx context.Context, subn
 
 // ListVpcsWithResponse List Vpcs
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:list`
 //
@@ -8780,7 +10697,7 @@ func (c *ClientWithResponses) ListVpcsWithResponse(ctx context.Context, params *
 //
 // Create a new regional VPC. Zonal VPCs are managed by the Baremetal service.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:create`
 //
@@ -8799,7 +10716,7 @@ func (c *ClientWithResponses) CreateVpcWithBodyWithResponse(ctx context.Context,
 //
 // Create a new regional VPC. Zonal VPCs are managed by the Baremetal service.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:create`
 //
@@ -8818,7 +10735,7 @@ func (c *ClientWithResponses) CreateVpcWithResponse(ctx context.Context, params 
 //
 // Delete a VPC. Owner-only. Requires all subnets to be deleted first.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:delete`
 //
@@ -8837,7 +10754,7 @@ func (c *ClientWithResponses) DeleteVpcWithResponse(ctx context.Context, vpcId c
 //
 // Return a VPC owned by or shared into the project.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:get`
 //
@@ -8856,7 +10773,7 @@ func (c *ClientWithResponses) GetVpcWithResponse(ctx context.Context, vpcId core
 //
 // Update VPC name or description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:update`
 //
@@ -8875,7 +10792,7 @@ func (c *ClientWithResponses) UpdateVpcWithBodyWithResponse(ctx context.Context,
 //
 // Update VPC name or description. Owner-only.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:update`
 //
@@ -8894,7 +10811,7 @@ func (c *ClientWithResponses) UpdateVpcWithResponse(ctx context.Context, vpcId c
 //
 // Share a regional VPC with other projects. Owner-only. Blocked for zonal VPCs.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:share`
 //
@@ -8913,7 +10830,7 @@ func (c *ClientWithResponses) ShareVpcWithBodyWithResponse(ctx context.Context, 
 //
 // Share a regional VPC with other projects. Owner-only. Blocked for zonal VPCs.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:share`
 //
@@ -8932,7 +10849,7 @@ func (c *ClientWithResponses) ShareVpcWithResponse(ctx context.Context, vpcId co
 //
 // Remove share of a regional VPC from the specified projects. Owner-only. Blocked for zonal VPCs.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:unshare`
 //
@@ -8951,7 +10868,7 @@ func (c *ClientWithResponses) UnshareVpcWithBodyWithResponse(ctx context.Context
 //
 // Remove share of a regional VPC from the specified projects. Owner-only. Blocked for zonal VPCs.
 //
-// **Required project permissions:**
+// **Required permissions:**
 //
 // - `urn:action:network:vpc:unshare`
 //
@@ -8964,6 +10881,307 @@ func (c *ClientWithResponses) UnshareVpcWithResponse(ctx context.Context, vpcId 
 		return nil, err
 	}
 	return ParseUnshareVpcResponse(rsp)
+}
+
+// ParseListDirectConnectsResponse parses an HTTP response from a ListDirectConnectsWithResponse call
+func ParseListDirectConnectsResponse(rsp *http.Response) (*ListDirectConnectsResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListDirectConnectsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedDirectConnectSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateDirectConnectResponse parses an HTTP response from a CreateDirectConnectWithResponse call
+func ParseCreateDirectConnectResponse(rsp *http.Response) (*CreateDirectConnectResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateDirectConnectResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest DirectConnectSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteDirectConnectResponse parses an HTTP response from a DeleteDirectConnectWithResponse call
+func ParseDeleteDirectConnectResponse(rsp *http.Response) (*DeleteDirectConnectResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteDirectConnectResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetDirectConnectResponse parses an HTTP response from a GetDirectConnectWithResponse call
+func ParseGetDirectConnectResponse(rsp *http.Response) (*GetDirectConnectResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetDirectConnectResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DirectConnectSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateDirectConnectResponse parses an HTTP response from a UpdateDirectConnectWithResponse call
+func ParseUpdateDirectConnectResponse(rsp *http.Response) (*UpdateDirectConnectResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateDirectConnectResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DirectConnectSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseListElasticIpsResponse parses an HTTP response from a ListElasticIpsWithResponse call
@@ -9767,6 +11985,250 @@ func ParseUpdatePrivateIpAllowedVipsResponse(rsp *http.Response) (*UpdatePrivate
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest PrivateIPSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListRouteTablesResponse parses an HTTP response from a ListRouteTablesWithResponse call
+func ParseListRouteTablesResponse(rsp *http.Response) (*ListRouteTablesResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListRouteTablesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedRouteTableSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetRouteTableResponse parses an HTTP response from a GetRouteTableWithResponse call
+func ParseGetRouteTableResponse(rsp *http.Response) (*GetRouteTableResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetRouteTableResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RouteTableSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateRouteTableInternetAccessResponse parses an HTTP response from a UpdateRouteTableInternetAccessWithResponse call
+func ParseUpdateRouteTableInternetAccessResponse(rsp *http.Response) (*UpdateRouteTableInternetAccessResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateRouteTableInternetAccessResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RouteTableSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListRouteTableSubnetsResponse parses an HTTP response from a ListRouteTableSubnetsWithResponse call
+func ParseListRouteTableSubnetsResponse(rsp *http.Response) (*ListRouteTableSubnetsResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListRouteTableSubnetsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedRouteTableSubnetSchema
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

@@ -108,6 +108,12 @@ DEFAULT_POLICY = {
     # matches property `name` at any depth; "nullable" wraps in anyOf[..., null].
     # Empty by default: the backend types its fields, so a rule here is rare.
     "overrides": {},
+
+    # Operations to remove before generation, as "METHOD /path" (the whole
+    # path item goes if no method remains). For a documented response shape
+    # the facade generator can't resolve to a named schema (see gen_facade.py
+    # parse_ops) and that isn't worth extending the facade for.
+    "drop_paths": [],
 }
 
 
@@ -419,6 +425,23 @@ def pass_hoist_unions(spec: dict, log: list[str]) -> list[str]:
     return untitled
 
 
+# ----------------------------------------------------------- pass: drop paths ---
+def pass_drop_paths(spec: dict, policy: dict, log: list[str]) -> None:
+    rules = policy.get("drop_paths") or []
+    paths = spec.get("paths") or {}
+    count = 0
+    for rule in rules:
+        method, _, url = rule.partition(" ")
+        item = paths.get(url)
+        if not isinstance(item, dict) or method.lower() not in item:
+            continue
+        del item[method.lower()]
+        count += 1
+        if not any(m in item for m in _METHODS):
+            del paths[url]
+    log.append(f"drop-paths     : dropped {count} operations")
+
+
 # ---------------------------------------------------------- pass: overrides ---
 def pass_overrides(spec: dict, policy: dict, log: list[str]) -> list[str]:
     rules = policy.get("overrides") or {}
@@ -520,6 +543,9 @@ def main() -> int:
     with open(args.src) as fh:
         spec = json.load(fh)
 
+    log: list[str] = []
+    pass_drop_paths(spec, policy, log)
+
     # Strip Django operationId prefixes (app[_v2]_views_verb_resource → verb_resource).
     op_count = 0
     for path_item in (spec.get("paths") or {}).values():
@@ -532,7 +558,6 @@ def main() -> int:
                     op["operationId"] = parts[1]
                     op_count += 1
 
-    log: list[str] = []
     if op_count:
         log.append(f"operationid-strip  : stripped {op_count} Django prefixes")
     # const-type runs first: it gives const schemas a type, which the union
