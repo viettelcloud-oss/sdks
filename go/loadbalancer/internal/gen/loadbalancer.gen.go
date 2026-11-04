@@ -925,13 +925,13 @@ type ListenerCreateSchema struct {
 	DefaultTlsCertId        nullable.Nullable[core.UUID] `json:"default_tls_cert_id,omitempty"`
 	Description             *string                      `json:"description,omitempty"`
 	EnableH2                nullable.Nullable[bool]      `json:"enable_h2,omitempty"`
-	ListenerTimeout         nullable.Nullable[int]       `json:"listener_timeout"`
+	ListenerTimeout         nullable.Nullable[int]       `json:"listener_timeout,omitempty"`
 	Name                    string                       `json:"name"`
 	Protocol                ListenerProtocolType         `json:"protocol"`
 	ProtocolPort            int                          `json:"protocol_port"`
-	ServerConnectingTimeout nullable.Nullable[int]       `json:"server_connecting_timeout"`
+	ServerConnectingTimeout nullable.Nullable[int]       `json:"server_connecting_timeout,omitempty"`
 	ServerGroupId           nullable.Nullable[core.UUID] `json:"server_group_id"`
-	ServerTimeout           nullable.Nullable[int]       `json:"server_timeout"`
+	ServerTimeout           nullable.Nullable[int]       `json:"server_timeout,omitempty"`
 	SetXForwardedFor        nullable.Nullable[bool]      `json:"set_x_forwarded_for,omitempty"`
 	SetXForwardedPort       nullable.Nullable[bool]      `json:"set_x_forwarded_port,omitempty"`
 	SetXForwardedProto      nullable.Nullable[bool]      `json:"set_x_forwarded_proto,omitempty"`
@@ -9425,6 +9425,8 @@ type PartialUpdateL7ruleResponse struct {
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
 	JSON200 *L7RuleSchema
+	// JSON202 the response for an HTTP 202 `application/json` response
+	JSON202 *L7RuleSchema
 	// JSON400 the response for an HTTP 400 `application/json` response
 	JSON400 *ValidationError
 	// JSON401 the response for an HTTP 401 `application/json` response
@@ -9458,6 +9460,8 @@ type UpdateL7ruleResponse struct {
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
 	JSON200 *L7RuleSchema
+	// JSON202 the response for an HTTP 202 `application/json` response
+	JSON202 *L7RuleSchema
 	// JSON400 the response for an HTTP 400 `application/json` response
 	JSON400 *ValidationError
 	// JSON401 the response for an HTTP 401 `application/json` response
@@ -12566,7 +12570,7 @@ func ParseDeleteL7ruleResponse(rsp *http.Response) (*DeleteL7ruleResponse, error
 	}
 
 	switch {
-	case rsp.StatusCode == 204:
+	case rsp.StatusCode == 202:
 		break // No content-type
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
@@ -12691,6 +12695,13 @@ func ParsePartialUpdateL7ruleResponse(rsp *http.Response) (*PartialUpdateL7ruleR
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
+		var dest L7RuleSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON202 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest ValidationError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -12751,6 +12762,13 @@ func ParseUpdateL7ruleResponse(rsp *http.Response) (*UpdateL7ruleResponse, error
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
+		var dest L7RuleSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON202 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest ValidationError

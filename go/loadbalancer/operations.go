@@ -580,7 +580,7 @@ func (c *Client) UpdateL7rule(ctx context.Context, L7policyID core.UUID, L7ruleI
 	if err != nil {
 		return nil, err
 	}
-	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, core.FirstNonNil(resp.JSON200, resp.JSON202), 200, 202)
 }
 
 // PartialUpdateL7rule Partial Update L7Rule
@@ -592,7 +592,7 @@ func (c *Client) PartialUpdateL7rule(ctx context.Context, L7policyID core.UUID, 
 	if err != nil {
 		return nil, err
 	}
-	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, core.FirstNonNil(resp.JSON200, resp.JSON202), 200, 202)
 }
 
 // DeleteL7rule Delete L7Rule
@@ -604,7 +604,7 @@ func (c *Client) DeleteL7rule(ctx context.Context, L7policyID core.UUID, L7ruleI
 	if err != nil {
 		return err
 	}
-	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 202)
 }
 
 // ListLoadBalancersIter returns an iterator over all LoadBalancerSchema pages.

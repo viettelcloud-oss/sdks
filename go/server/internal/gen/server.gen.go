@@ -2894,6 +2894,9 @@ type ClientInterface interface {
 	// **Required permissions:**
 	//
 	// - `urn:action:server:server:delete`
+	// - `urn:action:block_storage:volume:delete`
+	// - `urn:action:network:elastic_ip:delete`
+	// - `urn:action:network:private_ip:delete`
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -2905,6 +2908,9 @@ type ClientInterface interface {
 	// **Required permissions:**
 	//
 	// - `urn:action:server:server:delete`
+	// - `urn:action:block_storage:volume:delete`
+	// - `urn:action:network:elastic_ip:delete`
+	// - `urn:action:network:private_ip:delete`
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -4260,6 +4266,9 @@ func (c *Client) CloneServer(ctx context.Context, serverId core.UUID, params *Cl
 // **Required permissions:**
 //
 // - `urn:action:server:server:delete`
+// - `urn:action:block_storage:volume:delete`
+// - `urn:action:network:elastic_ip:delete`
+// - `urn:action:network:private_ip:delete`
 //
 // Takes any type of body and a specified content type.
 //
@@ -4281,6 +4290,9 @@ func (c *Client) DeleteServerCascadeWithBody(ctx context.Context, serverId core.
 // **Required permissions:**
 //
 // - `urn:action:server:server:delete`
+// - `urn:action:block_storage:volume:delete`
+// - `urn:action:network:elastic_ip:delete`
+// - `urn:action:network:private_ip:delete`
 //
 // Takes a body of the `application/json` content type.
 //
@@ -9131,6 +9143,9 @@ type ClientWithResponsesInterface interface {
 	// **Required permissions:**
 	//
 	// - `urn:action:server:server:delete`
+	// - `urn:action:block_storage:volume:delete`
+	// - `urn:action:network:elastic_ip:delete`
+	// - `urn:action:network:private_ip:delete`
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -9142,6 +9157,9 @@ type ClientWithResponsesInterface interface {
 	// **Required permissions:**
 	//
 	// - `urn:action:server:server:delete`
+	// - `urn:action:block_storage:volume:delete`
+	// - `urn:action:network:elastic_ip:delete`
+	// - `urn:action:network:private_ip:delete`
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -11978,6 +11996,9 @@ func (c *ClientWithResponses) CloneServerWithResponse(ctx context.Context, serve
 // **Required permissions:**
 //
 // - `urn:action:server:server:delete`
+// - `urn:action:block_storage:volume:delete`
+// - `urn:action:network:elastic_ip:delete`
+// - `urn:action:network:private_ip:delete`
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -11995,6 +12016,9 @@ func (c *ClientWithResponses) DeleteServerCascadeWithBodyWithResponse(ctx contex
 // **Required permissions:**
 //
 // - `urn:action:server:server:delete`
+// - `urn:action:block_storage:volume:delete`
+// - `urn:action:network:elastic_ip:delete`
+// - `urn:action:network:private_ip:delete`
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //

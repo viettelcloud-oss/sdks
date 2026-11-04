@@ -261,6 +261,78 @@ func (c *Client) DeleteVolumeBackupPolicy(ctx context.Context, VolumeBackupPolic
 	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
 }
 
+// ListSnapshotPolicies List Snapshot Policies
+//
+// GET /v2/block-storage/snapshot-policies/
+func (c *Client) ListSnapshotPolicies(ctx context.Context, params ListSnapshotPoliciesParams) (*PagedSnapshotPolicySchema, error) {
+	genParams := params
+	resp, err := c.gen.ListSnapshotPoliciesWithResponse(ctx, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// CreateSnapshotPolicy Create Snapshot Policy
+//
+// POST /v2/block-storage/snapshot-policies/
+func (c *Client) CreateSnapshotPolicy(ctx context.Context, params CreateSnapshotPolicyParams, body SnapshotPolicyCreateSchema) (*SnapshotPolicySchema, error) {
+	genParams := params
+	resp, err := c.gen.CreateSnapshotPolicyWithResponse(ctx, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON201, 201)
+}
+
+// GetSnapshotPolicy Get Snapshot Policy
+//
+// GET /v2/block-storage/snapshot-policies/{snapshot_policy_id}/
+func (c *Client) GetSnapshotPolicy(ctx context.Context, SnapshotPolicyID core.UUID, params GetSnapshotPolicyParams) (*SnapshotPolicySchema, error) {
+	genParams := params
+	resp, err := c.gen.GetSnapshotPolicyWithResponse(ctx, SnapshotPolicyID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// UpdateSnapshotPolicy Update Snapshot Policy
+//
+// PUT /v2/block-storage/snapshot-policies/{snapshot_policy_id}/
+func (c *Client) UpdateSnapshotPolicy(ctx context.Context, SnapshotPolicyID core.UUID, params UpdateSnapshotPolicyParams, body SnapshotPolicyUpdateSchema) (*SnapshotPolicySchema, error) {
+	genParams := params
+	resp, err := c.gen.UpdateSnapshotPolicyWithResponse(ctx, SnapshotPolicyID, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// PartialUpdateSnapshotPolicy Partial Update Snapshot Policy
+//
+// PATCH /v2/block-storage/snapshot-policies/{snapshot_policy_id}/
+func (c *Client) PartialUpdateSnapshotPolicy(ctx context.Context, SnapshotPolicyID core.UUID, params PartialUpdateSnapshotPolicyParams, body SnapshotPolicyPartialUpdateSchema) (*SnapshotPolicySchema, error) {
+	genParams := params
+	resp, err := c.gen.PartialUpdateSnapshotPolicyWithResponse(ctx, SnapshotPolicyID, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// DeleteSnapshotPolicy Delete Snapshot Policy
+//
+// DELETE /v2/block-storage/snapshot-policies/{snapshot_policy_id}/
+func (c *Client) DeleteSnapshotPolicy(ctx context.Context, SnapshotPolicyID core.UUID, params DeleteSnapshotPolicyParams) error {
+	genParams := params
+	resp, err := c.gen.DeleteSnapshotPolicyWithResponse(ctx, SnapshotPolicyID, &genParams)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
+}
+
 // ListVolumeSnapshots List Volume Snapshots
 //
 // GET /v2/block-storage/volume-snapshots/
@@ -386,6 +458,21 @@ func (c *Client) ListVolumeBackupPoliciesIter(ctx context.Context, params ListVo
 			return core.Page[VolumeBackupPolicySchema]{}, err
 		}
 		return core.Page[VolumeBackupPolicySchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListSnapshotPoliciesIter returns an iterator over all SnapshotPolicySchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListSnapshotPoliciesIter(ctx context.Context, params ListSnapshotPoliciesParams) iter.Seq2[*SnapshotPolicySchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[SnapshotPolicySchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListSnapshotPolicies(ctx, p)
+		if err != nil {
+			return core.Page[SnapshotPolicySchema]{}, err
+		}
+		return core.Page[SnapshotPolicySchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
 	})
 }
 

@@ -4,6 +4,7 @@ package observability
 
 import gen "github.com/viettelcloud-oss/sdks/go/observability/internal/gen"
 
+type AlertStatus = gen.AlertStatus
 type AuthenticationError = gen.AuthenticationError
 type CompareOperator = gen.CompareOperator
 type CreateDashboardParams = gen.CreateDashboardParams
@@ -22,6 +23,7 @@ type DashboardCreateSchema = gen.DashboardCreateSchema
 type DashboardPartialUpdateSchema = gen.DashboardPartialUpdateSchema
 type DashboardSchema = gen.DashboardSchema
 type DashboardTemplateBaseSchema = gen.DashboardTemplateBaseSchema
+type DashboardTemplateSchema = gen.DashboardTemplateSchema
 type DeleteDashboardParams = gen.DeleteDashboardParams
 type DeleteLogDashboardParams = gen.DeleteLogDashboardParams
 type DeleteLogRuleGroupParams = gen.DeleteLogRuleGroupParams
@@ -46,9 +48,11 @@ type GetMetricRuleGroupReceiverParams = gen.GetMetricRuleGroupReceiverParams
 type GetMetricRuleParams = gen.GetMetricRuleParams
 type GetReceiverParams = gen.GetReceiverParams
 type GetTokenParams = gen.GetTokenParams
+type IncidentSchema = gen.IncidentSchema
 type InternalError = gen.InternalError
 type ListDashboardTemplatesParams = gen.ListDashboardTemplatesParams
 type ListDashboardsParams = gen.ListDashboardsParams
+type ListIncidentsParams = gen.ListIncidentsParams
 type ListLogDashboardsParams = gen.ListLogDashboardsParams
 type ListLogRuleGroupReceiversParams = gen.ListLogRuleGroupReceiversParams
 type ListLogRuleGroupsParams = gen.ListLogRuleGroupsParams
@@ -107,6 +111,7 @@ type PagedMetricRuleSchema = gen.PagedMetricRuleSchema
 type PagedMetricRuleTemplateSchema = gen.PagedMetricRuleTemplateSchema
 type PagedReceiverSchema = gen.PagedReceiverSchema
 type PagedTokenSchema = gen.PagedTokenSchema
+type PaginatedIncidentSchema = gen.PaginatedIncidentSchema
 type PermissionDenied = gen.PermissionDenied
 type ProviderError = gen.ProviderError
 type ReceiverCreateSchema = gen.ReceiverCreateSchema
@@ -134,6 +139,8 @@ type UpdateTokenParams = gen.UpdateTokenParams
 type ValidationError = gen.ValidationError
 
 const (
+	AlertStatusFiring               = gen.AlertStatusFiring
+	AlertStatusResolved             = gen.AlertStatusResolved
 	CompareOperatorEmpty            = gen.CompareOperatorEmpty
 	CompareOperatorEqualEqual       = gen.CompareOperatorEqualEqual
 	CompareOperatorGreaterThan      = gen.CompareOperatorGreaterThan

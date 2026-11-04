@@ -688,7 +688,7 @@ type DBClusterCreateSchema struct {
 	EnableSsl                    *bool                                  `json:"enable_ssl,omitempty"`
 	Engine                       nullable.Nullable[DBClusterEngineType] `json:"engine,omitempty"`
 
-	// EngineConfig The modern alternative to topology_config for an engine with exactly one topology (not MongoDB): send this with node_pools instead of topology_config. Required for memcached and starrocks, which accept no other form. OpenSearch may omit both fields.
+	// EngineConfig The modern alternative to topology_config: send this with node_pools instead of topology_config. Required for memcached and starrocks, which accept no other form. OpenSearch may omit both fields.
 	EngineConfig      nullable.Nullable[map[string]interface{}] `json:"engine_config,omitempty"`
 	EngineVersionId   nullable.Nullable[core.UUID]              `json:"engine_version_id,omitempty"`
 	InitBackupId      nullable.Nullable[core.UUID]              `json:"init_backup_id,omitempty"`
@@ -710,6 +710,9 @@ type DBClusterCreateSchema struct {
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	StorageClassId nullable.Nullable[core.UUID] `json:"storage_class_id,omitempty"`
 	SubnetId       core.UUID                    `json:"subnet_id"`
+
+	// Topology Required with engine_config for an engine with several topologies (MongoDB: mongo_rs or mongo_sharding).
+	Topology nullable.Nullable[DBClusterTopologyKind] `json:"topology,omitempty"`
 
 	// TopologyConfig Use node_pools and engine_config. Not supported for memcached or starrocks.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set

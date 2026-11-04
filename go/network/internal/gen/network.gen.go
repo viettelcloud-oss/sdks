@@ -211,6 +211,48 @@ func (e SGRProtocol) Valid() bool {
 	}
 }
 
+// Defines values for VPCPeeringStatus.
+const (
+	VPCPeeringStatusActive   VPCPeeringStatus = "active"
+	VPCPeeringStatusError    VPCPeeringStatus = "error"
+	VPCPeeringStatusPending  VPCPeeringStatus = "pending"
+	VPCPeeringStatusRejected VPCPeeringStatus = "rejected"
+)
+
+// Valid indicates whether the value is a known member of the VPCPeeringStatus enum.
+func (e VPCPeeringStatus) Valid() bool {
+	switch e {
+	case VPCPeeringStatusActive:
+		return true
+	case VPCPeeringStatusError:
+		return true
+	case VPCPeeringStatusPending:
+		return true
+	case VPCPeeringStatusRejected:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for VPCPeeringType.
+const (
+	VPCPeeringTypeInterRegion VPCPeeringType = "inter_region"
+	VPCPeeringTypeIntraRegion VPCPeeringType = "intra_region"
+)
+
+// Valid indicates whether the value is a known member of the VPCPeeringType enum.
+func (e VPCPeeringType) Valid() bool {
+	switch e {
+	case VPCPeeringTypeInterRegion:
+		return true
+	case VPCPeeringTypeIntraRegion:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ListDirectConnectsParamsStatus.
 const (
 	ListDirectConnectsParamsStatusActive        ListDirectConnectsParamsStatus = "active"
@@ -382,6 +424,15 @@ type NestedElasticIPAllowedVIPSchema struct {
 	IpAddress nullable.Nullable[string] `json:"ip_address,omitempty"`
 }
 
+// NestedPeeredVPCSchema Nested schema for a VPC on one side of a VPC Peering.
+type NestedPeeredVPCSchema struct {
+	Cidr    string              `json:"cidr"`
+	Id      core.UUID           `json:"id"`
+	Name    string              `json:"name"`
+	Project NestedProjectSchema `json:"project"`
+	Region  NestedRegionSchema  `json:"region"`
+}
+
 // NestedPrivateIPAllowedVIPSchema defines model for NestedPrivateIPAllowedVIPSchema.
 type NestedPrivateIPAllowedVIPSchema struct {
 	Id        core.UUID                 `json:"id"`
@@ -504,6 +555,14 @@ type PagedSubnetSchema struct {
 	Next     nullable.Nullable[string] `json:"next,omitempty"`
 	Previous nullable.Nullable[string] `json:"previous,omitempty"`
 	Results  []SubnetSchema            `json:"results"`
+}
+
+// PagedVPCPeeringSchema defines model for PagedVPCPeeringSchema.
+type PagedVPCPeeringSchema struct {
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []VPCPeeringSchema        `json:"results"`
 }
 
 // PagedVPCSchema defines model for PagedVPCSchema.
@@ -710,6 +769,40 @@ type VPCCreateSchema struct {
 	Description nullable.Nullable[string] `json:"description,omitempty"`
 	Name        string                    `json:"name"`
 	RegionId    core.UUID                 `json:"region_id"`
+}
+
+// VPCPeeringCreateSchema defines model for VPCPeeringCreateSchema.
+type VPCPeeringCreateSchema struct {
+	AccepterVpcId  core.UUID `json:"accepter_vpc_id"`
+	Description    *string   `json:"description,omitempty"`
+	RequesterVpcId core.UUID `json:"requester_vpc_id"`
+}
+
+// VPCPeeringSchema defines model for VPCPeeringSchema.
+type VPCPeeringSchema struct {
+	// AccepterVpc Nested schema for a VPC on one side of a VPC Peering.
+	AccepterVpc NestedPeeredVPCSchema     `json:"accepter_vpc"`
+	CreatedAt   time.Time                 `json:"created_at"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Id          core.UUID                 `json:"id"`
+	Name        string                    `json:"name"`
+
+	// RequesterVpc Nested schema for a VPC on one side of a VPC Peering.
+	RequesterVpc   NestedPeeredVPCSchema `json:"requester_vpc"`
+	Status         VPCPeeringStatus      `json:"status"`
+	UpdatedAt      time.Time             `json:"updated_at"`
+	VpcPeeringType VPCPeeringType        `json:"vpc_peering_type"`
+}
+
+// VPCPeeringStatus defines model for VPCPeeringStatus.
+type VPCPeeringStatus string
+
+// VPCPeeringType defines model for VPCPeeringType.
+type VPCPeeringType string
+
+// VPCPeeringUpdateSchema defines model for VPCPeeringUpdateSchema.
+type VPCPeeringUpdateSchema struct {
+	Description string `json:"description"`
 }
 
 // VPCSchema defines model for VPCSchema.
@@ -1019,6 +1112,55 @@ type UpdateSubnetParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
+// ListVpcPeeringsParams defines parameters for ListVpcPeerings.
+type ListVpcPeeringsParams struct {
+	Name             *string           `form:"name,omitempty" json:"name,omitempty"`
+	Status           *VPCPeeringStatus `form:"status,omitempty" json:"status,omitempty"`
+	RegionId         *core.UUID        `form:"region_id,omitempty" json:"region_id,omitempty"`
+	RegionName       *string           `form:"region_name,omitempty" json:"region_name,omitempty"`
+	RequesterVpcName *string           `form:"requester_vpc_name,omitempty" json:"requester_vpc_name,omitempty"`
+	AccepterVpcName  *string           `form:"accepter_vpc_name,omitempty" json:"accepter_vpc_name,omitempty"`
+	RequesterVpcCidr *string           `form:"requester_vpc_cidr,omitempty" json:"requester_vpc_cidr,omitempty"`
+	AccepterVpcCidr  *string           `form:"accepter_vpc_cidr,omitempty" json:"accepter_vpc_cidr,omitempty"`
+	VpcId            *core.UUID        `form:"vpc_id,omitempty" json:"vpc_id,omitempty"`
+	RequesterVpcId   *core.UUID        `form:"requester_vpc_id,omitempty" json:"requester_vpc_id,omitempty"`
+	AccepterVpcId    *core.UUID        `form:"accepter_vpc_id,omitempty" json:"accepter_vpc_id,omitempty"`
+	VpcPeeringType   *VPCPeeringType   `form:"vpc_peering_type,omitempty" json:"vpc_peering_type,omitempty"`
+	PageSize         *int              `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber       *int              `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID        core.UUID         `json:"Project-ID"`
+}
+
+// CreateVpcPeeringParams defines parameters for CreateVpcPeering.
+type CreateVpcPeeringParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// DeleteVpcPeeringParams defines parameters for DeleteVpcPeering.
+type DeleteVpcPeeringParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// GetVpcPeeringParams defines parameters for GetVpcPeering.
+type GetVpcPeeringParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// UpdateVpcPeeringParams defines parameters for UpdateVpcPeering.
+type UpdateVpcPeeringParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// AcceptVpcPeeringParams defines parameters for AcceptVpcPeering.
+type AcceptVpcPeeringParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// RejectVpcPeeringParams defines parameters for RejectVpcPeering.
+type RejectVpcPeeringParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
 // ListVpcsParams defines parameters for ListVpcs.
 type ListVpcsParams struct {
 	RegionId       *core.UUID `form:"region_id,omitempty" json:"region_id,omitempty"`
@@ -1121,6 +1263,12 @@ type PartialUpdateSubnetJSONRequestBody = SubnetPartialUpdateSchema
 
 // UpdateSubnetJSONRequestBody defines body for UpdateSubnet for application/json ContentType.
 type UpdateSubnetJSONRequestBody = SubnetUpdateSchema
+
+// CreateVpcPeeringJSONRequestBody defines body for CreateVpcPeering for application/json ContentType.
+type CreateVpcPeeringJSONRequestBody = VPCPeeringCreateSchema
+
+// UpdateVpcPeeringJSONRequestBody defines body for UpdateVpcPeering for application/json ContentType.
+type UpdateVpcPeeringJSONRequestBody = VPCPeeringUpdateSchema
 
 // CreateVpcJSONRequestBody defines body for CreateVpc for application/json ContentType.
 type CreateVpcJSONRequestBody = VPCCreateSchema
@@ -1942,6 +2090,113 @@ type ClientInterface interface {
 	//
 	// Corresponds with PUT /v2/network/subnets/{subnet_id}/ (the `UpdateSubnet` operationId).
 	UpdateSubnet(ctx context.Context, subnetId core.UUID, params *UpdateSubnetParams, body UpdateSubnetJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListVpcPeerings List Vpc Peerings
+	//
+	// List peerings where either VPC is owned by the project or shared into it.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:list`
+	//
+	// Corresponds with GET /v2/network/vpc-peerings/ (the `ListVpcPeerings` operationId).
+	ListVpcPeerings(ctx context.Context, params *ListVpcPeeringsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateVpcPeeringWithBody Create Vpc Peering
+	//
+	// Request a peering from one of the project's VPCs to any zone-less VPC.
+	//
+	// Starts pending until the accepter's project accepts it, except when both
+	// VPCs belong to the project, where it is accepted right away.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:create`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v2/network/vpc-peerings/ (the `CreateVpcPeering` operationId).
+	CreateVpcPeeringWithBody(ctx context.Context, params *CreateVpcPeeringParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateVpcPeering Create Vpc Peering
+	//
+	// Request a peering from one of the project's VPCs to any zone-less VPC.
+	//
+	// Starts pending until the accepter's project accepts it, except when both
+	// VPCs belong to the project, where it is accepted right away.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:create`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v2/network/vpc-peerings/ (the `CreateVpcPeering` operationId).
+	CreateVpcPeering(ctx context.Context, params *CreateVpcPeeringParams, body CreateVpcPeeringJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteVpcPeering Delete Vpc Peering
+	//
+	// Delete the peering and every route that uses it as nexthop.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:delete`
+	//
+	// Corresponds with DELETE /v2/network/vpc-peerings/{vpc_peering_id}/ (the `DeleteVpcPeering` operationId).
+	DeleteVpcPeering(ctx context.Context, vpcPeeringId core.UUID, params *DeleteVpcPeeringParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetVpcPeering Get Vpc Peering
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:get`
+	//
+	// Corresponds with GET /v2/network/vpc-peerings/{vpc_peering_id}/ (the `GetVpcPeering` operationId).
+	GetVpcPeering(ctx context.Context, vpcPeeringId core.UUID, params *GetVpcPeeringParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateVpcPeeringWithBody Update Vpc Peering
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:update`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /v2/network/vpc-peerings/{vpc_peering_id}/ (the `UpdateVpcPeering` operationId).
+	UpdateVpcPeeringWithBody(ctx context.Context, vpcPeeringId core.UUID, params *UpdateVpcPeeringParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateVpcPeering Update Vpc Peering
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:update`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /v2/network/vpc-peerings/{vpc_peering_id}/ (the `UpdateVpcPeering` operationId).
+	UpdateVpcPeering(ctx context.Context, vpcPeeringId core.UUID, params *UpdateVpcPeeringParams, body UpdateVpcPeeringJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AcceptVpcPeering Accept Vpc Peering
+	//
+	// Accept a pending peering. Only the accepter VPC's project may answer.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:accept`
+	//
+	// Corresponds with POST /v2/network/vpc-peerings/{vpc_peering_id}/accept/ (the `AcceptVpcPeering` operationId).
+	AcceptVpcPeering(ctx context.Context, vpcPeeringId core.UUID, params *AcceptVpcPeeringParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RejectVpcPeering Reject Vpc Peering
+	//
+	// Reject a pending peering. Terminal: it cannot be accepted after.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:reject`
+	//
+	// Corresponds with POST /v2/network/vpc-peerings/{vpc_peering_id}/reject/ (the `RejectVpcPeering` operationId).
+	RejectVpcPeering(ctx context.Context, vpcPeeringId core.UUID, params *RejectVpcPeeringParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListVpcs List Vpcs
 	//
@@ -3414,6 +3669,203 @@ func (c *Client) UpdateSubnetWithBody(ctx context.Context, subnetId core.UUID, p
 // Corresponds with PUT /v2/network/subnets/{subnet_id}/ (the `UpdateSubnet` operationId).
 func (c *Client) UpdateSubnet(ctx context.Context, subnetId core.UUID, params *UpdateSubnetParams, body UpdateSubnetJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateSubnetRequest(c.Server, subnetId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListVpcPeerings List Vpc Peerings
+//
+// List peerings where either VPC is owned by the project or shared into it.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:list`
+//
+// Corresponds with GET /v2/network/vpc-peerings/ (the `ListVpcPeerings` operationId).
+func (c *Client) ListVpcPeerings(ctx context.Context, params *ListVpcPeeringsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListVpcPeeringsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateVpcPeeringWithBody Create Vpc Peering
+//
+// Request a peering from one of the project's VPCs to any zone-less VPC.
+//
+// Starts pending until the accepter's project accepts it, except when both
+// VPCs belong to the project, where it is accepted right away.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:create`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/network/vpc-peerings/ (the `CreateVpcPeering` operationId).
+func (c *Client) CreateVpcPeeringWithBody(ctx context.Context, params *CreateVpcPeeringParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateVpcPeeringRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateVpcPeering Create Vpc Peering
+//
+// Request a peering from one of the project's VPCs to any zone-less VPC.
+//
+// Starts pending until the accepter's project accepts it, except when both
+// VPCs belong to the project, where it is accepted right away.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:create`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/network/vpc-peerings/ (the `CreateVpcPeering` operationId).
+func (c *Client) CreateVpcPeering(ctx context.Context, params *CreateVpcPeeringParams, body CreateVpcPeeringJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateVpcPeeringRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteVpcPeering Delete Vpc Peering
+//
+// Delete the peering and every route that uses it as nexthop.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:delete`
+//
+// Corresponds with DELETE /v2/network/vpc-peerings/{vpc_peering_id}/ (the `DeleteVpcPeering` operationId).
+func (c *Client) DeleteVpcPeering(ctx context.Context, vpcPeeringId core.UUID, params *DeleteVpcPeeringParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteVpcPeeringRequest(c.Server, vpcPeeringId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetVpcPeering Get Vpc Peering
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:get`
+//
+// Corresponds with GET /v2/network/vpc-peerings/{vpc_peering_id}/ (the `GetVpcPeering` operationId).
+func (c *Client) GetVpcPeering(ctx context.Context, vpcPeeringId core.UUID, params *GetVpcPeeringParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetVpcPeeringRequest(c.Server, vpcPeeringId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateVpcPeeringWithBody Update Vpc Peering
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:update`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /v2/network/vpc-peerings/{vpc_peering_id}/ (the `UpdateVpcPeering` operationId).
+func (c *Client) UpdateVpcPeeringWithBody(ctx context.Context, vpcPeeringId core.UUID, params *UpdateVpcPeeringParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateVpcPeeringRequestWithBody(c.Server, vpcPeeringId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateVpcPeering Update Vpc Peering
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:update`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /v2/network/vpc-peerings/{vpc_peering_id}/ (the `UpdateVpcPeering` operationId).
+func (c *Client) UpdateVpcPeering(ctx context.Context, vpcPeeringId core.UUID, params *UpdateVpcPeeringParams, body UpdateVpcPeeringJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateVpcPeeringRequest(c.Server, vpcPeeringId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// AcceptVpcPeering Accept Vpc Peering
+//
+// Accept a pending peering. Only the accepter VPC's project may answer.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:accept`
+//
+// Corresponds with POST /v2/network/vpc-peerings/{vpc_peering_id}/accept/ (the `AcceptVpcPeering` operationId).
+func (c *Client) AcceptVpcPeering(ctx context.Context, vpcPeeringId core.UUID, params *AcceptVpcPeeringParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAcceptVpcPeeringRequest(c.Server, vpcPeeringId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RejectVpcPeering Reject Vpc Peering
+//
+// Reject a pending peering. Terminal: it cannot be accepted after.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:reject`
+//
+// Corresponds with POST /v2/network/vpc-peerings/{vpc_peering_id}/reject/ (the `RejectVpcPeering` operationId).
+func (c *Client) RejectVpcPeering(ctx context.Context, vpcPeeringId core.UUID, params *RejectVpcPeeringParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRejectVpcPeeringRequest(c.Server, vpcPeeringId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -6526,6 +6978,530 @@ func NewUpdateSubnetRequestWithBody(server string, subnetId core.UUID, params *U
 	return req, nil
 }
 
+// NewListVpcPeeringsRequest constructs an http.Request for the ListVpcPeerings method
+func NewListVpcPeeringsRequest(server string, params *ListVpcPeeringsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/vpc-peerings/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Name != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "name", *params.Name, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Status != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "status", *params.Status, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RegionId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "region_id", *params.RegionId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RegionName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "region_name", *params.RegionName, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RequesterVpcName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "requester_vpc_name", *params.RequesterVpcName, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.AccepterVpcName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "accepter_vpc_name", *params.AccepterVpcName, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RequesterVpcCidr != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "requester_vpc_cidr", *params.RequesterVpcCidr, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.AccepterVpcCidr != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "accepter_vpc_cidr", *params.AccepterVpcCidr, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.VpcId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "vpc_id", *params.VpcId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RequesterVpcId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "requester_vpc_id", *params.RequesterVpcId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.AccepterVpcId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "accepter_vpc_id", *params.AccepterVpcId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.VpcPeeringType != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "vpc_peering_type", *params.VpcPeeringType, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewCreateVpcPeeringRequest calls the generic CreateVpcPeering builder with application/json body
+func NewCreateVpcPeeringRequest(server string, params *CreateVpcPeeringParams, body CreateVpcPeeringJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateVpcPeeringRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCreateVpcPeeringRequestWithBody constructs an http.Request for the CreateVpcPeering method, with any body, and a specified content type
+func NewCreateVpcPeeringRequestWithBody(server string, params *CreateVpcPeeringParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/vpc-peerings/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteVpcPeeringRequest constructs an http.Request for the DeleteVpcPeering method
+func NewDeleteVpcPeeringRequest(server string, vpcPeeringId core.UUID, params *DeleteVpcPeeringParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "vpc_peering_id", vpcPeeringId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/vpc-peerings/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetVpcPeeringRequest constructs an http.Request for the GetVpcPeering method
+func NewGetVpcPeeringRequest(server string, vpcPeeringId core.UUID, params *GetVpcPeeringParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "vpc_peering_id", vpcPeeringId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/vpc-peerings/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewUpdateVpcPeeringRequest calls the generic UpdateVpcPeering builder with application/json body
+func NewUpdateVpcPeeringRequest(server string, vpcPeeringId core.UUID, params *UpdateVpcPeeringParams, body UpdateVpcPeeringJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateVpcPeeringRequestWithBody(server, vpcPeeringId, params, "application/json", bodyReader)
+}
+
+// NewUpdateVpcPeeringRequestWithBody constructs an http.Request for the UpdateVpcPeering method, with any body, and a specified content type
+func NewUpdateVpcPeeringRequestWithBody(server string, vpcPeeringId core.UUID, params *UpdateVpcPeeringParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "vpc_peering_id", vpcPeeringId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/vpc-peerings/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewAcceptVpcPeeringRequest constructs an http.Request for the AcceptVpcPeering method
+func NewAcceptVpcPeeringRequest(server string, vpcPeeringId core.UUID, params *AcceptVpcPeeringParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "vpc_peering_id", vpcPeeringId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/vpc-peerings/%s/accept/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewRejectVpcPeeringRequest constructs an http.Request for the RejectVpcPeering method
+func NewRejectVpcPeeringRequest(server string, vpcPeeringId core.UUID, params *RejectVpcPeeringParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "vpc_peering_id", vpcPeeringId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/vpc-peerings/%s/reject/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
 // NewListVpcsRequest constructs an http.Request for the ListVpcs method
 func NewListVpcsRequest(server string, params *ListVpcsParams) (*http.Request, error) {
 	var err error
@@ -7824,6 +8800,123 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with PUT /v2/network/subnets/{subnet_id}/ (the `UpdateSubnet` operationId).
 	UpdateSubnetWithResponse(ctx context.Context, subnetId core.UUID, params *UpdateSubnetParams, body UpdateSubnetJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSubnetResponse, error)
+
+	// ListVpcPeeringsWithResponse List Vpc Peerings
+	//
+	// List peerings where either VPC is owned by the project or shared into it.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:list`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/network/vpc-peerings/ (the `ListVpcPeerings` operationId).
+	ListVpcPeeringsWithResponse(ctx context.Context, params *ListVpcPeeringsParams, reqEditors ...RequestEditorFn) (*ListVpcPeeringsResponse, error)
+
+	// CreateVpcPeeringWithBodyWithResponse Create Vpc Peering
+	//
+	// Request a peering from one of the project's VPCs to any zone-less VPC.
+	//
+	// Starts pending until the accepter's project accepts it, except when both
+	// VPCs belong to the project, where it is accepted right away.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:create`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/network/vpc-peerings/ (the `CreateVpcPeering` operationId).
+	CreateVpcPeeringWithBodyWithResponse(ctx context.Context, params *CreateVpcPeeringParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateVpcPeeringResponse, error)
+
+	// CreateVpcPeeringWithResponse Create Vpc Peering
+	//
+	// Request a peering from one of the project's VPCs to any zone-less VPC.
+	//
+	// Starts pending until the accepter's project accepts it, except when both
+	// VPCs belong to the project, where it is accepted right away.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:create`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/network/vpc-peerings/ (the `CreateVpcPeering` operationId).
+	CreateVpcPeeringWithResponse(ctx context.Context, params *CreateVpcPeeringParams, body CreateVpcPeeringJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateVpcPeeringResponse, error)
+
+	// DeleteVpcPeeringWithResponse Delete Vpc Peering
+	//
+	// Delete the peering and every route that uses it as nexthop.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:delete`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v2/network/vpc-peerings/{vpc_peering_id}/ (the `DeleteVpcPeering` operationId).
+	DeleteVpcPeeringWithResponse(ctx context.Context, vpcPeeringId core.UUID, params *DeleteVpcPeeringParams, reqEditors ...RequestEditorFn) (*DeleteVpcPeeringResponse, error)
+
+	// GetVpcPeeringWithResponse Get Vpc Peering
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/network/vpc-peerings/{vpc_peering_id}/ (the `GetVpcPeering` operationId).
+	GetVpcPeeringWithResponse(ctx context.Context, vpcPeeringId core.UUID, params *GetVpcPeeringParams, reqEditors ...RequestEditorFn) (*GetVpcPeeringResponse, error)
+
+	// UpdateVpcPeeringWithBodyWithResponse Update Vpc Peering
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:update`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v2/network/vpc-peerings/{vpc_peering_id}/ (the `UpdateVpcPeering` operationId).
+	UpdateVpcPeeringWithBodyWithResponse(ctx context.Context, vpcPeeringId core.UUID, params *UpdateVpcPeeringParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateVpcPeeringResponse, error)
+
+	// UpdateVpcPeeringWithResponse Update Vpc Peering
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:update`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v2/network/vpc-peerings/{vpc_peering_id}/ (the `UpdateVpcPeering` operationId).
+	UpdateVpcPeeringWithResponse(ctx context.Context, vpcPeeringId core.UUID, params *UpdateVpcPeeringParams, body UpdateVpcPeeringJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateVpcPeeringResponse, error)
+
+	// AcceptVpcPeeringWithResponse Accept Vpc Peering
+	//
+	// Accept a pending peering. Only the accepter VPC's project may answer.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:accept`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/network/vpc-peerings/{vpc_peering_id}/accept/ (the `AcceptVpcPeering` operationId).
+	AcceptVpcPeeringWithResponse(ctx context.Context, vpcPeeringId core.UUID, params *AcceptVpcPeeringParams, reqEditors ...RequestEditorFn) (*AcceptVpcPeeringResponse, error)
+
+	// RejectVpcPeeringWithResponse Reject Vpc Peering
+	//
+	// Reject a pending peering. Terminal: it cannot be accepted after.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:vpc_peering:reject`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/network/vpc-peerings/{vpc_peering_id}/reject/ (the `RejectVpcPeering` operationId).
+	RejectVpcPeeringWithResponse(ctx context.Context, vpcPeeringId core.UUID, params *RejectVpcPeeringParams, reqEditors ...RequestEditorFn) (*RejectVpcPeeringResponse, error)
 
 	// ListVpcsWithResponse List Vpcs
 	//
@@ -9308,6 +10401,231 @@ func (r UpdateSubnetResponse) StatusCode() int {
 	return 0
 }
 
+type ListVpcPeeringsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedVPCPeeringSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListVpcPeeringsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListVpcPeeringsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateVpcPeeringResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *VPCPeeringSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateVpcPeeringResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateVpcPeeringResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteVpcPeeringResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteVpcPeeringResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteVpcPeeringResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetVpcPeeringResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *VPCPeeringSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetVpcPeeringResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetVpcPeeringResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateVpcPeeringResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *VPCPeeringSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateVpcPeeringResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateVpcPeeringResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AcceptVpcPeeringResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r AcceptVpcPeeringResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AcceptVpcPeeringResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RejectVpcPeeringResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r RejectVpcPeeringResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RejectVpcPeeringResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type ListVpcsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -10678,6 +11996,177 @@ func (c *ClientWithResponses) UpdateSubnetWithResponse(ctx context.Context, subn
 		return nil, err
 	}
 	return ParseUpdateSubnetResponse(rsp)
+}
+
+// ListVpcPeeringsWithResponse List Vpc Peerings
+//
+// List peerings where either VPC is owned by the project or shared into it.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:list`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/network/vpc-peerings/ (the `ListVpcPeerings` operationId).
+func (c *ClientWithResponses) ListVpcPeeringsWithResponse(ctx context.Context, params *ListVpcPeeringsParams, reqEditors ...RequestEditorFn) (*ListVpcPeeringsResponse, error) {
+	rsp, err := c.ListVpcPeerings(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListVpcPeeringsResponse(rsp)
+}
+
+// CreateVpcPeeringWithBodyWithResponse Create Vpc Peering
+//
+// Request a peering from one of the project's VPCs to any zone-less VPC.
+//
+// Starts pending until the accepter's project accepts it, except when both
+// VPCs belong to the project, where it is accepted right away.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:create`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/network/vpc-peerings/ (the `CreateVpcPeering` operationId).
+func (c *ClientWithResponses) CreateVpcPeeringWithBodyWithResponse(ctx context.Context, params *CreateVpcPeeringParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateVpcPeeringResponse, error) {
+	rsp, err := c.CreateVpcPeeringWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateVpcPeeringResponse(rsp)
+}
+
+// CreateVpcPeeringWithResponse Create Vpc Peering
+//
+// Request a peering from one of the project's VPCs to any zone-less VPC.
+//
+// Starts pending until the accepter's project accepts it, except when both
+// VPCs belong to the project, where it is accepted right away.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:create`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/network/vpc-peerings/ (the `CreateVpcPeering` operationId).
+func (c *ClientWithResponses) CreateVpcPeeringWithResponse(ctx context.Context, params *CreateVpcPeeringParams, body CreateVpcPeeringJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateVpcPeeringResponse, error) {
+	rsp, err := c.CreateVpcPeering(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateVpcPeeringResponse(rsp)
+}
+
+// DeleteVpcPeeringWithResponse Delete Vpc Peering
+//
+// Delete the peering and every route that uses it as nexthop.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:delete`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v2/network/vpc-peerings/{vpc_peering_id}/ (the `DeleteVpcPeering` operationId).
+func (c *ClientWithResponses) DeleteVpcPeeringWithResponse(ctx context.Context, vpcPeeringId core.UUID, params *DeleteVpcPeeringParams, reqEditors ...RequestEditorFn) (*DeleteVpcPeeringResponse, error) {
+	rsp, err := c.DeleteVpcPeering(ctx, vpcPeeringId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteVpcPeeringResponse(rsp)
+}
+
+// GetVpcPeeringWithResponse Get Vpc Peering
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/network/vpc-peerings/{vpc_peering_id}/ (the `GetVpcPeering` operationId).
+func (c *ClientWithResponses) GetVpcPeeringWithResponse(ctx context.Context, vpcPeeringId core.UUID, params *GetVpcPeeringParams, reqEditors ...RequestEditorFn) (*GetVpcPeeringResponse, error) {
+	rsp, err := c.GetVpcPeering(ctx, vpcPeeringId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetVpcPeeringResponse(rsp)
+}
+
+// UpdateVpcPeeringWithBodyWithResponse Update Vpc Peering
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:update`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v2/network/vpc-peerings/{vpc_peering_id}/ (the `UpdateVpcPeering` operationId).
+func (c *ClientWithResponses) UpdateVpcPeeringWithBodyWithResponse(ctx context.Context, vpcPeeringId core.UUID, params *UpdateVpcPeeringParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateVpcPeeringResponse, error) {
+	rsp, err := c.UpdateVpcPeeringWithBody(ctx, vpcPeeringId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateVpcPeeringResponse(rsp)
+}
+
+// UpdateVpcPeeringWithResponse Update Vpc Peering
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:update`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v2/network/vpc-peerings/{vpc_peering_id}/ (the `UpdateVpcPeering` operationId).
+func (c *ClientWithResponses) UpdateVpcPeeringWithResponse(ctx context.Context, vpcPeeringId core.UUID, params *UpdateVpcPeeringParams, body UpdateVpcPeeringJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateVpcPeeringResponse, error) {
+	rsp, err := c.UpdateVpcPeering(ctx, vpcPeeringId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateVpcPeeringResponse(rsp)
+}
+
+// AcceptVpcPeeringWithResponse Accept Vpc Peering
+//
+// Accept a pending peering. Only the accepter VPC's project may answer.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:accept`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/network/vpc-peerings/{vpc_peering_id}/accept/ (the `AcceptVpcPeering` operationId).
+func (c *ClientWithResponses) AcceptVpcPeeringWithResponse(ctx context.Context, vpcPeeringId core.UUID, params *AcceptVpcPeeringParams, reqEditors ...RequestEditorFn) (*AcceptVpcPeeringResponse, error) {
+	rsp, err := c.AcceptVpcPeering(ctx, vpcPeeringId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAcceptVpcPeeringResponse(rsp)
+}
+
+// RejectVpcPeeringWithResponse Reject Vpc Peering
+//
+// Reject a pending peering. Terminal: it cannot be accepted after.
+//
+// **Required permissions:**
+//
+// - `urn:action:network:vpc_peering:reject`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/network/vpc-peerings/{vpc_peering_id}/reject/ (the `RejectVpcPeering` operationId).
+func (c *ClientWithResponses) RejectVpcPeeringWithResponse(ctx context.Context, vpcPeeringId core.UUID, params *RejectVpcPeeringParams, reqEditors ...RequestEditorFn) (*RejectVpcPeeringResponse, error) {
+	rsp, err := c.RejectVpcPeering(ctx, vpcPeeringId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRejectVpcPeeringResponse(rsp)
 }
 
 // ListVpcsWithResponse List Vpcs
@@ -13323,6 +14812,421 @@ func ParseUpdateSubnetResponse(rsp *http.Response) (*UpdateSubnetResponse, error
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListVpcPeeringsResponse parses an HTTP response from a ListVpcPeeringsWithResponse call
+func ParseListVpcPeeringsResponse(rsp *http.Response) (*ListVpcPeeringsResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListVpcPeeringsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedVPCPeeringSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateVpcPeeringResponse parses an HTTP response from a CreateVpcPeeringWithResponse call
+func ParseCreateVpcPeeringResponse(rsp *http.Response) (*CreateVpcPeeringResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateVpcPeeringResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest VPCPeeringSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteVpcPeeringResponse parses an HTTP response from a DeleteVpcPeeringWithResponse call
+func ParseDeleteVpcPeeringResponse(rsp *http.Response) (*DeleteVpcPeeringResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteVpcPeeringResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetVpcPeeringResponse parses an HTTP response from a GetVpcPeeringWithResponse call
+func ParseGetVpcPeeringResponse(rsp *http.Response) (*GetVpcPeeringResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetVpcPeeringResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest VPCPeeringSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateVpcPeeringResponse parses an HTTP response from a UpdateVpcPeeringWithResponse call
+func ParseUpdateVpcPeeringResponse(rsp *http.Response) (*UpdateVpcPeeringResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateVpcPeeringResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest VPCPeeringSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAcceptVpcPeeringResponse parses an HTTP response from a AcceptVpcPeeringWithResponse call
+func ParseAcceptVpcPeeringResponse(rsp *http.Response) (*AcceptVpcPeeringResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AcceptVpcPeeringResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRejectVpcPeeringResponse parses an HTTP response from a RejectVpcPeeringWithResponse call
+func ParseRejectVpcPeeringResponse(rsp *http.Response) (*RejectVpcPeeringResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RejectVpcPeeringResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest ValidationError
