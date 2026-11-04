@@ -201,6 +201,17 @@ func (c *Client) ListDashboardTemplates(ctx context.Context, params ListDashboar
 	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
 }
 
+// GetDashboardTemplate Get Dashboard Template
+//
+// GET /v2/observability/dashboard-templates/{dashboard_template_id}/
+func (c *Client) GetDashboardTemplate(ctx context.Context, DashboardTemplateID core.UUID) (*DashboardTemplateSchema, error) {
+	resp, err := c.gen.GetDashboardTemplateWithResponse(ctx, DashboardTemplateID)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
 // ListMetricRuleGroups List Metric Rule Groups
 //
 // GET /v2/observability/metric-rule-groups/
@@ -387,6 +398,29 @@ func (c *Client) DeleteMetricRuleGroupReceiver(ctx context.Context, MetricRuleGr
 func (c *Client) ListMetricRuleTemplates(ctx context.Context, params ListMetricRuleTemplatesParams) (*PagedMetricRuleTemplateSchema, error) {
 	genParams := params
 	resp, err := c.gen.ListMetricRuleTemplatesWithResponse(ctx, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// GetMetricRuleTemplate Get Metric Rule Template
+//
+// GET /v2/observability/metric-rule-templates/{metric_rule_template_id}/
+func (c *Client) GetMetricRuleTemplate(ctx context.Context, MetricRuleTemplateID core.UUID) (*MetricRuleTemplateSchema, error) {
+	resp, err := c.gen.GetMetricRuleTemplateWithResponse(ctx, MetricRuleTemplateID)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// ListIncidents List Incidents
+//
+// GET /v2/observability/incidents/
+func (c *Client) ListIncidents(ctx context.Context, params ListIncidentsParams) (*PaginatedIncidentSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListIncidentsWithResponse(ctx, &genParams)
 	if err != nil {
 		return nil, err
 	}
@@ -645,6 +679,17 @@ func (c *Client) ListLogRuleTemplates(ctx context.Context, params ListLogRuleTem
 	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
 }
 
+// GetLogRuleTemplate Get Log Rule Template
+//
+// GET /v2/observability/log-rule-templates/{log_rule_template_id}/
+func (c *Client) GetLogRuleTemplate(ctx context.Context, LogRuleTemplateID core.UUID) (*LogRuleTemplateSchema, error) {
+	resp, err := c.gen.GetLogRuleTemplateWithResponse(ctx, LogRuleTemplateID)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
 // ListLogDashboards List Log Dashboards
 //
 // GET /v2/observability/log-dashboards/
@@ -822,6 +867,21 @@ func (c *Client) ListMetricRuleTemplatesIter(ctx context.Context, params ListMet
 			return core.Page[MetricRuleTemplateSchema]{}, err
 		}
 		return core.Page[MetricRuleTemplateSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListIncidentsIter returns an iterator over all IncidentSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListIncidentsIter(ctx context.Context, params ListIncidentsParams) iter.Seq2[*IncidentSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[IncidentSchema], error) {
+		p := params
+		p.Page = &page
+		p.PageSize = &size
+		pageResult, err := c.ListIncidents(ctx, p)
+		if err != nil {
+			return core.Page[IncidentSchema]{}, err
+		}
+		return core.Page[IncidentSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
 	})
 }
 

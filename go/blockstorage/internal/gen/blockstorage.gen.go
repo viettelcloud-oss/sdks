@@ -101,6 +101,171 @@ func (e PolicyFrequencyUnit) Valid() bool {
 	}
 }
 
+// Defines values for SnapshotDayOfWeek.
+const (
+	SnapshotDayOfWeekFri SnapshotDayOfWeek = "fri"
+	SnapshotDayOfWeekMon SnapshotDayOfWeek = "mon"
+	SnapshotDayOfWeekSat SnapshotDayOfWeek = "sat"
+	SnapshotDayOfWeekSun SnapshotDayOfWeek = "sun"
+	SnapshotDayOfWeekThu SnapshotDayOfWeek = "thu"
+	SnapshotDayOfWeekTue SnapshotDayOfWeek = "tue"
+	SnapshotDayOfWeekWed SnapshotDayOfWeek = "wed"
+)
+
+// Valid indicates whether the value is a known member of the SnapshotDayOfWeek enum.
+func (e SnapshotDayOfWeek) Valid() bool {
+	switch e {
+	case SnapshotDayOfWeekFri:
+		return true
+	case SnapshotDayOfWeekMon:
+		return true
+	case SnapshotDayOfWeekSat:
+		return true
+	case SnapshotDayOfWeekSun:
+		return true
+	case SnapshotDayOfWeekThu:
+		return true
+	case SnapshotDayOfWeekTue:
+		return true
+	case SnapshotDayOfWeekWed:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SnapshotPolicyDaysOfMonthScheduleExecutionStrategy.
+const (
+	SnapshotPolicyDaysOfMonthScheduleExecutionStrategyDaysOfMonth SnapshotPolicyDaysOfMonthScheduleExecutionStrategy = "days_of_month"
+)
+
+// Valid indicates whether the value is a known member of the SnapshotPolicyDaysOfMonthScheduleExecutionStrategy enum.
+func (e SnapshotPolicyDaysOfMonthScheduleExecutionStrategy) Valid() bool {
+	switch e {
+	case SnapshotPolicyDaysOfMonthScheduleExecutionStrategyDaysOfMonth:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SnapshotPolicyDaysOfMonthScheduleSchemaExecutionStrategy.
+const (
+	SnapshotPolicyDaysOfMonthScheduleSchemaExecutionStrategyDaysOfMonth SnapshotPolicyDaysOfMonthScheduleSchemaExecutionStrategy = "days_of_month"
+)
+
+// Valid indicates whether the value is a known member of the SnapshotPolicyDaysOfMonthScheduleSchemaExecutionStrategy enum.
+func (e SnapshotPolicyDaysOfMonthScheduleSchemaExecutionStrategy) Valid() bool {
+	switch e {
+	case SnapshotPolicyDaysOfMonthScheduleSchemaExecutionStrategyDaysOfMonth:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SnapshotPolicyDaysOfWeekScheduleExecutionStrategy.
+const (
+	SnapshotPolicyDaysOfWeekScheduleExecutionStrategyDaysOfWeek SnapshotPolicyDaysOfWeekScheduleExecutionStrategy = "days_of_week"
+)
+
+// Valid indicates whether the value is a known member of the SnapshotPolicyDaysOfWeekScheduleExecutionStrategy enum.
+func (e SnapshotPolicyDaysOfWeekScheduleExecutionStrategy) Valid() bool {
+	switch e {
+	case SnapshotPolicyDaysOfWeekScheduleExecutionStrategyDaysOfWeek:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SnapshotPolicyDaysOfWeekScheduleSchemaExecutionStrategy.
+const (
+	SnapshotPolicyDaysOfWeekScheduleSchemaExecutionStrategyDaysOfWeek SnapshotPolicyDaysOfWeekScheduleSchemaExecutionStrategy = "days_of_week"
+)
+
+// Valid indicates whether the value is a known member of the SnapshotPolicyDaysOfWeekScheduleSchemaExecutionStrategy enum.
+func (e SnapshotPolicyDaysOfWeekScheduleSchemaExecutionStrategy) Valid() bool {
+	switch e {
+	case SnapshotPolicyDaysOfWeekScheduleSchemaExecutionStrategyDaysOfWeek:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SnapshotPolicyPeriodicScheduleExecutionStrategy.
+const (
+	SnapshotPolicyPeriodicScheduleExecutionStrategyPeriodic SnapshotPolicyPeriodicScheduleExecutionStrategy = "periodic"
+)
+
+// Valid indicates whether the value is a known member of the SnapshotPolicyPeriodicScheduleExecutionStrategy enum.
+func (e SnapshotPolicyPeriodicScheduleExecutionStrategy) Valid() bool {
+	switch e {
+	case SnapshotPolicyPeriodicScheduleExecutionStrategyPeriodic:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SnapshotPolicyPeriodicScheduleSchemaExecutionStrategy.
+const (
+	SnapshotPolicyPeriodicScheduleSchemaExecutionStrategyPeriodic SnapshotPolicyPeriodicScheduleSchemaExecutionStrategy = "periodic"
+)
+
+// Valid indicates whether the value is a known member of the SnapshotPolicyPeriodicScheduleSchemaExecutionStrategy enum.
+func (e SnapshotPolicyPeriodicScheduleSchemaExecutionStrategy) Valid() bool {
+	switch e {
+	case SnapshotPolicyPeriodicScheduleSchemaExecutionStrategyPeriodic:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SnapshotPolicyState.
+const (
+	SnapshotPolicyStateDone    SnapshotPolicyState = "done"
+	SnapshotPolicyStateFail    SnapshotPolicyState = "fail"
+	SnapshotPolicyStateReady   SnapshotPolicyState = "ready"
+	SnapshotPolicyStateRunning SnapshotPolicyState = "running"
+)
+
+// Valid indicates whether the value is a known member of the SnapshotPolicyState enum.
+func (e SnapshotPolicyState) Valid() bool {
+	switch e {
+	case SnapshotPolicyStateDone:
+		return true
+	case SnapshotPolicyStateFail:
+		return true
+	case SnapshotPolicyStateReady:
+		return true
+	case SnapshotPolicyStateRunning:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SnapshotPolicyStatus.
+const (
+	SnapshotPolicyStatusDisabled SnapshotPolicyStatus = "disabled"
+	SnapshotPolicyStatusEnabled  SnapshotPolicyStatus = "enabled"
+)
+
+// Valid indicates whether the value is a known member of the SnapshotPolicyStatus enum.
+func (e SnapshotPolicyStatus) Valid() bool {
+	switch e {
+	case SnapshotPolicyStatusDisabled:
+		return true
+	case SnapshotPolicyStatusEnabled:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for SnapshotStatus.
 const (
 	SnapshotStatusAvailable SnapshotStatus = "available"
@@ -521,6 +686,27 @@ func (e VolumeTypeStatus) Valid() bool {
 	}
 }
 
+// Defines values for ListSnapshotPoliciesParamsExecutionStrategy.
+const (
+	ListSnapshotPoliciesParamsExecutionStrategyDaysOfMonth ListSnapshotPoliciesParamsExecutionStrategy = "days_of_month"
+	ListSnapshotPoliciesParamsExecutionStrategyDaysOfWeek  ListSnapshotPoliciesParamsExecutionStrategy = "days_of_week"
+	ListSnapshotPoliciesParamsExecutionStrategyPeriodic    ListSnapshotPoliciesParamsExecutionStrategy = "periodic"
+)
+
+// Valid indicates whether the value is a known member of the ListSnapshotPoliciesParamsExecutionStrategy enum.
+func (e ListSnapshotPoliciesParamsExecutionStrategy) Valid() bool {
+	switch e {
+	case ListSnapshotPoliciesParamsExecutionStrategyDaysOfMonth:
+		return true
+	case ListSnapshotPoliciesParamsExecutionStrategyDaysOfWeek:
+		return true
+	case ListSnapshotPoliciesParamsExecutionStrategyPeriodic:
+		return true
+	default:
+		return false
+	}
+}
+
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
 	Errors    []ErrorSchema             `json:"errors"`
@@ -685,6 +871,14 @@ type NestedZoneSchema struct {
 	Name        string    `json:"name"`
 }
 
+// PagedSnapshotPolicySchema defines model for PagedSnapshotPolicySchema.
+type PagedSnapshotPolicySchema struct {
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []SnapshotPolicySchema    `json:"results"`
+}
+
 // PagedVolumeBackupPolicySchema defines model for PagedVolumeBackupPolicySchema.
 type PagedVolumeBackupPolicySchema struct {
 	Count    int                        `json:"count"`
@@ -730,6 +924,141 @@ type PolicyExecutionStrategy string
 
 // PolicyFrequencyUnit defines model for PolicyFrequencyUnit.
 type PolicyFrequencyUnit string
+
+// SnapshotDayOfWeek defines model for SnapshotDayOfWeek.
+type SnapshotDayOfWeek string
+
+// SnapshotPolicyCreateSchema defines model for SnapshotPolicyCreateSchema.
+type SnapshotPolicyCreateSchema struct {
+	Description *string   `json:"description,omitempty"`
+	Name        string    `json:"name"`
+	RegionId    core.UUID `json:"region_id"`
+	Retention   *int      `json:"retention,omitempty"`
+
+	// Schedule SnapshotPolicySchedule is exactly one of: SnapshotPolicyDaysOfWeekSchedule, SnapshotPolicyDaysOfMonthSchedule, SnapshotPolicyPeriodicSchedule. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+	Schedule SnapshotPolicySchedule `json:"schedule"`
+	Status   SnapshotPolicyStatus   `json:"status"`
+}
+
+// SnapshotPolicyDaysOfMonthSchedule defines model for SnapshotPolicyDaysOfMonthSchedule.
+type SnapshotPolicyDaysOfMonthSchedule struct {
+	DaysOfMonth       []int                                              `json:"days_of_month"`
+	ExecutionStrategy SnapshotPolicyDaysOfMonthScheduleExecutionStrategy `json:"execution_strategy"`
+	Time              string                                             `json:"time"`
+}
+
+// SnapshotPolicyDaysOfMonthScheduleExecutionStrategy defines model for SnapshotPolicyDaysOfMonthSchedule.ExecutionStrategy.
+type SnapshotPolicyDaysOfMonthScheduleExecutionStrategy string
+
+// SnapshotPolicyDaysOfMonthScheduleSchema defines model for SnapshotPolicyDaysOfMonthScheduleSchema.
+type SnapshotPolicyDaysOfMonthScheduleSchema struct {
+	DaysOfMonth       []int                                                    `json:"days_of_month"`
+	ExecutionStrategy SnapshotPolicyDaysOfMonthScheduleSchemaExecutionStrategy `json:"execution_strategy"`
+	Time              string                                                   `json:"time"`
+}
+
+// SnapshotPolicyDaysOfMonthScheduleSchemaExecutionStrategy defines model for SnapshotPolicyDaysOfMonthScheduleSchema.ExecutionStrategy.
+type SnapshotPolicyDaysOfMonthScheduleSchemaExecutionStrategy string
+
+// SnapshotPolicyDaysOfWeekSchedule defines model for SnapshotPolicyDaysOfWeekSchedule.
+type SnapshotPolicyDaysOfWeekSchedule struct {
+	DaysOfWeek        []SnapshotDayOfWeek                               `json:"days_of_week"`
+	ExecutionStrategy SnapshotPolicyDaysOfWeekScheduleExecutionStrategy `json:"execution_strategy"`
+	Time              string                                            `json:"time"`
+}
+
+// SnapshotPolicyDaysOfWeekScheduleExecutionStrategy defines model for SnapshotPolicyDaysOfWeekSchedule.ExecutionStrategy.
+type SnapshotPolicyDaysOfWeekScheduleExecutionStrategy string
+
+// SnapshotPolicyDaysOfWeekScheduleSchema defines model for SnapshotPolicyDaysOfWeekScheduleSchema.
+type SnapshotPolicyDaysOfWeekScheduleSchema struct {
+	DaysOfWeek        []SnapshotDayOfWeek                                     `json:"days_of_week"`
+	ExecutionStrategy SnapshotPolicyDaysOfWeekScheduleSchemaExecutionStrategy `json:"execution_strategy"`
+	Time              string                                                  `json:"time"`
+}
+
+// SnapshotPolicyDaysOfWeekScheduleSchemaExecutionStrategy defines model for SnapshotPolicyDaysOfWeekScheduleSchema.ExecutionStrategy.
+type SnapshotPolicyDaysOfWeekScheduleSchemaExecutionStrategy string
+
+// SnapshotPolicyPartialUpdateSchema defines model for SnapshotPolicyPartialUpdateSchema.
+type SnapshotPolicyPartialUpdateSchema struct {
+	Description *string `json:"description,omitempty"`
+	Name        *string `json:"name,omitempty"`
+	Retention   *int    `json:"retention,omitempty"`
+
+	// Schedule SnapshotPolicySchedule is exactly one of: SnapshotPolicyDaysOfWeekSchedule, SnapshotPolicyDaysOfMonthSchedule, SnapshotPolicyPeriodicSchedule. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+	Schedule *SnapshotPolicySchedule `json:"schedule,omitempty"`
+	Status   *SnapshotPolicyStatus   `json:"status,omitempty"`
+}
+
+// SnapshotPolicyPeriodicSchedule defines model for SnapshotPolicyPeriodicSchedule.
+type SnapshotPolicyPeriodicSchedule struct {
+	ExecutionStrategy SnapshotPolicyPeriodicScheduleExecutionStrategy `json:"execution_strategy"`
+	FirstExecution    time.Time                                       `json:"first_execution"`
+	Frequency         int                                             `json:"frequency"`
+	FrequencyUnit     PolicyFrequencyUnit                             `json:"frequency_unit"`
+}
+
+// SnapshotPolicyPeriodicScheduleExecutionStrategy defines model for SnapshotPolicyPeriodicSchedule.ExecutionStrategy.
+type SnapshotPolicyPeriodicScheduleExecutionStrategy string
+
+// SnapshotPolicyPeriodicScheduleSchema defines model for SnapshotPolicyPeriodicScheduleSchema.
+type SnapshotPolicyPeriodicScheduleSchema struct {
+	ExecutionStrategy SnapshotPolicyPeriodicScheduleSchemaExecutionStrategy `json:"execution_strategy"`
+	FirstExecution    time.Time                                             `json:"first_execution"`
+	Frequency         int                                                   `json:"frequency"`
+	FrequencyUnit     PolicyFrequencyUnit                                   `json:"frequency_unit"`
+}
+
+// SnapshotPolicyPeriodicScheduleSchemaExecutionStrategy defines model for SnapshotPolicyPeriodicScheduleSchema.ExecutionStrategy.
+type SnapshotPolicyPeriodicScheduleSchemaExecutionStrategy string
+
+// SnapshotPolicySchedule SnapshotPolicySchedule is exactly one of: SnapshotPolicyDaysOfWeekSchedule, SnapshotPolicyDaysOfMonthSchedule, SnapshotPolicyPeriodicSchedule. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+type SnapshotPolicySchedule struct {
+	union json.RawMessage
+}
+
+// SnapshotPolicyScheduleSchema SnapshotPolicyScheduleSchema is exactly one of: SnapshotPolicyDaysOfWeekScheduleSchema, SnapshotPolicyDaysOfMonthScheduleSchema, SnapshotPolicyPeriodicScheduleSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+type SnapshotPolicyScheduleSchema struct {
+	union json.RawMessage
+}
+
+// SnapshotPolicySchema defines model for SnapshotPolicySchema.
+type SnapshotPolicySchema struct {
+	CreatedAt     time.Time                    `json:"created_at"`
+	Description   nullable.Nullable[string]    `json:"description"`
+	Id            core.UUID                    `json:"id"`
+	LastExecution nullable.Nullable[time.Time] `json:"last_execution"`
+	Name          string                       `json:"name"`
+	NextExecution nullable.Nullable[time.Time] `json:"next_execution"`
+	Project       NestedProjectSchema          `json:"project"`
+	Region        NestedRegionSchema           `json:"region"`
+	Retention     int                          `json:"retention"`
+
+	// Schedule SnapshotPolicyScheduleSchema is exactly one of: SnapshotPolicyDaysOfWeekScheduleSchema, SnapshotPolicyDaysOfMonthScheduleSchema, SnapshotPolicyPeriodicScheduleSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+	Schedule    SnapshotPolicyScheduleSchema `json:"schedule"`
+	State       SnapshotPolicyState          `json:"state"`
+	Status      SnapshotPolicyStatus         `json:"status"`
+	UpdatedAt   time.Time                    `json:"updated_at"`
+	VolumeCount int                          `json:"volume_count"`
+}
+
+// SnapshotPolicyState defines model for SnapshotPolicyState.
+type SnapshotPolicyState string
+
+// SnapshotPolicyStatus defines model for SnapshotPolicyStatus.
+type SnapshotPolicyStatus string
+
+// SnapshotPolicyUpdateSchema defines model for SnapshotPolicyUpdateSchema.
+type SnapshotPolicyUpdateSchema struct {
+	Description string `json:"description"`
+	Name        string `json:"name"`
+	Retention   int    `json:"retention"`
+
+	// Schedule SnapshotPolicySchedule is exactly one of: SnapshotPolicyDaysOfWeekSchedule, SnapshotPolicyDaysOfMonthSchedule, SnapshotPolicyPeriodicSchedule. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+	Schedule SnapshotPolicySchedule `json:"schedule"`
+	Status   SnapshotPolicyStatus   `json:"status"`
+}
 
 // SnapshotStatus defines model for SnapshotStatus.
 type SnapshotStatus string
@@ -1104,6 +1433,45 @@ type ProviderError = ErrorResponseSchema
 // ValidationError defines model for ValidationError.
 type ValidationError = ErrorResponseSchema
 
+// ListSnapshotPoliciesParams defines parameters for ListSnapshotPolicies.
+type ListSnapshotPoliciesParams struct {
+	Name              *string                                      `form:"name,omitempty" json:"name,omitempty"`
+	Status            *SnapshotPolicyStatus                        `form:"status,omitempty" json:"status,omitempty"`
+	ExecutionStrategy *ListSnapshotPoliciesParamsExecutionStrategy `form:"execution_strategy,omitempty" json:"execution_strategy,omitempty"`
+	RegionId          *core.UUID                                   `form:"region_id,omitempty" json:"region_id,omitempty"`
+	PageSize          *int                                         `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber        *int                                         `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID         core.UUID                                    `json:"Project-ID"`
+}
+
+// ListSnapshotPoliciesParamsExecutionStrategy defines parameters for ListSnapshotPolicies.
+type ListSnapshotPoliciesParamsExecutionStrategy string
+
+// CreateSnapshotPolicyParams defines parameters for CreateSnapshotPolicy.
+type CreateSnapshotPolicyParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// DeleteSnapshotPolicyParams defines parameters for DeleteSnapshotPolicy.
+type DeleteSnapshotPolicyParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// GetSnapshotPolicyParams defines parameters for GetSnapshotPolicy.
+type GetSnapshotPolicyParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// PartialUpdateSnapshotPolicyParams defines parameters for PartialUpdateSnapshotPolicy.
+type PartialUpdateSnapshotPolicyParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// UpdateSnapshotPolicyParams defines parameters for UpdateSnapshotPolicy.
+type UpdateSnapshotPolicyParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
 // ListVolumeBackupPoliciesParams defines parameters for ListVolumeBackupPolicies.
 type ListVolumeBackupPoliciesParams struct {
 	Name              *string                   `form:"name,omitempty" json:"name,omitempty"`
@@ -1301,6 +1669,15 @@ type SetVolumeSnapshotPolicyParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
+// CreateSnapshotPolicyJSONRequestBody defines body for CreateSnapshotPolicy for application/json ContentType.
+type CreateSnapshotPolicyJSONRequestBody = SnapshotPolicyCreateSchema
+
+// PartialUpdateSnapshotPolicyJSONRequestBody defines body for PartialUpdateSnapshotPolicy for application/json ContentType.
+type PartialUpdateSnapshotPolicyJSONRequestBody = SnapshotPolicyPartialUpdateSchema
+
+// UpdateSnapshotPolicyJSONRequestBody defines body for UpdateSnapshotPolicy for application/json ContentType.
+type UpdateSnapshotPolicyJSONRequestBody = SnapshotPolicyUpdateSchema
+
 // CreateVolumeBackupPolicyJSONRequestBody defines body for CreateVolumeBackupPolicy for application/json ContentType.
 type CreateVolumeBackupPolicyJSONRequestBody = VolumeBackupPolicyCreateSchema
 
@@ -1342,6 +1719,280 @@ type RetypeVolumeJSONRequestBody = VolumeRetypeSchema
 
 // SetVolumeSnapshotPolicyJSONRequestBody defines body for SetVolumeSnapshotPolicy for application/json ContentType.
 type SetVolumeSnapshotPolicyJSONRequestBody = VolumeSnapshotPolicyUpdateSchema
+
+// AsSnapshotPolicyDaysOfWeekSchedule returns the union data inside the SnapshotPolicySchedule as a SnapshotPolicyDaysOfWeekSchedule
+func (t SnapshotPolicySchedule) AsSnapshotPolicyDaysOfWeekSchedule() (SnapshotPolicyDaysOfWeekSchedule, error) {
+	var body SnapshotPolicyDaysOfWeekSchedule
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSnapshotPolicyDaysOfWeekSchedule overwrites any union data inside the SnapshotPolicySchedule as the provided SnapshotPolicyDaysOfWeekSchedule
+func (t *SnapshotPolicySchedule) FromSnapshotPolicyDaysOfWeekSchedule(v SnapshotPolicyDaysOfWeekSchedule) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"days_of_week"}`))
+	t.union = b
+	return err
+}
+
+// MergeSnapshotPolicyDaysOfWeekSchedule performs a merge with any union data inside the SnapshotPolicySchedule, using the provided SnapshotPolicyDaysOfWeekSchedule
+func (t *SnapshotPolicySchedule) MergeSnapshotPolicyDaysOfWeekSchedule(v SnapshotPolicyDaysOfWeekSchedule) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"days_of_week"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSnapshotPolicyDaysOfMonthSchedule returns the union data inside the SnapshotPolicySchedule as a SnapshotPolicyDaysOfMonthSchedule
+func (t SnapshotPolicySchedule) AsSnapshotPolicyDaysOfMonthSchedule() (SnapshotPolicyDaysOfMonthSchedule, error) {
+	var body SnapshotPolicyDaysOfMonthSchedule
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSnapshotPolicyDaysOfMonthSchedule overwrites any union data inside the SnapshotPolicySchedule as the provided SnapshotPolicyDaysOfMonthSchedule
+func (t *SnapshotPolicySchedule) FromSnapshotPolicyDaysOfMonthSchedule(v SnapshotPolicyDaysOfMonthSchedule) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"days_of_month"}`))
+	t.union = b
+	return err
+}
+
+// MergeSnapshotPolicyDaysOfMonthSchedule performs a merge with any union data inside the SnapshotPolicySchedule, using the provided SnapshotPolicyDaysOfMonthSchedule
+func (t *SnapshotPolicySchedule) MergeSnapshotPolicyDaysOfMonthSchedule(v SnapshotPolicyDaysOfMonthSchedule) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"days_of_month"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSnapshotPolicyPeriodicSchedule returns the union data inside the SnapshotPolicySchedule as a SnapshotPolicyPeriodicSchedule
+func (t SnapshotPolicySchedule) AsSnapshotPolicyPeriodicSchedule() (SnapshotPolicyPeriodicSchedule, error) {
+	var body SnapshotPolicyPeriodicSchedule
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSnapshotPolicyPeriodicSchedule overwrites any union data inside the SnapshotPolicySchedule as the provided SnapshotPolicyPeriodicSchedule
+func (t *SnapshotPolicySchedule) FromSnapshotPolicyPeriodicSchedule(v SnapshotPolicyPeriodicSchedule) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"periodic"}`))
+	t.union = b
+	return err
+}
+
+// MergeSnapshotPolicyPeriodicSchedule performs a merge with any union data inside the SnapshotPolicySchedule, using the provided SnapshotPolicyPeriodicSchedule
+func (t *SnapshotPolicySchedule) MergeSnapshotPolicyPeriodicSchedule(v SnapshotPolicyPeriodicSchedule) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"periodic"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t SnapshotPolicySchedule) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"execution_strategy"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t SnapshotPolicySchedule) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "days_of_month":
+		return t.AsSnapshotPolicyDaysOfMonthSchedule()
+	case "days_of_week":
+		return t.AsSnapshotPolicyDaysOfWeekSchedule()
+	case "periodic":
+		return t.AsSnapshotPolicyPeriodicSchedule()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t SnapshotPolicySchedule) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *SnapshotPolicySchedule) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsSnapshotPolicyDaysOfWeekScheduleSchema returns the union data inside the SnapshotPolicyScheduleSchema as a SnapshotPolicyDaysOfWeekScheduleSchema
+func (t SnapshotPolicyScheduleSchema) AsSnapshotPolicyDaysOfWeekScheduleSchema() (SnapshotPolicyDaysOfWeekScheduleSchema, error) {
+	var body SnapshotPolicyDaysOfWeekScheduleSchema
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSnapshotPolicyDaysOfWeekScheduleSchema overwrites any union data inside the SnapshotPolicyScheduleSchema as the provided SnapshotPolicyDaysOfWeekScheduleSchema
+func (t *SnapshotPolicyScheduleSchema) FromSnapshotPolicyDaysOfWeekScheduleSchema(v SnapshotPolicyDaysOfWeekScheduleSchema) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"days_of_week"}`))
+	t.union = b
+	return err
+}
+
+// MergeSnapshotPolicyDaysOfWeekScheduleSchema performs a merge with any union data inside the SnapshotPolicyScheduleSchema, using the provided SnapshotPolicyDaysOfWeekScheduleSchema
+func (t *SnapshotPolicyScheduleSchema) MergeSnapshotPolicyDaysOfWeekScheduleSchema(v SnapshotPolicyDaysOfWeekScheduleSchema) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"days_of_week"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSnapshotPolicyDaysOfMonthScheduleSchema returns the union data inside the SnapshotPolicyScheduleSchema as a SnapshotPolicyDaysOfMonthScheduleSchema
+func (t SnapshotPolicyScheduleSchema) AsSnapshotPolicyDaysOfMonthScheduleSchema() (SnapshotPolicyDaysOfMonthScheduleSchema, error) {
+	var body SnapshotPolicyDaysOfMonthScheduleSchema
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSnapshotPolicyDaysOfMonthScheduleSchema overwrites any union data inside the SnapshotPolicyScheduleSchema as the provided SnapshotPolicyDaysOfMonthScheduleSchema
+func (t *SnapshotPolicyScheduleSchema) FromSnapshotPolicyDaysOfMonthScheduleSchema(v SnapshotPolicyDaysOfMonthScheduleSchema) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"days_of_month"}`))
+	t.union = b
+	return err
+}
+
+// MergeSnapshotPolicyDaysOfMonthScheduleSchema performs a merge with any union data inside the SnapshotPolicyScheduleSchema, using the provided SnapshotPolicyDaysOfMonthScheduleSchema
+func (t *SnapshotPolicyScheduleSchema) MergeSnapshotPolicyDaysOfMonthScheduleSchema(v SnapshotPolicyDaysOfMonthScheduleSchema) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"days_of_month"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSnapshotPolicyPeriodicScheduleSchema returns the union data inside the SnapshotPolicyScheduleSchema as a SnapshotPolicyPeriodicScheduleSchema
+func (t SnapshotPolicyScheduleSchema) AsSnapshotPolicyPeriodicScheduleSchema() (SnapshotPolicyPeriodicScheduleSchema, error) {
+	var body SnapshotPolicyPeriodicScheduleSchema
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSnapshotPolicyPeriodicScheduleSchema overwrites any union data inside the SnapshotPolicyScheduleSchema as the provided SnapshotPolicyPeriodicScheduleSchema
+func (t *SnapshotPolicyScheduleSchema) FromSnapshotPolicyPeriodicScheduleSchema(v SnapshotPolicyPeriodicScheduleSchema) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"periodic"}`))
+	t.union = b
+	return err
+}
+
+// MergeSnapshotPolicyPeriodicScheduleSchema performs a merge with any union data inside the SnapshotPolicyScheduleSchema, using the provided SnapshotPolicyPeriodicScheduleSchema
+func (t *SnapshotPolicyScheduleSchema) MergeSnapshotPolicyPeriodicScheduleSchema(v SnapshotPolicyPeriodicScheduleSchema) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"execution_strategy":"periodic"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t SnapshotPolicyScheduleSchema) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"execution_strategy"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t SnapshotPolicyScheduleSchema) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "days_of_month":
+		return t.AsSnapshotPolicyDaysOfMonthScheduleSchema()
+	case "days_of_week":
+		return t.AsSnapshotPolicyDaysOfWeekScheduleSchema()
+	case "periodic":
+		return t.AsSnapshotPolicyPeriodicScheduleSchema()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t SnapshotPolicyScheduleSchema) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *SnapshotPolicyScheduleSchema) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // AsVolumeBackupPolicyDaysOfMonthSchedule returns the union data inside the VolumeBackupPolicySchedule as a VolumeBackupPolicyDaysOfMonthSchedule
 func (t VolumeBackupPolicySchedule) AsVolumeBackupPolicyDaysOfMonthSchedule() (VolumeBackupPolicyDaysOfMonthSchedule, error) {
@@ -1828,6 +2479,99 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 // The interface specification for the client above.
 type ClientInterface interface {
 
+	// ListSnapshotPolicies List Snapshot Policies
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:list`
+	//
+	// Corresponds with GET /v2/block-storage/snapshot-policies/ (the `ListSnapshotPolicies` operationId).
+	ListSnapshotPolicies(ctx context.Context, params *ListSnapshotPoliciesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateSnapshotPolicyWithBody Create Snapshot Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:create`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v2/block-storage/snapshot-policies/ (the `CreateSnapshotPolicy` operationId).
+	CreateSnapshotPolicyWithBody(ctx context.Context, params *CreateSnapshotPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateSnapshotPolicy Create Snapshot Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:create`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v2/block-storage/snapshot-policies/ (the `CreateSnapshotPolicy` operationId).
+	CreateSnapshotPolicy(ctx context.Context, params *CreateSnapshotPolicyParams, body CreateSnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteSnapshotPolicy Delete Snapshot Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:delete`
+	//
+	// Corresponds with DELETE /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `DeleteSnapshotPolicy` operationId).
+	DeleteSnapshotPolicy(ctx context.Context, snapshotPolicyId core.UUID, params *DeleteSnapshotPolicyParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetSnapshotPolicy Get Snapshot Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:get`
+	//
+	// Corresponds with GET /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `GetSnapshotPolicy` operationId).
+	GetSnapshotPolicy(ctx context.Context, snapshotPolicyId core.UUID, params *GetSnapshotPolicyParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PartialUpdateSnapshotPolicyWithBody Partial Update Snapshot Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:update`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PATCH /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `PartialUpdateSnapshotPolicy` operationId).
+	PartialUpdateSnapshotPolicyWithBody(ctx context.Context, snapshotPolicyId core.UUID, params *PartialUpdateSnapshotPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PartialUpdateSnapshotPolicy Partial Update Snapshot Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:update`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PATCH /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `PartialUpdateSnapshotPolicy` operationId).
+	PartialUpdateSnapshotPolicy(ctx context.Context, snapshotPolicyId core.UUID, params *PartialUpdateSnapshotPolicyParams, body PartialUpdateSnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateSnapshotPolicyWithBody Update Snapshot Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:update`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `UpdateSnapshotPolicy` operationId).
+	UpdateSnapshotPolicyWithBody(ctx context.Context, snapshotPolicyId core.UUID, params *UpdateSnapshotPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateSnapshotPolicy Update Snapshot Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:update`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `UpdateSnapshotPolicy` operationId).
+	UpdateSnapshotPolicy(ctx context.Context, snapshotPolicyId core.UUID, params *UpdateSnapshotPolicyParams, body UpdateSnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListVolumeBackupPolicies List Volume Backup Policies
 	//
 	// **Required permissions:**
@@ -2257,6 +3001,189 @@ type ClientInterface interface {
 	//
 	// Corresponds with PUT /v2/block-storage/volumes/{volume_id}/snapshot-policy/ (the `SetVolumeSnapshotPolicy` operationId).
 	SetVolumeSnapshotPolicy(ctx context.Context, volumeId core.UUID, params *SetVolumeSnapshotPolicyParams, body SetVolumeSnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+// ListSnapshotPolicies List Snapshot Policies
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:list`
+//
+// Corresponds with GET /v2/block-storage/snapshot-policies/ (the `ListSnapshotPolicies` operationId).
+func (c *Client) ListSnapshotPolicies(ctx context.Context, params *ListSnapshotPoliciesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListSnapshotPoliciesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateSnapshotPolicyWithBody Create Snapshot Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:create`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/block-storage/snapshot-policies/ (the `CreateSnapshotPolicy` operationId).
+func (c *Client) CreateSnapshotPolicyWithBody(ctx context.Context, params *CreateSnapshotPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSnapshotPolicyRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateSnapshotPolicy Create Snapshot Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:create`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/block-storage/snapshot-policies/ (the `CreateSnapshotPolicy` operationId).
+func (c *Client) CreateSnapshotPolicy(ctx context.Context, params *CreateSnapshotPolicyParams, body CreateSnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSnapshotPolicyRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteSnapshotPolicy Delete Snapshot Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:delete`
+//
+// Corresponds with DELETE /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `DeleteSnapshotPolicy` operationId).
+func (c *Client) DeleteSnapshotPolicy(ctx context.Context, snapshotPolicyId core.UUID, params *DeleteSnapshotPolicyParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteSnapshotPolicyRequest(c.Server, snapshotPolicyId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetSnapshotPolicy Get Snapshot Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:get`
+//
+// Corresponds with GET /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `GetSnapshotPolicy` operationId).
+func (c *Client) GetSnapshotPolicy(ctx context.Context, snapshotPolicyId core.UUID, params *GetSnapshotPolicyParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSnapshotPolicyRequest(c.Server, snapshotPolicyId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PartialUpdateSnapshotPolicyWithBody Partial Update Snapshot Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:update`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PATCH /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `PartialUpdateSnapshotPolicy` operationId).
+func (c *Client) PartialUpdateSnapshotPolicyWithBody(ctx context.Context, snapshotPolicyId core.UUID, params *PartialUpdateSnapshotPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPartialUpdateSnapshotPolicyRequestWithBody(c.Server, snapshotPolicyId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PartialUpdateSnapshotPolicy Partial Update Snapshot Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:update`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PATCH /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `PartialUpdateSnapshotPolicy` operationId).
+func (c *Client) PartialUpdateSnapshotPolicy(ctx context.Context, snapshotPolicyId core.UUID, params *PartialUpdateSnapshotPolicyParams, body PartialUpdateSnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPartialUpdateSnapshotPolicyRequest(c.Server, snapshotPolicyId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateSnapshotPolicyWithBody Update Snapshot Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:update`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `UpdateSnapshotPolicy` operationId).
+func (c *Client) UpdateSnapshotPolicyWithBody(ctx context.Context, snapshotPolicyId core.UUID, params *UpdateSnapshotPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSnapshotPolicyRequestWithBody(c.Server, snapshotPolicyId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateSnapshotPolicy Update Snapshot Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:update`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `UpdateSnapshotPolicy` operationId).
+func (c *Client) UpdateSnapshotPolicy(ctx context.Context, snapshotPolicyId core.UUID, params *UpdateSnapshotPolicyParams, body UpdateSnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSnapshotPolicyRequest(c.Server, snapshotPolicyId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 // ListVolumeBackupPolicies List Volume Backup Policies
@@ -3107,6 +4034,400 @@ func (c *Client) SetVolumeSnapshotPolicy(ctx context.Context, volumeId core.UUID
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewListSnapshotPoliciesRequest constructs an http.Request for the ListSnapshotPolicies method
+func NewListSnapshotPoliciesRequest(server string, params *ListSnapshotPoliciesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/block-storage/snapshot-policies/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Name != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "name", *params.Name, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Status != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "status", *params.Status, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.ExecutionStrategy != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "execution_strategy", *params.ExecutionStrategy, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RegionId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "region_id", *params.RegionId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewCreateSnapshotPolicyRequest calls the generic CreateSnapshotPolicy builder with application/json body
+func NewCreateSnapshotPolicyRequest(server string, params *CreateSnapshotPolicyParams, body CreateSnapshotPolicyJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateSnapshotPolicyRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCreateSnapshotPolicyRequestWithBody constructs an http.Request for the CreateSnapshotPolicy method, with any body, and a specified content type
+func NewCreateSnapshotPolicyRequestWithBody(server string, params *CreateSnapshotPolicyParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/block-storage/snapshot-policies/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteSnapshotPolicyRequest constructs an http.Request for the DeleteSnapshotPolicy method
+func NewDeleteSnapshotPolicyRequest(server string, snapshotPolicyId core.UUID, params *DeleteSnapshotPolicyParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "snapshot_policy_id", snapshotPolicyId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/block-storage/snapshot-policies/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetSnapshotPolicyRequest constructs an http.Request for the GetSnapshotPolicy method
+func NewGetSnapshotPolicyRequest(server string, snapshotPolicyId core.UUID, params *GetSnapshotPolicyParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "snapshot_policy_id", snapshotPolicyId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/block-storage/snapshot-policies/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewPartialUpdateSnapshotPolicyRequest calls the generic PartialUpdateSnapshotPolicy builder with application/json body
+func NewPartialUpdateSnapshotPolicyRequest(server string, snapshotPolicyId core.UUID, params *PartialUpdateSnapshotPolicyParams, body PartialUpdateSnapshotPolicyJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPartialUpdateSnapshotPolicyRequestWithBody(server, snapshotPolicyId, params, "application/json", bodyReader)
+}
+
+// NewPartialUpdateSnapshotPolicyRequestWithBody constructs an http.Request for the PartialUpdateSnapshotPolicy method, with any body, and a specified content type
+func NewPartialUpdateSnapshotPolicyRequestWithBody(server string, snapshotPolicyId core.UUID, params *PartialUpdateSnapshotPolicyParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "snapshot_policy_id", snapshotPolicyId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/block-storage/snapshot-policies/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewUpdateSnapshotPolicyRequest calls the generic UpdateSnapshotPolicy builder with application/json body
+func NewUpdateSnapshotPolicyRequest(server string, snapshotPolicyId core.UUID, params *UpdateSnapshotPolicyParams, body UpdateSnapshotPolicyJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateSnapshotPolicyRequestWithBody(server, snapshotPolicyId, params, "application/json", bodyReader)
+}
+
+// NewUpdateSnapshotPolicyRequestWithBody constructs an http.Request for the UpdateSnapshotPolicy method, with any body, and a specified content type
+func NewUpdateSnapshotPolicyRequestWithBody(server string, snapshotPolicyId core.UUID, params *UpdateSnapshotPolicyParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "snapshot_policy_id", snapshotPolicyId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/block-storage/snapshot-policies/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
 }
 
 // NewListVolumeBackupPoliciesRequest constructs an http.Request for the ListVolumeBackupPolicies method
@@ -5345,6 +6666,105 @@ func WithBaseURL(baseURL string) ClientOption {
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
 
+	// ListSnapshotPoliciesWithResponse List Snapshot Policies
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:list`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/block-storage/snapshot-policies/ (the `ListSnapshotPolicies` operationId).
+	ListSnapshotPoliciesWithResponse(ctx context.Context, params *ListSnapshotPoliciesParams, reqEditors ...RequestEditorFn) (*ListSnapshotPoliciesResponse, error)
+
+	// CreateSnapshotPolicyWithBodyWithResponse Create Snapshot Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:create`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/block-storage/snapshot-policies/ (the `CreateSnapshotPolicy` operationId).
+	CreateSnapshotPolicyWithBodyWithResponse(ctx context.Context, params *CreateSnapshotPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSnapshotPolicyResponse, error)
+
+	// CreateSnapshotPolicyWithResponse Create Snapshot Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:create`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/block-storage/snapshot-policies/ (the `CreateSnapshotPolicy` operationId).
+	CreateSnapshotPolicyWithResponse(ctx context.Context, params *CreateSnapshotPolicyParams, body CreateSnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSnapshotPolicyResponse, error)
+
+	// DeleteSnapshotPolicyWithResponse Delete Snapshot Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:delete`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `DeleteSnapshotPolicy` operationId).
+	DeleteSnapshotPolicyWithResponse(ctx context.Context, snapshotPolicyId core.UUID, params *DeleteSnapshotPolicyParams, reqEditors ...RequestEditorFn) (*DeleteSnapshotPolicyResponse, error)
+
+	// GetSnapshotPolicyWithResponse Get Snapshot Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `GetSnapshotPolicy` operationId).
+	GetSnapshotPolicyWithResponse(ctx context.Context, snapshotPolicyId core.UUID, params *GetSnapshotPolicyParams, reqEditors ...RequestEditorFn) (*GetSnapshotPolicyResponse, error)
+
+	// PartialUpdateSnapshotPolicyWithBodyWithResponse Partial Update Snapshot Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:update`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `PartialUpdateSnapshotPolicy` operationId).
+	PartialUpdateSnapshotPolicyWithBodyWithResponse(ctx context.Context, snapshotPolicyId core.UUID, params *PartialUpdateSnapshotPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PartialUpdateSnapshotPolicyResponse, error)
+
+	// PartialUpdateSnapshotPolicyWithResponse Partial Update Snapshot Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:update`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `PartialUpdateSnapshotPolicy` operationId).
+	PartialUpdateSnapshotPolicyWithResponse(ctx context.Context, snapshotPolicyId core.UUID, params *PartialUpdateSnapshotPolicyParams, body PartialUpdateSnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*PartialUpdateSnapshotPolicyResponse, error)
+
+	// UpdateSnapshotPolicyWithBodyWithResponse Update Snapshot Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:update`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `UpdateSnapshotPolicy` operationId).
+	UpdateSnapshotPolicyWithBodyWithResponse(ctx context.Context, snapshotPolicyId core.UUID, params *UpdateSnapshotPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSnapshotPolicyResponse, error)
+
+	// UpdateSnapshotPolicyWithResponse Update Snapshot Policy
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:block_storage:snapshot_policy:update`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `UpdateSnapshotPolicy` operationId).
+	UpdateSnapshotPolicyWithResponse(ctx context.Context, snapshotPolicyId core.UUID, params *UpdateSnapshotPolicyParams, body UpdateSnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSnapshotPolicyResponse, error)
+
 	// ListVolumeBackupPoliciesWithResponse List Volume Backup Policies
 	//
 	// **Required permissions:**
@@ -5802,6 +7222,202 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with PUT /v2/block-storage/volumes/{volume_id}/snapshot-policy/ (the `SetVolumeSnapshotPolicy` operationId).
 	SetVolumeSnapshotPolicyWithResponse(ctx context.Context, volumeId core.UUID, params *SetVolumeSnapshotPolicyParams, body SetVolumeSnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*SetVolumeSnapshotPolicyResponse, error)
+}
+
+type ListSnapshotPoliciesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedSnapshotPolicySchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListSnapshotPoliciesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListSnapshotPoliciesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateSnapshotPolicyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *SnapshotPolicySchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateSnapshotPolicyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateSnapshotPolicyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteSnapshotPolicyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteSnapshotPolicyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteSnapshotPolicyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetSnapshotPolicyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SnapshotPolicySchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetSnapshotPolicyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetSnapshotPolicyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PartialUpdateSnapshotPolicyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SnapshotPolicySchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r PartialUpdateSnapshotPolicyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PartialUpdateSnapshotPolicyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateSnapshotPolicyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SnapshotPolicySchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateSnapshotPolicyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateSnapshotPolicyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type ListVolumeBackupPoliciesResponse struct {
@@ -6712,6 +8328,159 @@ func (r SetVolumeSnapshotPolicyResponse) StatusCode() int {
 	return 0
 }
 
+// ListSnapshotPoliciesWithResponse List Snapshot Policies
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:list`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/block-storage/snapshot-policies/ (the `ListSnapshotPolicies` operationId).
+func (c *ClientWithResponses) ListSnapshotPoliciesWithResponse(ctx context.Context, params *ListSnapshotPoliciesParams, reqEditors ...RequestEditorFn) (*ListSnapshotPoliciesResponse, error) {
+	rsp, err := c.ListSnapshotPolicies(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListSnapshotPoliciesResponse(rsp)
+}
+
+// CreateSnapshotPolicyWithBodyWithResponse Create Snapshot Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:create`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/block-storage/snapshot-policies/ (the `CreateSnapshotPolicy` operationId).
+func (c *ClientWithResponses) CreateSnapshotPolicyWithBodyWithResponse(ctx context.Context, params *CreateSnapshotPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSnapshotPolicyResponse, error) {
+	rsp, err := c.CreateSnapshotPolicyWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSnapshotPolicyResponse(rsp)
+}
+
+// CreateSnapshotPolicyWithResponse Create Snapshot Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:create`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/block-storage/snapshot-policies/ (the `CreateSnapshotPolicy` operationId).
+func (c *ClientWithResponses) CreateSnapshotPolicyWithResponse(ctx context.Context, params *CreateSnapshotPolicyParams, body CreateSnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSnapshotPolicyResponse, error) {
+	rsp, err := c.CreateSnapshotPolicy(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSnapshotPolicyResponse(rsp)
+}
+
+// DeleteSnapshotPolicyWithResponse Delete Snapshot Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:delete`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `DeleteSnapshotPolicy` operationId).
+func (c *ClientWithResponses) DeleteSnapshotPolicyWithResponse(ctx context.Context, snapshotPolicyId core.UUID, params *DeleteSnapshotPolicyParams, reqEditors ...RequestEditorFn) (*DeleteSnapshotPolicyResponse, error) {
+	rsp, err := c.DeleteSnapshotPolicy(ctx, snapshotPolicyId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteSnapshotPolicyResponse(rsp)
+}
+
+// GetSnapshotPolicyWithResponse Get Snapshot Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `GetSnapshotPolicy` operationId).
+func (c *ClientWithResponses) GetSnapshotPolicyWithResponse(ctx context.Context, snapshotPolicyId core.UUID, params *GetSnapshotPolicyParams, reqEditors ...RequestEditorFn) (*GetSnapshotPolicyResponse, error) {
+	rsp, err := c.GetSnapshotPolicy(ctx, snapshotPolicyId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetSnapshotPolicyResponse(rsp)
+}
+
+// PartialUpdateSnapshotPolicyWithBodyWithResponse Partial Update Snapshot Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:update`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `PartialUpdateSnapshotPolicy` operationId).
+func (c *ClientWithResponses) PartialUpdateSnapshotPolicyWithBodyWithResponse(ctx context.Context, snapshotPolicyId core.UUID, params *PartialUpdateSnapshotPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PartialUpdateSnapshotPolicyResponse, error) {
+	rsp, err := c.PartialUpdateSnapshotPolicyWithBody(ctx, snapshotPolicyId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePartialUpdateSnapshotPolicyResponse(rsp)
+}
+
+// PartialUpdateSnapshotPolicyWithResponse Partial Update Snapshot Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:update`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `PartialUpdateSnapshotPolicy` operationId).
+func (c *ClientWithResponses) PartialUpdateSnapshotPolicyWithResponse(ctx context.Context, snapshotPolicyId core.UUID, params *PartialUpdateSnapshotPolicyParams, body PartialUpdateSnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*PartialUpdateSnapshotPolicyResponse, error) {
+	rsp, err := c.PartialUpdateSnapshotPolicy(ctx, snapshotPolicyId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePartialUpdateSnapshotPolicyResponse(rsp)
+}
+
+// UpdateSnapshotPolicyWithBodyWithResponse Update Snapshot Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:update`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `UpdateSnapshotPolicy` operationId).
+func (c *ClientWithResponses) UpdateSnapshotPolicyWithBodyWithResponse(ctx context.Context, snapshotPolicyId core.UUID, params *UpdateSnapshotPolicyParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSnapshotPolicyResponse, error) {
+	rsp, err := c.UpdateSnapshotPolicyWithBody(ctx, snapshotPolicyId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSnapshotPolicyResponse(rsp)
+}
+
+// UpdateSnapshotPolicyWithResponse Update Snapshot Policy
+//
+// **Required permissions:**
+//
+// - `urn:action:block_storage:snapshot_policy:update`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v2/block-storage/snapshot-policies/{snapshot_policy_id}/ (the `UpdateSnapshotPolicy` operationId).
+func (c *ClientWithResponses) UpdateSnapshotPolicyWithResponse(ctx context.Context, snapshotPolicyId core.UUID, params *UpdateSnapshotPolicyParams, body UpdateSnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSnapshotPolicyResponse, error) {
+	rsp, err := c.UpdateSnapshotPolicy(ctx, snapshotPolicyId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSnapshotPolicyResponse(rsp)
+}
+
 // ListVolumeBackupPoliciesWithResponse List Volume Backup Policies
 //
 // **Required permissions:**
@@ -7420,6 +9189,368 @@ func (c *ClientWithResponses) SetVolumeSnapshotPolicyWithResponse(ctx context.Co
 		return nil, err
 	}
 	return ParseSetVolumeSnapshotPolicyResponse(rsp)
+}
+
+// ParseListSnapshotPoliciesResponse parses an HTTP response from a ListSnapshotPoliciesWithResponse call
+func ParseListSnapshotPoliciesResponse(rsp *http.Response) (*ListSnapshotPoliciesResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListSnapshotPoliciesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedSnapshotPolicySchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateSnapshotPolicyResponse parses an HTTP response from a CreateSnapshotPolicyWithResponse call
+func ParseCreateSnapshotPolicyResponse(rsp *http.Response) (*CreateSnapshotPolicyResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateSnapshotPolicyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest SnapshotPolicySchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteSnapshotPolicyResponse parses an HTTP response from a DeleteSnapshotPolicyWithResponse call
+func ParseDeleteSnapshotPolicyResponse(rsp *http.Response) (*DeleteSnapshotPolicyResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteSnapshotPolicyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetSnapshotPolicyResponse parses an HTTP response from a GetSnapshotPolicyWithResponse call
+func ParseGetSnapshotPolicyResponse(rsp *http.Response) (*GetSnapshotPolicyResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetSnapshotPolicyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SnapshotPolicySchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePartialUpdateSnapshotPolicyResponse parses an HTTP response from a PartialUpdateSnapshotPolicyWithResponse call
+func ParsePartialUpdateSnapshotPolicyResponse(rsp *http.Response) (*PartialUpdateSnapshotPolicyResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PartialUpdateSnapshotPolicyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SnapshotPolicySchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateSnapshotPolicyResponse parses an HTTP response from a UpdateSnapshotPolicyWithResponse call
+func ParseUpdateSnapshotPolicyResponse(rsp *http.Response) (*UpdateSnapshotPolicyResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateSnapshotPolicyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SnapshotPolicySchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseListVolumeBackupPoliciesResponse parses an HTTP response from a ListVolumeBackupPoliciesWithResponse call

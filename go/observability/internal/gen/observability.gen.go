@@ -19,6 +19,24 @@ import (
 	runtime "github.com/viettelcloud-oss/sdks/go/internal/oapi"
 )
 
+// Defines values for AlertStatus.
+const (
+	AlertStatusFiring   AlertStatus = "firing"
+	AlertStatusResolved AlertStatus = "resolved"
+)
+
+// Valid indicates whether the value is a known member of the AlertStatus enum.
+func (e AlertStatus) Valid() bool {
+	switch e {
+	case AlertStatusFiring:
+		return true
+	case AlertStatusResolved:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CompareOperator.
 const (
 	CompareOperatorEmpty            CompareOperator = "!="
@@ -151,6 +169,9 @@ func (e TimeUnit) Valid() bool {
 	}
 }
 
+// AlertStatus defines model for AlertStatus.
+type AlertStatus string
+
 // CompareOperator defines model for CompareOperator.
 type CompareOperator string
 
@@ -202,6 +223,18 @@ type DashboardTemplateBaseSchema struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+// DashboardTemplateSchema defines model for DashboardTemplateSchema.
+type DashboardTemplateSchema struct {
+	CreatedAt   time.Time              `json:"created_at"`
+	Description string                 `json:"description"`
+	Enabled     bool                   `json:"enabled"`
+	Id          core.UUID              `json:"id"`
+	Label       string                 `json:"label"`
+	Name        string                 `json:"name"`
+	Template    map[string]interface{} `json:"template"`
+	UpdatedAt   time.Time              `json:"updated_at"`
+}
+
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
 	Errors    []ErrorSchema             `json:"errors"`
@@ -213,6 +246,23 @@ type ErrorSchema struct {
 	Code     string `json:"code"`
 	Location string `json:"location"`
 	Message  string `json:"message"`
+}
+
+// IncidentSchema defines model for IncidentSchema.
+type IncidentSchema struct {
+	AlertName         string                       `json:"alert_name"`
+	FiringTime        time.Time                    `json:"firing_time"`
+	Id                core.UUID                    `json:"id"`
+	LogRuleGroupId    nullable.Nullable[core.UUID] `json:"log_rule_group_id"`
+	LogRuleId         nullable.Nullable[core.UUID] `json:"log_rule_id"`
+	MetricRuleGroupId nullable.Nullable[core.UUID] `json:"metric_rule_group_id"`
+	MetricRuleId      nullable.Nullable[core.UUID] `json:"metric_rule_id"`
+	ProjectId         core.UUID                    `json:"project_id"`
+	ReceiverId        nullable.Nullable[core.UUID] `json:"receiver_id"`
+	ReceiverName      string                       `json:"receiver_name"`
+	RegionId          nullable.Nullable[core.UUID] `json:"region_id"`
+	Severity          Severity                     `json:"severity"`
+	Status            AlertStatus                  `json:"status"`
 }
 
 // LogDashboardBaseSchema defines model for LogDashboardBaseSchema.
@@ -670,6 +720,14 @@ type PagedTokenSchema struct {
 	Results  []TokenSchema             `json:"results"`
 }
 
+// PaginatedIncidentSchema defines model for PaginatedIncidentSchema.
+type PaginatedIncidentSchema struct {
+	Count   int              `json:"count"`
+	MaxPage int              `json:"max_page"`
+	Page    int              `json:"page"`
+	Results []IncidentSchema `json:"results"`
+}
+
 // ReceiverCreateSchema defines model for ReceiverCreateSchema.
 type ReceiverCreateSchema struct {
 	Destination    string                 `json:"destination"`
@@ -804,6 +862,16 @@ type GetDashboardParams struct {
 // UpdateDashboardParams defines parameters for UpdateDashboard.
 type UpdateDashboardParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// ListIncidentsParams defines parameters for ListIncidents.
+type ListIncidentsParams struct {
+	Page         *int       `form:"page,omitempty" json:"page,omitempty"`
+	PageSize     *int       `form:"page_size,omitempty" json:"page_size,omitempty"`
+	AlertName    *string    `form:"alert_name,omitempty" json:"alert_name,omitempty"`
+	ReceiverName *string    `form:"receiver_name,omitempty" json:"receiver_name,omitempty"`
+	RegionId     *core.UUID `form:"region_id,omitempty" json:"region_id,omitempty"`
+	ProjectID    core.UUID  `json:"Project-ID"`
 }
 
 // ListLogDashboardsParams defines parameters for ListLogDashboards.
@@ -1296,6 +1364,11 @@ type ClientInterface interface {
 	// Corresponds with GET /v2/observability/dashboard-templates/ (the `ListDashboardTemplates` operationId).
 	ListDashboardTemplates(ctx context.Context, params *ListDashboardTemplatesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetDashboardTemplate Get Dashboard Template
+	//
+	// Corresponds with GET /v2/observability/dashboard-templates/{dashboard_template_id}/ (the `GetDashboardTemplate` operationId).
+	GetDashboardTemplate(ctx context.Context, dashboardTemplateId core.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListDashboards List Dashboards
 	//
 	// **Required permissions:**
@@ -1366,6 +1439,15 @@ type ClientInterface interface {
 	//
 	// Corresponds with PATCH /v2/observability/dashboards/{dashboard_id}/ (the `UpdateDashboard` operationId).
 	UpdateDashboard(ctx context.Context, dashboardId core.UUID, params *UpdateDashboardParams, body UpdateDashboardJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListIncidents List Incidents
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:observability:incident:list`
+	//
+	// Corresponds with GET /v2/observability/incidents/ (the `ListIncidents` operationId).
+	ListIncidents(ctx context.Context, params *ListIncidentsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListLogDashboards List Log Dashboards
 	//
@@ -1584,6 +1666,11 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /v2/observability/log-rule-templates/ (the `ListLogRuleTemplates` operationId).
 	ListLogRuleTemplates(ctx context.Context, params *ListLogRuleTemplatesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetLogRuleTemplate Get Log Rule Template
+	//
+	// Corresponds with GET /v2/observability/log-rule-templates/{log_rule_template_id}/ (the `GetLogRuleTemplate` operationId).
+	GetLogRuleTemplate(ctx context.Context, logRuleTemplateId core.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListLogRules List Log Rules
 	//
@@ -1874,6 +1961,11 @@ type ClientInterface interface {
 	// Corresponds with GET /v2/observability/metric-rule-templates/ (the `ListMetricRuleTemplates` operationId).
 	ListMetricRuleTemplates(ctx context.Context, params *ListMetricRuleTemplatesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetMetricRuleTemplate Get Metric Rule Template
+	//
+	// Corresponds with GET /v2/observability/metric-rule-templates/{metric_rule_template_id}/ (the `GetMetricRuleTemplate` operationId).
+	GetMetricRuleTemplate(ctx context.Context, metricRuleTemplateId core.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListMetricRules List Metric Rules
 	//
 	// **Required permissions:**
@@ -2103,6 +2195,21 @@ func (c *Client) ListDashboardTemplates(ctx context.Context, params *ListDashboa
 	return c.Client.Do(req)
 }
 
+// GetDashboardTemplate Get Dashboard Template
+//
+// Corresponds with GET /v2/observability/dashboard-templates/{dashboard_template_id}/ (the `GetDashboardTemplate` operationId).
+func (c *Client) GetDashboardTemplate(ctx context.Context, dashboardTemplateId core.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetDashboardTemplateRequest(c.Server, dashboardTemplateId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // ListDashboards List Dashboards
 //
 // **Required permissions:**
@@ -2234,6 +2341,25 @@ func (c *Client) UpdateDashboardWithBody(ctx context.Context, dashboardId core.U
 // Corresponds with PATCH /v2/observability/dashboards/{dashboard_id}/ (the `UpdateDashboard` operationId).
 func (c *Client) UpdateDashboard(ctx context.Context, dashboardId core.UUID, params *UpdateDashboardParams, body UpdateDashboardJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateDashboardRequest(c.Server, dashboardId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListIncidents List Incidents
+//
+// **Required permissions:**
+//
+// - `urn:action:observability:incident:list`
+//
+// Corresponds with GET /v2/observability/incidents/ (the `ListIncidents` operationId).
+func (c *Client) ListIncidents(ctx context.Context, params *ListIncidentsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListIncidentsRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2672,6 +2798,21 @@ func (c *Client) UpdateLogRuleGroup(ctx context.Context, logRuleGroupId core.UUI
 // Corresponds with GET /v2/observability/log-rule-templates/ (the `ListLogRuleTemplates` operationId).
 func (c *Client) ListLogRuleTemplates(ctx context.Context, params *ListLogRuleTemplatesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListLogRuleTemplatesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetLogRuleTemplate Get Log Rule Template
+//
+// Corresponds with GET /v2/observability/log-rule-templates/{log_rule_template_id}/ (the `GetLogRuleTemplate` operationId).
+func (c *Client) GetLogRuleTemplate(ctx context.Context, logRuleTemplateId core.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetLogRuleTemplateRequest(c.Server, logRuleTemplateId)
 	if err != nil {
 		return nil, err
 	}
@@ -3261,6 +3402,21 @@ func (c *Client) ListMetricRuleTemplates(ctx context.Context, params *ListMetric
 	return c.Client.Do(req)
 }
 
+// GetMetricRuleTemplate Get Metric Rule Template
+//
+// Corresponds with GET /v2/observability/metric-rule-templates/{metric_rule_template_id}/ (the `GetMetricRuleTemplate` operationId).
+func (c *Client) GetMetricRuleTemplate(ctx context.Context, metricRuleTemplateId core.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetMetricRuleTemplateRequest(c.Server, metricRuleTemplateId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // ListMetricRules List Metric Rules
 //
 // **Required permissions:**
@@ -3786,6 +3942,40 @@ func NewListDashboardTemplatesRequest(server string, params *ListDashboardTempla
 	return req, nil
 }
 
+// NewGetDashboardTemplateRequest constructs an http.Request for the GetDashboardTemplate method
+func NewGetDashboardTemplateRequest(server string, dashboardTemplateId core.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dashboard_template_id", dashboardTemplateId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/observability/dashboard-templates/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewListDashboardsRequest constructs an http.Request for the ListDashboards method
 func NewListDashboardsRequest(server string, params *ListDashboardsParams) (*http.Request, error) {
 	var err error
@@ -4079,6 +4269,121 @@ func NewUpdateDashboardRequestWithBody(server string, dashboardId core.UUID, par
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListIncidentsRequest constructs an http.Request for the ListIncidents method
+func NewListIncidentsRequest(server string, params *ListIncidentsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/observability/incidents/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Page != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page", *params.Page, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.AlertName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "alert_name", *params.AlertName, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.ReceiverName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "receiver_name", *params.ReceiverName, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RegionId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "region_id", *params.RegionId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	if params != nil {
 
@@ -5238,6 +5543,40 @@ func NewListLogRuleTemplatesRequest(server string, params *ListLogRuleTemplatesP
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetLogRuleTemplateRequest constructs an http.Request for the GetLogRuleTemplate method
+func NewGetLogRuleTemplateRequest(server string, logRuleTemplateId core.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "log_rule_template_id", logRuleTemplateId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/observability/log-rule-templates/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
 	}
 
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
@@ -6782,6 +7121,40 @@ func NewListMetricRuleTemplatesRequest(server string, params *ListMetricRuleTemp
 	return req, nil
 }
 
+// NewGetMetricRuleTemplateRequest constructs an http.Request for the GetMetricRuleTemplate method
+func NewGetMetricRuleTemplateRequest(server string, metricRuleTemplateId core.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "metric_rule_template_id", metricRuleTemplateId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/observability/metric-rule-templates/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewListMetricRulesRequest constructs an http.Request for the ListMetricRules method
 func NewListMetricRulesRequest(server string, params *ListMetricRulesParams) (*http.Request, error) {
 	var err error
@@ -7871,6 +8244,13 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /v2/observability/dashboard-templates/ (the `ListDashboardTemplates` operationId).
 	ListDashboardTemplatesWithResponse(ctx context.Context, params *ListDashboardTemplatesParams, reqEditors ...RequestEditorFn) (*ListDashboardTemplatesResponse, error)
 
+	// GetDashboardTemplateWithResponse Get Dashboard Template
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/observability/dashboard-templates/{dashboard_template_id}/ (the `GetDashboardTemplate` operationId).
+	GetDashboardTemplateWithResponse(ctx context.Context, dashboardTemplateId core.UUID, reqEditors ...RequestEditorFn) (*GetDashboardTemplateResponse, error)
+
 	// ListDashboardsWithResponse List Dashboards
 	//
 	// **Required permissions:**
@@ -7947,6 +8327,17 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with PATCH /v2/observability/dashboards/{dashboard_id}/ (the `UpdateDashboard` operationId).
 	UpdateDashboardWithResponse(ctx context.Context, dashboardId core.UUID, params *UpdateDashboardParams, body UpdateDashboardJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateDashboardResponse, error)
+
+	// ListIncidentsWithResponse List Incidents
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:observability:incident:list`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/observability/incidents/ (the `ListIncidents` operationId).
+	ListIncidentsWithResponse(ctx context.Context, params *ListIncidentsParams, reqEditors ...RequestEditorFn) (*ListIncidentsResponse, error)
 
 	// ListLogDashboardsWithResponse List Log Dashboards
 	//
@@ -8185,6 +8576,13 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /v2/observability/log-rule-templates/ (the `ListLogRuleTemplates` operationId).
 	ListLogRuleTemplatesWithResponse(ctx context.Context, params *ListLogRuleTemplatesParams, reqEditors ...RequestEditorFn) (*ListLogRuleTemplatesResponse, error)
+
+	// GetLogRuleTemplateWithResponse Get Log Rule Template
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/observability/log-rule-templates/{log_rule_template_id}/ (the `GetLogRuleTemplate` operationId).
+	GetLogRuleTemplateWithResponse(ctx context.Context, logRuleTemplateId core.UUID, reqEditors ...RequestEditorFn) (*GetLogRuleTemplateResponse, error)
 
 	// ListLogRulesWithResponse List Log Rules
 	//
@@ -8501,6 +8899,13 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /v2/observability/metric-rule-templates/ (the `ListMetricRuleTemplates` operationId).
 	ListMetricRuleTemplatesWithResponse(ctx context.Context, params *ListMetricRuleTemplatesParams, reqEditors ...RequestEditorFn) (*ListMetricRuleTemplatesResponse, error)
 
+	// GetMetricRuleTemplateWithResponse Get Metric Rule Template
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/observability/metric-rule-templates/{metric_rule_template_id}/ (the `GetMetricRuleTemplate` operationId).
+	GetMetricRuleTemplateWithResponse(ctx context.Context, metricRuleTemplateId core.UUID, reqEditors ...RequestEditorFn) (*GetMetricRuleTemplateResponse, error)
+
 	// ListMetricRulesWithResponse List Metric Rules
 	//
 	// **Required permissions:**
@@ -8766,6 +9171,39 @@ func (r ListDashboardTemplatesResponse) StatusCode() int {
 	return 0
 }
 
+type GetDashboardTemplateResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *DashboardTemplateSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetDashboardTemplateResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetDashboardTemplateResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type ListDashboardsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -8923,6 +9361,39 @@ func (r UpdateDashboardResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateDashboardResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListIncidentsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PaginatedIncidentSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListIncidentsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListIncidentsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9445,6 +9916,39 @@ func (r ListLogRuleTemplatesResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r ListLogRuleTemplatesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetLogRuleTemplateResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *LogRuleTemplateSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetLogRuleTemplateResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetLogRuleTemplateResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10136,6 +10640,39 @@ func (r ListMetricRuleTemplatesResponse) StatusCode() int {
 	return 0
 }
 
+type GetMetricRuleTemplateResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *MetricRuleTemplateSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetMetricRuleTemplateResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetMetricRuleTemplateResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type ListMetricRulesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -10638,6 +11175,19 @@ func (c *ClientWithResponses) ListDashboardTemplatesWithResponse(ctx context.Con
 	return ParseListDashboardTemplatesResponse(rsp)
 }
 
+// GetDashboardTemplateWithResponse Get Dashboard Template
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/observability/dashboard-templates/{dashboard_template_id}/ (the `GetDashboardTemplate` operationId).
+func (c *ClientWithResponses) GetDashboardTemplateWithResponse(ctx context.Context, dashboardTemplateId core.UUID, reqEditors ...RequestEditorFn) (*GetDashboardTemplateResponse, error) {
+	rsp, err := c.GetDashboardTemplate(ctx, dashboardTemplateId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetDashboardTemplateResponse(rsp)
+}
+
 // ListDashboardsWithResponse List Dashboards
 //
 // **Required permissions:**
@@ -10755,6 +11305,23 @@ func (c *ClientWithResponses) UpdateDashboardWithResponse(ctx context.Context, d
 		return nil, err
 	}
 	return ParseUpdateDashboardResponse(rsp)
+}
+
+// ListIncidentsWithResponse List Incidents
+//
+// **Required permissions:**
+//
+// - `urn:action:observability:incident:list`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/observability/incidents/ (the `ListIncidents` operationId).
+func (c *ClientWithResponses) ListIncidentsWithResponse(ctx context.Context, params *ListIncidentsParams, reqEditors ...RequestEditorFn) (*ListIncidentsResponse, error) {
+	rsp, err := c.ListIncidents(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListIncidentsResponse(rsp)
 }
 
 // ListLogDashboardsWithResponse List Log Dashboards
@@ -11125,6 +11692,19 @@ func (c *ClientWithResponses) ListLogRuleTemplatesWithResponse(ctx context.Conte
 		return nil, err
 	}
 	return ParseListLogRuleTemplatesResponse(rsp)
+}
+
+// GetLogRuleTemplateWithResponse Get Log Rule Template
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/observability/log-rule-templates/{log_rule_template_id}/ (the `GetLogRuleTemplate` operationId).
+func (c *ClientWithResponses) GetLogRuleTemplateWithResponse(ctx context.Context, logRuleTemplateId core.UUID, reqEditors ...RequestEditorFn) (*GetLogRuleTemplateResponse, error) {
+	rsp, err := c.GetLogRuleTemplate(ctx, logRuleTemplateId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetLogRuleTemplateResponse(rsp)
 }
 
 // ListLogRulesWithResponse List Log Rules
@@ -11616,6 +12196,19 @@ func (c *ClientWithResponses) ListMetricRuleTemplatesWithResponse(ctx context.Co
 	return ParseListMetricRuleTemplatesResponse(rsp)
 }
 
+// GetMetricRuleTemplateWithResponse Get Metric Rule Template
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/observability/metric-rule-templates/{metric_rule_template_id}/ (the `GetMetricRuleTemplate` operationId).
+func (c *ClientWithResponses) GetMetricRuleTemplateWithResponse(ctx context.Context, metricRuleTemplateId core.UUID, reqEditors ...RequestEditorFn) (*GetMetricRuleTemplateResponse, error) {
+	rsp, err := c.GetMetricRuleTemplate(ctx, metricRuleTemplateId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetMetricRuleTemplateResponse(rsp)
+}
+
 // ListMetricRulesWithResponse List Metric Rules
 //
 // **Required permissions:**
@@ -12034,6 +12627,67 @@ func ParseListDashboardTemplatesResponse(rsp *http.Response) (*ListDashboardTemp
 	return response, nil
 }
 
+// ParseGetDashboardTemplateResponse parses an HTTP response from a GetDashboardTemplateWithResponse call
+func ParseGetDashboardTemplateResponse(rsp *http.Response) (*GetDashboardTemplateResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetDashboardTemplateResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DashboardTemplateSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseListDashboardsResponse parses an HTTP response from a ListDashboardsWithResponse call
 func ParseListDashboardsResponse(rsp *http.Response) (*ListDashboardsResponse, error) {
 	bodyBytes, err := core.ReadResponseBody(rsp)
@@ -12290,6 +12944,67 @@ func ParseUpdateDashboardResponse(rsp *http.Response) (*UpdateDashboardResponse,
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest DashboardSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListIncidentsResponse parses an HTTP response from a ListIncidentsWithResponse call
+func ParseListIncidentsResponse(rsp *http.Response) (*ListIncidentsResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListIncidentsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PaginatedIncidentSchema
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -13254,6 +13969,67 @@ func ParseListLogRuleTemplatesResponse(rsp *http.Response) (*ListLogRuleTemplate
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest PagedLogRuleTemplateSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetLogRuleTemplateResponse parses an HTTP response from a GetLogRuleTemplateWithResponse call
+func ParseGetLogRuleTemplateResponse(rsp *http.Response) (*GetLogRuleTemplateResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetLogRuleTemplateResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest LogRuleTemplateSchema
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -14519,6 +15295,67 @@ func ParseListMetricRuleTemplatesResponse(rsp *http.Response) (*ListMetricRuleTe
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest PagedMetricRuleTemplateSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetMetricRuleTemplateResponse parses an HTTP response from a GetMetricRuleTemplateWithResponse call
+func ParseGetMetricRuleTemplateResponse(rsp *http.Response) (*GetMetricRuleTemplateResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetMetricRuleTemplateResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest MetricRuleTemplateSchema
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

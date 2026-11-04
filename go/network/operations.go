@@ -441,6 +441,90 @@ func (c *Client) UpdateRouteTableInternetAccess(ctx context.Context, RouteTableI
 	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
 }
 
+// ListVpcPeerings List Vpc Peerings
+//
+// GET /v2/network/vpc-peerings/
+func (c *Client) ListVpcPeerings(ctx context.Context, params ListVpcPeeringsParams) (*PagedVPCPeeringSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListVpcPeeringsWithResponse(ctx, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// CreateVpcPeering Create Vpc Peering
+//
+// POST /v2/network/vpc-peerings/
+func (c *Client) CreateVpcPeering(ctx context.Context, params CreateVpcPeeringParams, body VPCPeeringCreateSchema) (*VPCPeeringSchema, error) {
+	genParams := params
+	resp, err := c.gen.CreateVpcPeeringWithResponse(ctx, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON201, 201)
+}
+
+// GetVpcPeering Get Vpc Peering
+//
+// GET /v2/network/vpc-peerings/{vpc_peering_id}/
+func (c *Client) GetVpcPeering(ctx context.Context, VPCPeeringID core.UUID, params GetVpcPeeringParams) (*VPCPeeringSchema, error) {
+	genParams := params
+	resp, err := c.gen.GetVpcPeeringWithResponse(ctx, VPCPeeringID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// UpdateVpcPeering Update Vpc Peering
+//
+// PUT /v2/network/vpc-peerings/{vpc_peering_id}/
+func (c *Client) UpdateVpcPeering(ctx context.Context, VPCPeeringID core.UUID, params UpdateVpcPeeringParams, body VPCPeeringUpdateSchema) (*VPCPeeringSchema, error) {
+	genParams := params
+	resp, err := c.gen.UpdateVpcPeeringWithResponse(ctx, VPCPeeringID, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// DeleteVpcPeering Delete Vpc Peering
+//
+// DELETE /v2/network/vpc-peerings/{vpc_peering_id}/
+func (c *Client) DeleteVpcPeering(ctx context.Context, VPCPeeringID core.UUID, params DeleteVpcPeeringParams) error {
+	genParams := params
+	resp, err := c.gen.DeleteVpcPeeringWithResponse(ctx, VPCPeeringID, &genParams)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
+}
+
+// AcceptVpcPeering Accept Vpc Peering
+//
+// POST /v2/network/vpc-peerings/{vpc_peering_id}/accept/
+func (c *Client) AcceptVpcPeering(ctx context.Context, VPCPeeringID core.UUID, params AcceptVpcPeeringParams) error {
+	genParams := params
+	resp, err := c.gen.AcceptVpcPeeringWithResponse(ctx, VPCPeeringID, &genParams)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
+}
+
+// RejectVpcPeering Reject Vpc Peering
+//
+// POST /v2/network/vpc-peerings/{vpc_peering_id}/reject/
+func (c *Client) RejectVpcPeering(ctx context.Context, VPCPeeringID core.UUID, params RejectVpcPeeringParams) error {
+	genParams := params
+	resp, err := c.gen.RejectVpcPeeringWithResponse(ctx, VPCPeeringID, &genParams)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
+}
+
 // ListSecurityGroups List Security Groups
 //
 // GET /v2/network/security-groups/
@@ -687,6 +771,21 @@ func (c *Client) ListRouteTableSubnetsIter(ctx context.Context, RouteTableID cor
 			return core.Page[RouteTableSubnetSchema]{}, err
 		}
 		return core.Page[RouteTableSubnetSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListVpcPeeringsIter returns an iterator over all VPCPeeringSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListVpcPeeringsIter(ctx context.Context, params ListVpcPeeringsParams) iter.Seq2[*VPCPeeringSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[VPCPeeringSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListVpcPeerings(ctx, p)
+		if err != nil {
+			return core.Page[VPCPeeringSchema]{}, err
+		}
+		return core.Page[VPCPeeringSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
 	})
 }
 

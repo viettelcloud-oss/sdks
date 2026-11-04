@@ -520,12 +520,12 @@ type ContainerGroupScalingSchema struct {
 
 // ContainerGroupSchema defines model for ContainerGroupSchema.
 type ContainerGroupSchema struct {
-	CreatedAt      time.Time                                             `json:"created_at"`
-	Flavor         NestedCaaSFlavorSchema                                `json:"flavor"`
-	Id             core.UUID                                             `json:"id"`
-	LatestRevision nullable.Nullable[ContainerGroupRevisionDetailSchema] `json:"latest_revision,omitempty"`
-	Message        string                                                `json:"message"`
-	Name           string                                                `json:"name"`
+	CreatedAt      time.Time                          `json:"created_at"`
+	Flavor         NestedCaaSFlavorSchema             `json:"flavor"`
+	Id             core.UUID                          `json:"id"`
+	LatestRevision ContainerGroupRevisionDetailSchema `json:"latest_revision"`
+	Message        string                             `json:"message"`
+	Name           string                             `json:"name"`
 
 	// OperationalStatus What CMP is doing to the group right now. Claimed through a
 	// compare-and-swap so a second concurrent operation is rejected, and released

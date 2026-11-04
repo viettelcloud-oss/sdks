@@ -418,14 +418,6 @@ type PagedAuthenticatorSchema struct {
 	Results  []AuthenticatorSchema     `json:"results"`
 }
 
-// PagedCORSConfigSchema defines model for PagedCORSConfigSchema.
-type PagedCORSConfigSchema struct {
-	Count    int                       `json:"count"`
-	Next     nullable.Nullable[string] `json:"next,omitempty"`
-	Previous nullable.Nullable[string] `json:"previous,omitempty"`
-	Results  []CORSConfigSchema        `json:"results"`
-}
-
 // PagedCustomDomainSchema defines model for PagedCustomDomainSchema.
 type PagedCustomDomainSchema struct {
 	Count    int                       `json:"count"`
@@ -694,11 +686,6 @@ type GetApiParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
-// RefreshApiMetricsParams defines parameters for RefreshApiMetrics.
-type RefreshApiMetricsParams struct {
-	ProjectID core.UUID `json:"Project-ID"`
-}
-
 // ListAuthenticatorsParams defines parameters for ListAuthenticators.
 type ListAuthenticatorsParams struct {
 	Name       *string    `form:"name,omitempty" json:"name,omitempty"`
@@ -724,14 +711,6 @@ type GetAuthenticatorParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
-// ListCorsConfigsParams defines parameters for ListCorsConfigs.
-type ListCorsConfigsParams struct {
-	ApiId      *core.UUID `form:"api_id,omitempty" json:"api_id,omitempty"`
-	PageSize   *int       `form:"page_size,omitempty" json:"page_size,omitempty"`
-	PageNumber *int       `form:"page_number,omitempty" json:"page_number,omitempty"`
-	ProjectID  core.UUID  `json:"Project-ID"`
-}
-
 // GetCorsConfigParams defines parameters for GetCorsConfig.
 type GetCorsConfigParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
@@ -739,11 +718,6 @@ type GetCorsConfigParams struct {
 
 // UpdateCorsConfigParams defines parameters for UpdateCorsConfig.
 type UpdateCorsConfigParams struct {
-	ProjectID core.UUID `json:"Project-ID"`
-}
-
-// ResetCorsConfigParams defines parameters for ResetCorsConfig.
-type ResetCorsConfigParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
@@ -1158,15 +1132,6 @@ type ClientInterface interface {
 	// Corresponds with GET /v2/api-gateway/apis/{api_id}/ (the `GetApi` operationId).
 	GetApi(ctx context.Context, apiId core.UUID, params *GetApiParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// RefreshApiMetrics Refresh Api Metrics
-	//
-	// **Required permissions:**
-	//
-	// - `urn:action:api_gateway:api:refresh_metrics`
-	//
-	// Corresponds with POST /v2/api-gateway/apis/{api_id}/refresh-metrics/ (the `RefreshApiMetrics` operationId).
-	RefreshApiMetrics(ctx context.Context, apiId core.UUID, params *RefreshApiMetricsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// ListAuthenticators List Authenticators
 	//
 	// **Required permissions:**
@@ -1216,15 +1181,6 @@ type ClientInterface interface {
 	// Corresponds with GET /v2/api-gateway/authenticators/{authenticator_id}/ (the `GetAuthenticator` operationId).
 	GetAuthenticator(ctx context.Context, authenticatorId core.UUID, params *GetAuthenticatorParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// ListCorsConfigs List Cors Configs
-	//
-	// **Required permissions:**
-	//
-	// - `urn:action:api_gateway:cors_config:list`
-	//
-	// Corresponds with GET /v2/api-gateway/cors-configs/ (the `ListCorsConfigs` operationId).
-	ListCorsConfigs(ctx context.Context, params *ListCorsConfigsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// GetCorsConfig Get Cors Config
 	//
 	// **Required permissions:**
@@ -1255,15 +1211,6 @@ type ClientInterface interface {
 	//
 	// Corresponds with PATCH /v2/api-gateway/cors-configs/{cors_config_id}/ (the `UpdateCorsConfig` operationId).
 	UpdateCorsConfig(ctx context.Context, corsConfigId core.UUID, params *UpdateCorsConfigParams, body UpdateCorsConfigJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ResetCorsConfig Reset Cors Config
-	//
-	// **Required permissions:**
-	//
-	// - `urn:action:api_gateway:cors_config:reset`
-	//
-	// Corresponds with POST /v2/api-gateway/cors-configs/{cors_config_id}/reset/ (the `ResetCorsConfig` operationId).
-	ResetCorsConfig(ctx context.Context, corsConfigId core.UUID, params *ResetCorsConfigParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListCustomDomains List Custom Domains
 	//
@@ -1636,25 +1583,6 @@ func (c *Client) GetApi(ctx context.Context, apiId core.UUID, params *GetApiPara
 	return c.Client.Do(req)
 }
 
-// RefreshApiMetrics Refresh Api Metrics
-//
-// **Required permissions:**
-//
-// - `urn:action:api_gateway:api:refresh_metrics`
-//
-// Corresponds with POST /v2/api-gateway/apis/{api_id}/refresh-metrics/ (the `RefreshApiMetrics` operationId).
-func (c *Client) RefreshApiMetrics(ctx context.Context, apiId core.UUID, params *RefreshApiMetricsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewRefreshApiMetricsRequest(c.Server, apiId, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 // ListAuthenticators List Authenticators
 //
 // **Required permissions:**
@@ -1754,25 +1682,6 @@ func (c *Client) GetAuthenticator(ctx context.Context, authenticatorId core.UUID
 	return c.Client.Do(req)
 }
 
-// ListCorsConfigs List Cors Configs
-//
-// **Required permissions:**
-//
-// - `urn:action:api_gateway:cors_config:list`
-//
-// Corresponds with GET /v2/api-gateway/cors-configs/ (the `ListCorsConfigs` operationId).
-func (c *Client) ListCorsConfigs(ctx context.Context, params *ListCorsConfigsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListCorsConfigsRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 // GetCorsConfig Get Cors Config
 //
 // **Required permissions:**
@@ -1824,25 +1733,6 @@ func (c *Client) UpdateCorsConfigWithBody(ctx context.Context, corsConfigId core
 // Corresponds with PATCH /v2/api-gateway/cors-configs/{cors_config_id}/ (the `UpdateCorsConfig` operationId).
 func (c *Client) UpdateCorsConfig(ctx context.Context, corsConfigId core.UUID, params *UpdateCorsConfigParams, body UpdateCorsConfigJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateCorsConfigRequest(c.Server, corsConfigId, params, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// ResetCorsConfig Reset Cors Config
-//
-// **Required permissions:**
-//
-// - `urn:action:api_gateway:cors_config:reset`
-//
-// Corresponds with POST /v2/api-gateway/cors-configs/{cors_config_id}/reset/ (the `ResetCorsConfig` operationId).
-func (c *Client) ResetCorsConfig(ctx context.Context, corsConfigId core.UUID, params *ResetCorsConfigParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewResetCorsConfigRequest(c.Server, corsConfigId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2644,53 +2534,6 @@ func NewGetApiRequest(server string, apiId core.UUID, params *GetApiParams) (*ht
 	return req, nil
 }
 
-// NewRefreshApiMetricsRequest constructs an http.Request for the RefreshApiMetrics method
-func NewRefreshApiMetricsRequest(server string, apiId core.UUID, params *RefreshApiMetricsParams) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "api_id", apiId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v2/api-gateway/apis/%s/refresh-metrics/", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-
-		var headerParam0 string
-
-		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("Project-ID", headerParam0)
-
-	}
-
-	return req, nil
-}
-
 // NewListAuthenticatorsRequest constructs an http.Request for the ListAuthenticators method
 func NewListAuthenticatorsRequest(server string, params *ListAuthenticatorsParams) (*http.Request, error) {
 	var err error
@@ -2953,97 +2796,6 @@ func NewGetAuthenticatorRequest(server string, authenticatorId core.UUID, params
 	return req, nil
 }
 
-// NewListCorsConfigsRequest constructs an http.Request for the ListCorsConfigs method
-func NewListCorsConfigsRequest(server string, params *ListCorsConfigsParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v2/api-gateway/cors-configs/")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		// queryValues collects non-styled parameters (passthrough, JSON)
-		// that are safe to round-trip through url.Values.Encode().
-		queryValues := queryURL.Query()
-		// rawQueryFragments collects pre-encoded query fragments from
-		// styled parameters, preserving literal commas as delimiters
-		// per the OpenAPI spec (e.g. "color=blue,black,brown").
-		var rawQueryFragments []string
-
-		if params.ApiId != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "api_id", *params.ApiId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if params.PageSize != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if params.PageNumber != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if encoded := queryValues.Encode(); encoded != "" {
-			rawQueryFragments = append(rawQueryFragments, encoded)
-		}
-		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-
-		var headerParam0 string
-
-		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("Project-ID", headerParam0)
-
-	}
-
-	return req, nil
-}
-
 // NewGetCorsConfigRequest constructs an http.Request for the GetCorsConfig method
 func NewGetCorsConfigRequest(server string, corsConfigId core.UUID, params *GetCorsConfigParams) (*http.Request, error) {
 	var err error
@@ -3134,53 +2886,6 @@ func NewUpdateCorsConfigRequestWithBody(server string, corsConfigId core.UUID, p
 	}
 
 	req.Header.Add("Content-Type", contentType)
-
-	if params != nil {
-
-		var headerParam0 string
-
-		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("Project-ID", headerParam0)
-
-	}
-
-	return req, nil
-}
-
-// NewResetCorsConfigRequest constructs an http.Request for the ResetCorsConfig method
-func NewResetCorsConfigRequest(server string, corsConfigId core.UUID, params *ResetCorsConfigParams) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "cors_config_id", corsConfigId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v2/api-gateway/cors-configs/%s/reset/", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
 
 	if params != nil {
 
@@ -4584,17 +4289,6 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /v2/api-gateway/apis/{api_id}/ (the `GetApi` operationId).
 	GetApiWithResponse(ctx context.Context, apiId core.UUID, params *GetApiParams, reqEditors ...RequestEditorFn) (*GetApiResponse, error)
 
-	// RefreshApiMetricsWithResponse Refresh Api Metrics
-	//
-	// **Required permissions:**
-	//
-	// - `urn:action:api_gateway:api:refresh_metrics`
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /v2/api-gateway/apis/{api_id}/refresh-metrics/ (the `RefreshApiMetrics` operationId).
-	RefreshApiMetricsWithResponse(ctx context.Context, apiId core.UUID, params *RefreshApiMetricsParams, reqEditors ...RequestEditorFn) (*RefreshApiMetricsResponse, error)
-
 	// ListAuthenticatorsWithResponse List Authenticators
 	//
 	// **Required permissions:**
@@ -4650,17 +4344,6 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /v2/api-gateway/authenticators/{authenticator_id}/ (the `GetAuthenticator` operationId).
 	GetAuthenticatorWithResponse(ctx context.Context, authenticatorId core.UUID, params *GetAuthenticatorParams, reqEditors ...RequestEditorFn) (*GetAuthenticatorResponse, error)
 
-	// ListCorsConfigsWithResponse List Cors Configs
-	//
-	// **Required permissions:**
-	//
-	// - `urn:action:api_gateway:cors_config:list`
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /v2/api-gateway/cors-configs/ (the `ListCorsConfigs` operationId).
-	ListCorsConfigsWithResponse(ctx context.Context, params *ListCorsConfigsParams, reqEditors ...RequestEditorFn) (*ListCorsConfigsResponse, error)
-
 	// GetCorsConfigWithResponse Get Cors Config
 	//
 	// **Required permissions:**
@@ -4693,17 +4376,6 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with PATCH /v2/api-gateway/cors-configs/{cors_config_id}/ (the `UpdateCorsConfig` operationId).
 	UpdateCorsConfigWithResponse(ctx context.Context, corsConfigId core.UUID, params *UpdateCorsConfigParams, body UpdateCorsConfigJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCorsConfigResponse, error)
-
-	// ResetCorsConfigWithResponse Reset Cors Config
-	//
-	// **Required permissions:**
-	//
-	// - `urn:action:api_gateway:cors_config:reset`
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /v2/api-gateway/cors-configs/{cors_config_id}/reset/ (the `ResetCorsConfig` operationId).
-	ResetCorsConfigWithResponse(ctx context.Context, corsConfigId core.UUID, params *ResetCorsConfigParams, reqEditors ...RequestEditorFn) (*ResetCorsConfigResponse, error)
 
 	// ListCustomDomainsWithResponse List Custom Domains
 	//
@@ -5133,39 +4805,6 @@ func (r GetApiResponse) StatusCode() int {
 	return 0
 }
 
-type RefreshApiMetricsResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *APIBaseSchema
-	// JSON400 the response for an HTTP 400 `application/json` response
-	JSON400 *ValidationError
-	// JSON401 the response for an HTTP 401 `application/json` response
-	JSON401 *AuthenticationError
-	// JSON403 the response for an HTTP 403 `application/json` response
-	JSON403 *PermissionDenied
-	// JSON500 the response for an HTTP 500 `application/json` response
-	JSON500 *InternalError
-	// JSON502 the response for an HTTP 502 `application/json` response
-	JSON502 *ProviderError
-}
-
-// Status returns HTTPResponse.Status
-func (r RefreshApiMetricsResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r RefreshApiMetricsResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type ListAuthenticatorsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -5296,39 +4935,6 @@ func (r GetAuthenticatorResponse) StatusCode() int {
 	return 0
 }
 
-type ListCorsConfigsResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *PagedCORSConfigSchema
-	// JSON400 the response for an HTTP 400 `application/json` response
-	JSON400 *ValidationError
-	// JSON401 the response for an HTTP 401 `application/json` response
-	JSON401 *AuthenticationError
-	// JSON403 the response for an HTTP 403 `application/json` response
-	JSON403 *PermissionDenied
-	// JSON500 the response for an HTTP 500 `application/json` response
-	JSON500 *InternalError
-	// JSON502 the response for an HTTP 502 `application/json` response
-	JSON502 *ProviderError
-}
-
-// Status returns HTTPResponse.Status
-func (r ListCorsConfigsResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ListCorsConfigsResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type GetCorsConfigResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -5389,39 +4995,6 @@ func (r UpdateCorsConfigResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateCorsConfigResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type ResetCorsConfigResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *CORSConfigSchema
-	// JSON400 the response for an HTTP 400 `application/json` response
-	JSON400 *ValidationError
-	// JSON401 the response for an HTTP 401 `application/json` response
-	JSON401 *AuthenticationError
-	// JSON403 the response for an HTTP 403 `application/json` response
-	JSON403 *PermissionDenied
-	// JSON500 the response for an HTTP 500 `application/json` response
-	JSON500 *InternalError
-	// JSON502 the response for an HTTP 502 `application/json` response
-	JSON502 *ProviderError
-}
-
-// Status returns HTTPResponse.Status
-func (r ResetCorsConfigResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ResetCorsConfigResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -6163,23 +5736,6 @@ func (c *ClientWithResponses) GetApiWithResponse(ctx context.Context, apiId core
 	return ParseGetApiResponse(rsp)
 }
 
-// RefreshApiMetricsWithResponse Refresh Api Metrics
-//
-// **Required permissions:**
-//
-// - `urn:action:api_gateway:api:refresh_metrics`
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /v2/api-gateway/apis/{api_id}/refresh-metrics/ (the `RefreshApiMetrics` operationId).
-func (c *ClientWithResponses) RefreshApiMetricsWithResponse(ctx context.Context, apiId core.UUID, params *RefreshApiMetricsParams, reqEditors ...RequestEditorFn) (*RefreshApiMetricsResponse, error) {
-	rsp, err := c.RefreshApiMetrics(ctx, apiId, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseRefreshApiMetricsResponse(rsp)
-}
-
 // ListAuthenticatorsWithResponse List Authenticators
 //
 // **Required permissions:**
@@ -6265,23 +5821,6 @@ func (c *ClientWithResponses) GetAuthenticatorWithResponse(ctx context.Context, 
 	return ParseGetAuthenticatorResponse(rsp)
 }
 
-// ListCorsConfigsWithResponse List Cors Configs
-//
-// **Required permissions:**
-//
-// - `urn:action:api_gateway:cors_config:list`
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /v2/api-gateway/cors-configs/ (the `ListCorsConfigs` operationId).
-func (c *ClientWithResponses) ListCorsConfigsWithResponse(ctx context.Context, params *ListCorsConfigsParams, reqEditors ...RequestEditorFn) (*ListCorsConfigsResponse, error) {
-	rsp, err := c.ListCorsConfigs(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListCorsConfigsResponse(rsp)
-}
-
 // GetCorsConfigWithResponse Get Cors Config
 //
 // **Required permissions:**
@@ -6331,23 +5870,6 @@ func (c *ClientWithResponses) UpdateCorsConfigWithResponse(ctx context.Context, 
 		return nil, err
 	}
 	return ParseUpdateCorsConfigResponse(rsp)
-}
-
-// ResetCorsConfigWithResponse Reset Cors Config
-//
-// **Required permissions:**
-//
-// - `urn:action:api_gateway:cors_config:reset`
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /v2/api-gateway/cors-configs/{cors_config_id}/reset/ (the `ResetCorsConfig` operationId).
-func (c *ClientWithResponses) ResetCorsConfigWithResponse(ctx context.Context, corsConfigId core.UUID, params *ResetCorsConfigParams, reqEditors ...RequestEditorFn) (*ResetCorsConfigResponse, error) {
-	rsp, err := c.ResetCorsConfig(ctx, corsConfigId, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseResetCorsConfigResponse(rsp)
 }
 
 // ListCustomDomainsWithResponse List Custom Domains
@@ -7049,67 +6571,6 @@ func ParseGetApiResponse(rsp *http.Response) (*GetApiResponse, error) {
 	return response, nil
 }
 
-// ParseRefreshApiMetricsResponse parses an HTTP response from a RefreshApiMetricsWithResponse call
-func ParseRefreshApiMetricsResponse(rsp *http.Response) (*RefreshApiMetricsResponse, error) {
-	bodyBytes, err := core.ReadResponseBody(rsp)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &RefreshApiMetricsResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest APIBaseSchema
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest ValidationError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest AuthenticationError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
-		var dest PermissionDenied
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON403 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest InternalError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
-		var dest ProviderError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON502 = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseListAuthenticatorsResponse parses an HTTP response from a ListAuthenticatorsWithResponse call
 func ParseListAuthenticatorsResponse(rsp *http.Response) (*ListAuthenticatorsResponse, error) {
 	bodyBytes, err := core.ReadResponseBody(rsp)
@@ -7350,67 +6811,6 @@ func ParseGetAuthenticatorResponse(rsp *http.Response) (*GetAuthenticatorRespons
 	return response, nil
 }
 
-// ParseListCorsConfigsResponse parses an HTTP response from a ListCorsConfigsWithResponse call
-func ParseListCorsConfigsResponse(rsp *http.Response) (*ListCorsConfigsResponse, error) {
-	bodyBytes, err := core.ReadResponseBody(rsp)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &ListCorsConfigsResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest PagedCORSConfigSchema
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest ValidationError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest AuthenticationError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
-		var dest PermissionDenied
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON403 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest InternalError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
-		var dest ProviderError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON502 = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseGetCorsConfigResponse parses an HTTP response from a GetCorsConfigWithResponse call
 func ParseGetCorsConfigResponse(rsp *http.Response) (*GetCorsConfigResponse, error) {
 	bodyBytes, err := core.ReadResponseBody(rsp)
@@ -7481,67 +6881,6 @@ func ParseUpdateCorsConfigResponse(rsp *http.Response) (*UpdateCorsConfigRespons
 	}
 
 	response := &UpdateCorsConfigResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest CORSConfigSchema
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest ValidationError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest AuthenticationError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
-		var dest PermissionDenied
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON403 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest InternalError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
-		var dest ProviderError
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON502 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseResetCorsConfigResponse parses an HTTP response from a ResetCorsConfigWithResponse call
-func ParseResetCorsConfigResponse(rsp *http.Response) (*ResetCorsConfigResponse, error) {
-	bodyBytes, err := core.ReadResponseBody(rsp)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &ResetCorsConfigResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
