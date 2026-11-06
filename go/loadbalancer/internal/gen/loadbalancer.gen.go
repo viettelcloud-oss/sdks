@@ -347,6 +347,21 @@ func (e ServerGroupAlgorithm) Valid() bool {
 	}
 }
 
+// Defines values for ServerGroupBackendTLSMode.
+const (
+	ServerGroupBackendTLSModeENCRYPTONLY ServerGroupBackendTLSMode = "ENCRYPT_ONLY"
+)
+
+// Valid indicates whether the value is a known member of the ServerGroupBackendTLSMode enum.
+func (e ServerGroupBackendTLSMode) Valid() bool {
+	switch e {
+	case ServerGroupBackendTLSModeENCRYPTONLY:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ServerGroupHealthCheckHttpConfigMonitorType.
 const (
 	ServerGroupHealthCheckHttpConfigMonitorTypeHTTP  ServerGroupHealthCheckHttpConfigMonitorType = "HTTP"
@@ -877,14 +892,14 @@ type LBListenerCreateSchema struct {
 
 // LBServerGroupCreateSchema defines model for LBServerGroupCreateSchema.
 type LBServerGroupCreateSchema struct {
-	Algorithm     ServerGroupAlgorithm                            `json:"algorithm"`
-	Description   *string                                         `json:"description,omitempty"`
-	EnableH2      nullable.Nullable[bool]                         `json:"enable_h2,omitempty"`
-	EncryptCertId nullable.Nullable[core.UUID]                    `json:"encrypt_cert_id,omitempty"`
-	HealthCheck   nullable.Nullable[ServerGroupHealthCheckConfig] `json:"health_check"`
-	Members       *[]LBServerGroupMemberCreateSchema              `json:"members,omitempty"`
-	Name          string                                          `json:"name"`
-	Protocol      ServerGroupProtocolType                         `json:"protocol"`
+	Algorithm      ServerGroupAlgorithm                            `json:"algorithm"`
+	BackendTlsMode nullable.Nullable[ServerGroupBackendTLSMode]    `json:"backend_tls_mode,omitempty"`
+	Description    *string                                         `json:"description,omitempty"`
+	EnableH2       nullable.Nullable[bool]                         `json:"enable_h2,omitempty"`
+	HealthCheck    nullable.Nullable[ServerGroupHealthCheckConfig] `json:"health_check"`
+	Members        *[]LBServerGroupMemberCreateSchema              `json:"members,omitempty"`
+	Name           string                                          `json:"name"`
+	Protocol       ServerGroupProtocolType                         `json:"protocol"`
 
 	// SessionPersistence ServerGroupSessionPersistenceKind is exactly one of: ServerGroupSessionPersistenceBasic, ServerGroupSessionPersistenceAppCookie. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
 	SessionPersistence ServerGroupSessionPersistenceKind `json:"session_persistence"`
@@ -1291,6 +1306,9 @@ type PagedServerGroupSchema struct {
 // ServerGroupAlgorithm defines model for ServerGroupAlgorithm.
 type ServerGroupAlgorithm string
 
+// ServerGroupBackendTLSMode defines model for ServerGroupBackendTLSMode.
+type ServerGroupBackendTLSMode string
+
 // ServerGroupBatchMember defines model for ServerGroupBatchMember.
 type ServerGroupBatchMember struct {
 	Address      string                       `json:"address"`
@@ -1308,13 +1326,13 @@ type ServerGroupBatchUpdateMemberSchema struct {
 
 // ServerGroupCreateSchema defines model for ServerGroupCreateSchema.
 type ServerGroupCreateSchema struct {
-	Algorithm     ServerGroupAlgorithm                            `json:"algorithm"`
-	Description   *string                                         `json:"description,omitempty"`
-	EnableH2      nullable.Nullable[bool]                         `json:"enable_h2,omitempty"`
-	EncryptCertId nullable.Nullable[core.UUID]                    `json:"encrypt_cert_id,omitempty"`
-	HealthCheck   nullable.Nullable[ServerGroupHealthCheckConfig] `json:"health_check"`
-	Name          string                                          `json:"name"`
-	Protocol      ServerGroupProtocolType                         `json:"protocol"`
+	Algorithm      ServerGroupAlgorithm                            `json:"algorithm"`
+	BackendTlsMode nullable.Nullable[ServerGroupBackendTLSMode]    `json:"backend_tls_mode,omitempty"`
+	Description    *string                                         `json:"description,omitempty"`
+	EnableH2       nullable.Nullable[bool]                         `json:"enable_h2,omitempty"`
+	HealthCheck    nullable.Nullable[ServerGroupHealthCheckConfig] `json:"health_check"`
+	Name           string                                          `json:"name"`
+	Protocol       ServerGroupProtocolType                         `json:"protocol"`
 
 	// SessionPersistence ServerGroupSessionPersistenceKind is exactly one of: ServerGroupSessionPersistenceBasic, ServerGroupSessionPersistenceAppCookie. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
 	SessionPersistence ServerGroupSessionPersistenceKind `json:"session_persistence"`
@@ -1323,11 +1341,11 @@ type ServerGroupCreateSchema struct {
 // ServerGroupDetailSchema defines model for ServerGroupDetailSchema.
 type ServerGroupDetailSchema struct {
 	Algorithm                    ServerGroupAlgorithm                             `json:"algorithm"`
+	BackendTlsMode               nullable.Nullable[ServerGroupBackendTLSMode]     `json:"backend_tls_mode"`
 	CreatedAt                    time.Time                                        `json:"created_at"`
 	Description                  nullable.Nullable[string]                        `json:"description"`
 	EnableH2                     nullable.Nullable[bool]                          `json:"enable_h2"`
 	EnableHealthCheck            bool                                             `json:"enable_health_check"`
-	EncryptCertId                nullable.Nullable[core.UUID]                     `json:"encrypt_cert_id"`
 	Id                           core.UUID                                        `json:"id"`
 	MemberCount                  int                                              `json:"member_count"`
 	MonitorDelay                 nullable.Nullable[int]                           `json:"monitor_delay"`
@@ -1426,12 +1444,12 @@ type ServerGroupMonitorType string
 
 // ServerGroupPartialUpdateSchema defines model for ServerGroupPartialUpdateSchema.
 type ServerGroupPartialUpdateSchema struct {
-	Algorithm     *ServerGroupAlgorithm                           `json:"algorithm,omitempty"`
-	Description   nullable.Nullable[string]                       `json:"description,omitempty"`
-	EnableH2      nullable.Nullable[bool]                         `json:"enable_h2,omitempty"`
-	EncryptCertId nullable.Nullable[core.UUID]                    `json:"encrypt_cert_id,omitempty"`
-	HealthCheck   nullable.Nullable[ServerGroupHealthCheckConfig] `json:"health_check,omitempty"`
-	Name          *string                                         `json:"name,omitempty"`
+	Algorithm      *ServerGroupAlgorithm                           `json:"algorithm,omitempty"`
+	BackendTlsMode nullable.Nullable[ServerGroupBackendTLSMode]    `json:"backend_tls_mode,omitempty"`
+	Description    nullable.Nullable[string]                       `json:"description,omitempty"`
+	EnableH2       nullable.Nullable[bool]                         `json:"enable_h2,omitempty"`
+	HealthCheck    nullable.Nullable[ServerGroupHealthCheckConfig] `json:"health_check,omitempty"`
+	Name           *string                                         `json:"name,omitempty"`
 
 	// SessionPersistence ServerGroupSessionPersistenceKind is exactly one of: ServerGroupSessionPersistenceBasic, ServerGroupSessionPersistenceAppCookie. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
 	SessionPersistence *ServerGroupSessionPersistenceKind `json:"session_persistence,omitempty"`
@@ -1442,18 +1460,18 @@ type ServerGroupProtocolType string
 
 // ServerGroupSchema defines model for ServerGroupSchema.
 type ServerGroupSchema struct {
-	Algorithm          ServerGroupAlgorithm            `json:"algorithm"`
-	CreatedAt          time.Time                       `json:"created_at"`
-	EnableH2           nullable.Nullable[bool]         `json:"enable_h2"`
-	EnableHealthCheck  bool                            `json:"enable_health_check"`
-	EncryptCertId      nullable.Nullable[core.UUID]    `json:"encrypt_cert_id"`
-	Id                 core.UUID                       `json:"id"`
-	MemberCount        int                             `json:"member_count"`
-	Name               string                          `json:"name"`
-	Protocol           ServerGroupProtocolType         `json:"protocol"`
-	ProvisioningStatus LoadBalancingProvisioningStatus `json:"provisioning_status"`
-	Status             LoadBalancingStatus             `json:"status"`
-	UpdatedAt          time.Time                       `json:"updated_at"`
+	Algorithm          ServerGroupAlgorithm                         `json:"algorithm"`
+	BackendTlsMode     nullable.Nullable[ServerGroupBackendTLSMode] `json:"backend_tls_mode"`
+	CreatedAt          time.Time                                    `json:"created_at"`
+	EnableH2           nullable.Nullable[bool]                      `json:"enable_h2"`
+	EnableHealthCheck  bool                                         `json:"enable_health_check"`
+	Id                 core.UUID                                    `json:"id"`
+	MemberCount        int                                          `json:"member_count"`
+	Name               string                                       `json:"name"`
+	Protocol           ServerGroupProtocolType                      `json:"protocol"`
+	ProvisioningStatus LoadBalancingProvisioningStatus              `json:"provisioning_status"`
+	Status             LoadBalancingStatus                          `json:"status"`
+	UpdatedAt          time.Time                                    `json:"updated_at"`
 }
 
 // ServerGroupSessionPersistence defines model for ServerGroupSessionPersistence.
@@ -1483,14 +1501,12 @@ type ServerGroupSessionPersistenceKind struct {
 
 // ServerGroupUpdateSchema defines model for ServerGroupUpdateSchema.
 type ServerGroupUpdateSchema struct {
-	Algorithm   ServerGroupAlgorithm    `json:"algorithm"`
-	Description string                  `json:"description"`
-	EnableH2    nullable.Nullable[bool] `json:"enable_h2"`
-
-	// EncryptCertId This field will be updated to None if not specified
-	EncryptCertId nullable.Nullable[core.UUID]                    `json:"encrypt_cert_id,omitempty"`
-	HealthCheck   nullable.Nullable[ServerGroupHealthCheckConfig] `json:"health_check"`
-	Name          string                                          `json:"name"`
+	Algorithm      ServerGroupAlgorithm                            `json:"algorithm"`
+	BackendTlsMode nullable.Nullable[ServerGroupBackendTLSMode]    `json:"backend_tls_mode"`
+	Description    string                                          `json:"description"`
+	EnableH2       nullable.Nullable[bool]                         `json:"enable_h2"`
+	HealthCheck    nullable.Nullable[ServerGroupHealthCheckConfig] `json:"health_check"`
+	Name           string                                          `json:"name"`
 
 	// SessionPersistence ServerGroupSessionPersistenceKind is exactly one of: ServerGroupSessionPersistenceBasic, ServerGroupSessionPersistenceAppCookie. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
 	SessionPersistence ServerGroupSessionPersistenceKind `json:"session_persistence"`

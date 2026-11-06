@@ -585,14 +585,12 @@ type CustomImageImportSchema struct {
 	ContainerFormat *ImageCustomContainerFormat `json:"container_format,omitempty"`
 	Description     *string                     `json:"description,omitempty"`
 	DiskFormat      *ImageCustomFormat          `json:"disk_format,omitempty"`
-
-	// ImageSize Image size in GiB
-	ImageSize int       `json:"image_size"`
-	Name      string    `json:"name"`
-	ObjectKey string    `json:"object_key"`
-	Os        *string   `json:"os,omitempty"`
-	RegionId  core.UUID `json:"region_id"`
-	Version   *string   `json:"version,omitempty"`
+	ImageSizeBytes  int                         `json:"image_size_bytes"`
+	Name            string                      `json:"name"`
+	ObjectKey       string                      `json:"object_key"`
+	Os              *string                     `json:"os,omitempty"`
+	RegionId        core.UUID                   `json:"region_id"`
+	Version         *string                     `json:"version,omitempty"`
 }
 
 // CustomImagePartialUpdateSchema defines model for CustomImagePartialUpdateSchema.

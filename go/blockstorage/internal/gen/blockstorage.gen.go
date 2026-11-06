@@ -1191,6 +1191,11 @@ type VolumeBackupPolicyUpdateSchema struct {
 	Status   VolumeBackupPolicyStatus   `json:"status"`
 }
 
+// VolumeBackupRestoreSchema defines model for VolumeBackupRestoreSchema.
+type VolumeBackupRestoreSchema struct {
+	VolumeId core.UUID `json:"volume_id"`
+}
+
 // VolumeBackupSchema defines model for VolumeBackupSchema.
 type VolumeBackupSchema struct {
 	CreatedAt         time.Time                             `json:"created_at"`
@@ -1548,6 +1553,11 @@ type UpdateVolumeBackupParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
+// RestoreVolumeBackupParams defines parameters for RestoreVolumeBackup.
+type RestoreVolumeBackupParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
 // ListVolumeSnapshotsParams defines parameters for ListVolumeSnapshots.
 type ListVolumeSnapshotsParams struct {
 	Name       *string           `form:"name,omitempty" json:"name,omitempty"`
@@ -1695,6 +1705,9 @@ type PartialUpdateVolumeBackupJSONRequestBody = VolumeBackupPartialUpdateSchema
 
 // UpdateVolumeBackupJSONRequestBody defines body for UpdateVolumeBackup for application/json ContentType.
 type UpdateVolumeBackupJSONRequestBody = VolumeBackupUpdateSchema
+
+// RestoreVolumeBackupJSONRequestBody defines body for RestoreVolumeBackup for application/json ContentType.
+type RestoreVolumeBackupJSONRequestBody = VolumeBackupRestoreSchema
 
 // CreateVolumeSnapshotJSONRequestBody defines body for CreateVolumeSnapshot for application/json ContentType.
 type CreateVolumeSnapshotJSONRequestBody = VolumeSnapshotCreateSchema
@@ -2762,6 +2775,28 @@ type ClientInterface interface {
 	// Corresponds with PUT /v2/block-storage/volume-backups/{volume_backup_id}/ (the `UpdateVolumeBackup` operationId).
 	UpdateVolumeBackup(ctx context.Context, volumeBackupId core.UUID, params *UpdateVolumeBackupParams, body UpdateVolumeBackupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// RestoreVolumeBackupWithBody Restore Volume Backup
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup:restore`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v2/block-storage/volume-backups/{volume_backup_id}/restore/ (the `RestoreVolumeBackup` operationId).
+	RestoreVolumeBackupWithBody(ctx context.Context, volumeBackupId core.UUID, params *RestoreVolumeBackupParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RestoreVolumeBackup Restore Volume Backup
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup:restore`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v2/block-storage/volume-backups/{volume_backup_id}/restore/ (the `RestoreVolumeBackup` operationId).
+	RestoreVolumeBackup(ctx context.Context, volumeBackupId core.UUID, params *RestoreVolumeBackupParams, body RestoreVolumeBackupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListVolumeSnapshots List Volume Snapshots
 	//
 	// **Required permissions:**
@@ -3546,6 +3581,48 @@ func (c *Client) UpdateVolumeBackupWithBody(ctx context.Context, volumeBackupId 
 // Corresponds with PUT /v2/block-storage/volume-backups/{volume_backup_id}/ (the `UpdateVolumeBackup` operationId).
 func (c *Client) UpdateVolumeBackup(ctx context.Context, volumeBackupId core.UUID, params *UpdateVolumeBackupParams, body UpdateVolumeBackupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateVolumeBackupRequest(c.Server, volumeBackupId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RestoreVolumeBackupWithBody Restore Volume Backup
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup:restore`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/block-storage/volume-backups/{volume_backup_id}/restore/ (the `RestoreVolumeBackup` operationId).
+func (c *Client) RestoreVolumeBackupWithBody(ctx context.Context, volumeBackupId core.UUID, params *RestoreVolumeBackupParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRestoreVolumeBackupRequestWithBody(c.Server, volumeBackupId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RestoreVolumeBackup Restore Volume Backup
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup:restore`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/block-storage/volume-backups/{volume_backup_id}/restore/ (the `RestoreVolumeBackup` operationId).
+func (c *Client) RestoreVolumeBackup(ctx context.Context, volumeBackupId core.UUID, params *RestoreVolumeBackupParams, body RestoreVolumeBackupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRestoreVolumeBackupRequest(c.Server, volumeBackupId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -5244,6 +5321,66 @@ func NewUpdateVolumeBackupRequestWithBody(server string, volumeBackupId core.UUI
 	}
 
 	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewRestoreVolumeBackupRequest calls the generic RestoreVolumeBackup builder with application/json body
+func NewRestoreVolumeBackupRequest(server string, volumeBackupId core.UUID, params *RestoreVolumeBackupParams, body RestoreVolumeBackupJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRestoreVolumeBackupRequestWithBody(server, volumeBackupId, params, "application/json", bodyReader)
+}
+
+// NewRestoreVolumeBackupRequestWithBody constructs an http.Request for the RestoreVolumeBackup method, with any body, and a specified content type
+func NewRestoreVolumeBackupRequestWithBody(server string, volumeBackupId core.UUID, params *RestoreVolumeBackupParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "volume_backup_id", volumeBackupId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/block-storage/volume-backups/%s/restore/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -6967,6 +7104,28 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with PUT /v2/block-storage/volume-backups/{volume_backup_id}/ (the `UpdateVolumeBackup` operationId).
 	UpdateVolumeBackupWithResponse(ctx context.Context, volumeBackupId core.UUID, params *UpdateVolumeBackupParams, body UpdateVolumeBackupJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateVolumeBackupResponse, error)
 
+	// RestoreVolumeBackupWithBodyWithResponse Restore Volume Backup
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup:restore`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/block-storage/volume-backups/{volume_backup_id}/restore/ (the `RestoreVolumeBackup` operationId).
+	RestoreVolumeBackupWithBodyWithResponse(ctx context.Context, volumeBackupId core.UUID, params *RestoreVolumeBackupParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RestoreVolumeBackupResponse, error)
+
+	// RestoreVolumeBackupWithResponse Restore Volume Backup
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:volume_backup:volume_backup:restore`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/block-storage/volume-backups/{volume_backup_id}/restore/ (the `RestoreVolumeBackup` operationId).
+	RestoreVolumeBackupWithResponse(ctx context.Context, volumeBackupId core.UUID, params *RestoreVolumeBackupParams, body RestoreVolumeBackupJSONRequestBody, reqEditors ...RequestEditorFn) (*RestoreVolumeBackupResponse, error)
+
 	// ListVolumeSnapshotsWithResponse List Volume Snapshots
 	//
 	// **Required permissions:**
@@ -7806,6 +7965,37 @@ func (r UpdateVolumeBackupResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateVolumeBackupResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RestoreVolumeBackupResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r RestoreVolumeBackupResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RestoreVolumeBackupResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8789,6 +8979,40 @@ func (c *ClientWithResponses) UpdateVolumeBackupWithResponse(ctx context.Context
 		return nil, err
 	}
 	return ParseUpdateVolumeBackupResponse(rsp)
+}
+
+// RestoreVolumeBackupWithBodyWithResponse Restore Volume Backup
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup:restore`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/block-storage/volume-backups/{volume_backup_id}/restore/ (the `RestoreVolumeBackup` operationId).
+func (c *ClientWithResponses) RestoreVolumeBackupWithBodyWithResponse(ctx context.Context, volumeBackupId core.UUID, params *RestoreVolumeBackupParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RestoreVolumeBackupResponse, error) {
+	rsp, err := c.RestoreVolumeBackupWithBody(ctx, volumeBackupId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRestoreVolumeBackupResponse(rsp)
+}
+
+// RestoreVolumeBackupWithResponse Restore Volume Backup
+//
+// **Required permissions:**
+//
+// - `urn:action:volume_backup:volume_backup:restore`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/block-storage/volume-backups/{volume_backup_id}/restore/ (the `RestoreVolumeBackup` operationId).
+func (c *ClientWithResponses) RestoreVolumeBackupWithResponse(ctx context.Context, volumeBackupId core.UUID, params *RestoreVolumeBackupParams, body RestoreVolumeBackupJSONRequestBody, reqEditors ...RequestEditorFn) (*RestoreVolumeBackupResponse, error) {
+	rsp, err := c.RestoreVolumeBackup(ctx, volumeBackupId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRestoreVolumeBackupResponse(rsp)
 }
 
 // ListVolumeSnapshotsWithResponse List Volume Snapshots
@@ -10236,6 +10460,63 @@ func ParseUpdateVolumeBackupResponse(rsp *http.Response) (*UpdateVolumeBackupRes
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRestoreVolumeBackupResponse parses an HTTP response from a RestoreVolumeBackupWithResponse call
+func ParseRestoreVolumeBackupResponse(rsp *http.Response) (*RestoreVolumeBackupResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RestoreVolumeBackupResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 202:
+		break // No content-type
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest ValidationError

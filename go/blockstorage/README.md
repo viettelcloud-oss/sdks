@@ -1,7 +1,7 @@
 # Viettel Cloud Block Storage SDK
 
-Package `blockstorage` manages the volume lifecycle (create, get, update,
-delete) and lists the available volume types.
+Package `blockstorage` is the Go client for the Viettel Cloud Block Storage
+API. It has one method for each operation in the Block Storage API spec.
 
 ## Dependency setup
 
@@ -47,6 +47,9 @@ func main() {
 ```
 
 ## Operations
+
+The table lists the main operations. The package has more. Read
+`operations.go` for the full list.
 
 | Method | HTTP |
 | --- | --- |

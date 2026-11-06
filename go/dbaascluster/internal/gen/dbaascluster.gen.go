@@ -137,6 +137,7 @@ func (e DBClusterDiskType) Valid() bool {
 // Defines values for DBClusterEngineType.
 const (
 	DBClusterEngineTypeCassandra   DBClusterEngineType = "cassandra"
+	DBClusterEngineTypeMariadb     DBClusterEngineType = "mariadb"
 	DBClusterEngineTypeMemcached   DBClusterEngineType = "memcached"
 	DBClusterEngineTypeMongodb     DBClusterEngineType = "mongodb"
 	DBClusterEngineTypeOpensearch  DBClusterEngineType = "opensearch"
@@ -148,6 +149,8 @@ const (
 func (e DBClusterEngineType) Valid() bool {
 	switch e {
 	case DBClusterEngineTypeCassandra:
+		return true
+	case DBClusterEngineTypeMariadb:
 		return true
 	case DBClusterEngineTypeMemcached:
 		return true
@@ -167,6 +170,8 @@ func (e DBClusterEngineType) Valid() bool {
 // Defines values for DBClusterNodeRole.
 const (
 	DBClusterNodeRoleCassandraNode     DBClusterNodeRole = "cassandra_node"
+	DBClusterNodeRoleMariadbDb         DBClusterNodeRole = "mariadb_db"
+	DBClusterNodeRoleMariadbProxy      DBClusterNodeRole = "mariadb_proxy"
 	DBClusterNodeRoleMemcachedMcrouter DBClusterNodeRole = "memcached_mcrouter"
 	DBClusterNodeRoleMemcachedNode     DBClusterNodeRole = "memcached_node"
 	DBClusterNodeRoleMongoNode         DBClusterNodeRole = "mongo_node"
@@ -181,6 +186,10 @@ const (
 func (e DBClusterNodeRole) Valid() bool {
 	switch e {
 	case DBClusterNodeRoleCassandraNode:
+		return true
+	case DBClusterNodeRoleMariadbDb:
+		return true
+	case DBClusterNodeRoleMariadbProxy:
 		return true
 	case DBClusterNodeRoleMemcachedMcrouter:
 		return true
@@ -281,6 +290,7 @@ func (e DBClusterStatus) Valid() bool {
 // Defines values for DBClusterTopologyKind.
 const (
 	DBClusterTopologyKindCassandra     DBClusterTopologyKind = "cassandra"
+	DBClusterTopologyKindMariadb       DBClusterTopologyKind = "mariadb"
 	DBClusterTopologyKindMemcached     DBClusterTopologyKind = "memcached"
 	DBClusterTopologyKindMongoRs       DBClusterTopologyKind = "mongo_rs"
 	DBClusterTopologyKindMongoSharding DBClusterTopologyKind = "mongo_sharding"
@@ -293,6 +303,8 @@ const (
 func (e DBClusterTopologyKind) Valid() bool {
 	switch e {
 	case DBClusterTopologyKindCassandra:
+		return true
+	case DBClusterTopologyKindMariadb:
 		return true
 	case DBClusterTopologyKindMemcached:
 		return true
@@ -623,6 +635,38 @@ type DBClusterBackupCreateSchema struct {
 	Name        string    `json:"name"`
 }
 
+// DBClusterBackupDetailSchema defines model for DBClusterBackupDetailSchema.
+type DBClusterBackupDetailSchema struct {
+	BackupInfo      string                                   `json:"backup_info"`
+	BackupTimestamp nullable.Nullable[time.Time]             `json:"backup_timestamp,omitempty"`
+	BackupType      BackupType                               `json:"backup_type"`
+	CloudObjectId   nullable.Nullable[string]                `json:"cloud_object_id,omitempty"`
+	CreatedAt       time.Time                                `json:"created_at"`
+	DbCluster       nullable.Nullable[NestedDBClusterSchema] `json:"db_cluster,omitempty"`
+
+	// DefaultAdminUsername Default admin account of the backup's engine version, which a restore keeping that version gives the new cluster. Empty when the version no longer exists or defines no default.
+	DefaultAdminUsername  string                           `json:"default_admin_username"`
+	Description           string                           `json:"description"`
+	EndRestoreTimestamp   nullable.Nullable[time.Time]     `json:"end_restore_timestamp,omitempty"`
+	Engine                DBClusterEngineType              `json:"engine"`
+	EngineVersion         string                           `json:"engine_version"`
+	ErrorMessage          string                           `json:"error_message"`
+	Id                    core.UUID                        `json:"id"`
+	Name                  string                           `json:"name"`
+	OperationalStatus     DBClusterBackupOperationalStatus `json:"operational_status"`
+	Project               NestedProjectSchema              `json:"project"`
+	Region                NestedRegionSchema               `json:"region"`
+	RequiredVolumeSize    int                              `json:"required_volume_size"`
+	Size                  int                              `json:"size"`
+	StartRestoreTimestamp nullable.Nullable[time.Time]     `json:"start_restore_timestamp,omitempty"`
+	Status                DBClusterBackupStatus            `json:"status"`
+
+	// TopologyConfig The node layout is restored from the backup snapshot.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	TopologyConfig nullable.Nullable[map[string]interface{}] `json:"topology_config,omitempty"`
+	UpdatedAt      time.Time                                 `json:"updated_at"`
+}
+
 // DBClusterBackupOperationalStatus defines model for DBClusterBackupOperationalStatus.
 type DBClusterBackupOperationalStatus string
 
@@ -688,7 +732,7 @@ type DBClusterCreateSchema struct {
 	EnableSsl                    *bool                                  `json:"enable_ssl,omitempty"`
 	Engine                       nullable.Nullable[DBClusterEngineType] `json:"engine,omitempty"`
 
-	// EngineConfig The modern alternative to topology_config: send this with node_pools instead of topology_config. Required for memcached and starrocks, which accept no other form. OpenSearch may omit both fields.
+	// EngineConfig The modern alternative to topology_config: send this with node_pools instead of topology_config. Required for memcached, starrocks and mariadb, which accept no other form. OpenSearch may omit both fields.
 	EngineConfig      nullable.Nullable[map[string]interface{}] `json:"engine_config,omitempty"`
 	EngineVersionId   nullable.Nullable[core.UUID]              `json:"engine_version_id,omitempty"`
 	InitBackupId      nullable.Nullable[core.UUID]              `json:"init_backup_id,omitempty"`
@@ -714,7 +758,7 @@ type DBClusterCreateSchema struct {
 	// Topology Required with engine_config for an engine with several topologies (MongoDB: mongo_rs or mongo_sharding).
 	Topology nullable.Nullable[DBClusterTopologyKind] `json:"topology,omitempty"`
 
-	// TopologyConfig Use node_pools and engine_config. Not supported for memcached or starrocks.
+	// TopologyConfig Use node_pools and engine_config. Not supported for memcached, starrocks or mariadb.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	TopologyConfig nullable.Nullable[DBClusterTopologyConfig] `json:"topology_config,omitempty"`
 	ZoneId         nullable.Nullable[core.UUID]               `json:"zone_id,omitempty"`
@@ -5034,7 +5078,7 @@ type GetDbClusterBackupResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *DBClusterBackupSchema
+	JSON200 *DBClusterBackupDetailSchema
 	// JSON400 the response for an HTTP 400 `application/json` response
 	JSON400 *ValidationError
 	// JSON401 the response for an HTTP 401 `application/json` response
@@ -6411,7 +6455,7 @@ func ParseGetDbClusterBackupResponse(rsp *http.Response) (*GetDbClusterBackupRes
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest DBClusterBackupSchema
+		var dest DBClusterBackupDetailSchema
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

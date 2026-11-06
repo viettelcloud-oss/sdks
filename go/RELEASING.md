@@ -41,6 +41,9 @@ Mark a breaking change with `!` — there is no `break:` type here.
    git status --short
    ```
 
+   The fetch reads `SPEC_BASE_URL` from `go/.env`. If the file does not exist,
+   copy it from `go/.env.example` and set the backend address.
+
    If it reports changes, merge the regeneration as its own change before
    releasing — a release should not be the commit that also rewrites the
    generated code.

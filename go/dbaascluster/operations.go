@@ -180,7 +180,7 @@ func (c *Client) CreateDbClusterBackup(ctx context.Context, params CreateDbClust
 // GetDbClusterBackup Get Db Cluster Backup
 //
 // GET /v2/dbaas/db-clusters-backups/{backup_id}/
-func (c *Client) GetDbClusterBackup(ctx context.Context, BackupID core.UUID, params GetDbClusterBackupParams) (*DBClusterBackupSchema, error) {
+func (c *Client) GetDbClusterBackup(ctx context.Context, BackupID core.UUID, params GetDbClusterBackupParams) (*DBClusterBackupDetailSchema, error) {
 	genParams := params
 	resp, err := c.gen.GetDbClusterBackupWithResponse(ctx, BackupID, &genParams)
 	if err != nil {

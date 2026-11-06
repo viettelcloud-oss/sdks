@@ -8,8 +8,9 @@ Generated from the OpenAPI specification using
 [oapi-codegen v2.8.0](https://github.com/oapi-codegen/oapi-codegen). A facade
 generator (`gen_facade.py`) produces ergonomic service wrappers on top of the
 generated clients. Shared errors, options, retries, pagination, and transport
-behavior are maintained by hand in `core`. The published module depends on
-`github.com/google/uuid` only.
+behavior are maintained by hand in `core`. The published module has two
+direct dependencies: `github.com/google/uuid` and
+`github.com/oapi-codegen/nullable`.
 
 ## Seed Files
 
@@ -21,32 +22,52 @@ go/
   Makefile               # Thin wrapper over pipeline/main.py
   pipeline.yaml          # Single source of truth: spec, services, codegen config
   pipeline/              # Orchestrator + spec-normalize + facade scripts
-  core/                  # Maintained: errors, retry, pagination, decimal, uuid
+  core/                  # Maintained: errors, retry, pagination, decimal, uuid, nullable
   internal/oapi/         # Maintained: runtime surface for generated clients
-  server/, blockstorage/, network/, project/, loadbalancer/, caas/, dbaas/, dbaascluster/   # Generated: client + facade per service
+  <service>/             # Generated: client + facade per service (see pipeline.yaml)
+  <service>/doc.go       # Maintained, where present: package documentation
+  <service>/README.md    # Maintained, where present: service quick start
   RELEASING.md           # Release procedure
 ```
 
-The OpenAPI spec is fetched from the running backend (configured in `pipeline.yaml`),
-or supply an existing `openapi.json`. The normalized spec is not checked in;
-generated bindings, facades, and documentation are committed for consumer use
-without code generation.
+Each service reads its own OpenAPI spec. The pipeline downloads it from the
+backend to `openapi.<service>.json`. The backend address comes from
+`SPEC_BASE_URL` in `go/.env`, and the path of each spec comes from
+`pipeline.yaml`. You can also put the raw spec files in
+place by hand. Raw and normalized specs are not committed. The generated
+bindings and facades are committed, so consumers do not need code generation.
 
 ## Quick Start
 
+Copy `.env.example` to `.env` and set `SPEC_BASE_URL` to the backend address.
+Git ignores `.env`, so do not commit it:
+
 ```sh
-# One command to go from seed to working SDK
-make all
+cp .env.example .env
+```
+
+```sh
+# One command to go from seed to working SDK. The raw specs are not
+# committed, so a fresh checkout must fetch them.
+make all FETCH_SPEC=1
 ```
 
 ```go
 import (
+    "context"
+    "fmt"
+    "log"
     "log/slog"
+
     "github.com/viettelcloud-oss/sdks/go/blockstorage"
     "github.com/viettelcloud-oss/sdks/go/core"
 )
 
 func main() {
+    ctx := context.Background()
+    projectID := core.MustParseUUID("<project-id>")
+    volID := core.MustParseUUID("<volume-id>")
+
     c, err := blockstorage.NewClient("<api-endpoint>",
         blockstorage.WithPAT("<your-token>"),
         blockstorage.WithRetry(core.DefaultRetry()),
@@ -58,7 +79,7 @@ func main() {
     }
 
     // Use the client...
-    vol, err := c.GetVolume(ctx, volID, blockstorage.GetVolumeParams{})
+    vol, err := c.GetVolume(ctx, volID, blockstorage.GetVolumeParams{ProjectID: projectID})
     if err != nil {
         log.Fatal(err)
     }
@@ -121,15 +142,20 @@ unwraps the HTTP response and returns the parsed payload directly:
 
 | Method shape | Request body | Return | Example |
 |---|---|---|---|
-| `ListX` | None | `(*PagedXSchema, error)` | `ListVolume(ctx, params)` |
-| `GetX` | None | `(*XDetailSchema, error)` | `GetVolume(ctx, id, params)` |
-| `CreateX` | `XCreateSchema` | `(*XDetailSchema, error)` | `CreateVolume(ctx, params, body)` |
-| `UpdateX` | `XUpdateSchemaPatch` | `(*XDetailSchema, error)` | `UpdateVolume(ctx, id, params, body)` |
-| `DeleteX` / action | `XSchema` or none | `error` only | `RetypeVolume(ctx, id, params, body)` |
+| `ListX` | None | `(*PagedXSchema, error)` | `ListVolume(ctx, params)` returns `*PagedVolumeSchema` |
+| `GetX` | None | `(*XSchema, error)` | `GetVolume(ctx, id, params)` returns `*VolumeSchema` |
+| `CreateX` | `XCreateSchema` | `(*XSchema, error)` | `CreateVolume(ctx, params, body)` returns `*VolumeSchema` |
+| `UpdateX` / `PartialUpdateX` | `XUpdateSchema` / `XPartialUpdateSchema` | `(*XSchema, error)` | `UpdateVolume(ctx, id, params, body)` takes `VolumePartialUpdateSchema` |
+| `DeleteX` / action | A schema or none | `error` only | `RetypeVolume(ctx, id, params, body)` |
+
+The type names come from the spec of each service, so they are not always the
+same as the shapes above. For example, `server.GetServer` returns
+`*ServerDetailSchema`. Read `operations.go` in the service package for the
+exact signatures.
 
 ```go
 // Create a volume
-var createFrom blockstorage.VolumeCreateSchema_CreateFrom
+var createFrom blockstorage.VolumeCreateSourceOptions
 err := createFrom.FromVolumeCreateEmptySchema(blockstorage.VolumeCreateEmptySchema{
     Size:         100,
     VolumeTypeId: volumeTypeID,
@@ -145,7 +171,7 @@ vol, err := c.CreateVolume(ctx, blockstorage.CreateVolumeParams{
 })
 
 // List volumes (single page)
-page, err := c.Volumes.Page(ctx, blockstorage.ListVolumeParams{
+page, err := c.ListVolume(ctx, blockstorage.ListVolumeParams{
     ProjectID: projectID,
 })
 ```
@@ -160,7 +186,7 @@ List endpoints support iterator-based pagination. Use `List<Name>Iter`
 
 ```go
 for item, err := range c.ListVolumeIter(ctx, blockstorage.ListVolumeParams{
-    ProjectID: &projectID,
+    ProjectID: projectID,
 }) {
     if err != nil {
         log.Fatal(err)
@@ -176,7 +202,8 @@ The generator adds an iterator only to an operation whose spec declares
 `x-pagination` with `type: page_number`. That extension names the query
 parameters holding the page and the page size, and the response fields holding
 the items and the total, so the generator never guesses them from names. A list
-answered in one response (`type: none`) gets no iterator.
+answered in one response (`type: none`) or paged by cursor (`type: cursor`)
+gets no iterator.
 
 ### Error Handling
 
@@ -307,7 +334,7 @@ Request and response types are available directly from each service package:
 ```go
 import "github.com/viettelcloud-oss/sdks/go/blockstorage"
 
-vol := &blockstorage.VolumeDetailSchema{Name: "test"}
+vol := &blockstorage.VolumeSchema{Name: "test"}
 ```
 
 #### Decimals (money, prices, quotas)
@@ -355,7 +382,9 @@ See [RELEASING.md](RELEASING.md).
 - Go 1.26.8 or later
 - Python 3 (for pipeline orchestration, normalization, facade generation)
 - PyYAML: `pip install pyyaml`
-- `curl` (optional; only needed to fetch spec from backend)
+- `curl` (needed only to fetch the specs from the backend)
+- A `go/.env` file that sets `SPEC_BASE_URL`, copied from `.env.example`
+  (needed only to fetch the specs from the backend)
 - Network access to your Go module proxy (for initial `make all`)
 
 ### Make Targets
@@ -364,16 +393,17 @@ See [RELEASING.md](RELEASING.md).
 |---------|-------------|
 | `make help` | Show all available targets |
 | `make init` | Create `go.mod`, or sync its module path and Go version to `pipeline.yaml` |
-| `make all` | Full pipeline: spec + generate, then tidy/build/vet |
-| `make spec` | Normalize the spec, reusing the existing `openapi.json` |
-| `make spec FETCH_SPEC=1` | Fetch the spec from the backend first, then normalize |
+| `make all` | Full pipeline: init + spec + generate, then tidy/build/vet. Reuses the local raw specs |
+| `make all FETCH_SPEC=1` | Same, but fetch the specs from the backend first |
+| `make spec` | Normalize the specs, reusing the existing `openapi.<service>.json` files |
+| `make spec FETCH_SPEC=1` | Fetch the specs from the backend first, then normalize |
 | `make generate` | Re-normalize each local raw spec, then generate clients + facades for all services |
 | `make generate SERVICES="server network"` | Generate only the named services |
 | `make build` | Compile every package in the module |
 | `make vet` | Run `go vet` on every package in the module |
 | `make tidy` | Run `go mod tidy` for the module |
-| `make clean` | Remove generated code and facades |
-| `make clean-all` | Also remove the fetched `openapi.json` |
+| `make clean` | Remove generated code, facades and normalized specs. Keeps `doc.go` and `README.md` |
+| `make clean-all` | Also remove `openapi.json`. The per-service raw specs `openapi.<service>.json` stay |
 
 ### Checks
 
@@ -390,15 +420,16 @@ See [RELEASING.md](RELEASING.md).
 | `make test` | Run the pipeline tests, then `go test -race -cover ./...` |
 | `make spec-version` | Print each service's generated `SpecVersion` |
 
-Run `make verify` before pushing — it is the same command
-[`.jenkins/check_merge_request.yml`](../.jenkins/check_merge_request.yml) runs,
-so a green local run means a green pipeline.
+Run `make verify` before you push. It is the same target that
+[`.jenkins/check_merge_request.yml`](../.jenkins/check_merge_request.yml) runs.
+The pipeline also checks the format of the merge request title, so a green
+local run passes the pipeline only if the title is also correct.
 
 ### Continuous integration
 
 | Pipeline | Trigger | What it does |
 |---|---|---|
-| `check_merge_request` | push to an open MR, or a `recheck` comment | commit-title format, then `make verify` |
+| `check_merge_request` | MR opened or reopened, new commits or a title change, or a `recheck` comment | MR title format, then `make verify` |
 | `check_main` | push to `main` | `make verify` on the merge commit |
 | `release` | manual | semantic-release; see [RELEASING.md](RELEASING.md) |
 
@@ -415,10 +446,10 @@ they were generated from; that is tracked separately from this CI setup.
 pipeline.yaml
   │
   ├─ Spec fetch + normalize
-  │  • Fetch from backend (or reuse openapi.json)
+  │  • Fetch from backend (or reuse openapi.<service>.json)
   │  • Strip Django operationId prefixes
   │  • Rewrite Pydantic shapes (unions, decimals, uuids, etc)
-  │  → openapi_edited.json
+  │  → openapi_edited.<service>.json
   │
   └─ Generate (per service)
      • oapi-codegen v2.8.0 → <service>/internal/gen/
@@ -426,37 +457,42 @@ pipeline.yaml
      • gen_facade.py → <service>/client.go, operations.go, …
 ```
 
-All configuration — spec URL, services, oapi-codegen options, normalize rules —
-lives in `pipeline.yaml`. The Makefile delegates to `python3 pipeline/main.py`,
-which reads the config and orchestrates the steps.
+The spec paths, services, oapi-codegen options and normalize rules live in
+`pipeline.yaml`. The backend base URL comes from `SPEC_BASE_URL` in `.env`. The
+Makefile delegates to `python3 pipeline/main.py`, which reads the config and
+orchestrates the steps.
 
 ### Add a New Service
 
 1. Add the service to `pipeline.yaml` under `services:`:
    ```yaml
-   - name: loadbalancer
-     folder: loadbalancer
-     tag: "Load Balancing"
+   - name: myservice
+     folder: myservice
+     tag: "My Service"
+     spec:
+       path: /v2/docs/api-v2/my-service.json
    ```
 
-2. Generate:
+2. Fetch and normalize the specs. `make generate` does not fetch, and the new
+   service has no raw spec yet:
    ```sh
-   make generate && make tidy && make build
+   make spec FETCH_SPEC=1
    ```
 
-   Or generate only the new service:
+3. Generate only the new service:
    ```sh
-   make generate SERVICES="loadbalancer" && make tidy && make build
+   make generate SERVICES="myservice" && make tidy && make build
    ```
+
+4. Add the package to the table and the layout in the
+   [repository README](../README.md).
 
 ### Regenerate After Spec Update
 
 ```sh
-# Fetch from configured backend and regenerate everything
-make all
-
-# Fetch from a different backend (override pipeline.yaml):
-make all SPEC_URL=https://staging-api.example.com/v2/openapi.json
+# Fetch from the backend in SPEC_BASE_URL (.env) and regenerate everything.
+# To fetch from a different backend, change SPEC_BASE_URL in .env first.
+make all FETCH_SPEC=1
 
 # Regenerate specific services only (reuse existing spec):
 make generate SERVICES="server blockstorage"
