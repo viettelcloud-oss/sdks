@@ -1,7 +1,7 @@
 # Viettel Cloud Network SDK
 
-Package `network` manages the VPC lifecycle (create, get, update, delete) and
-elastic IPs (create, get, delete).
+Package `network` is the Go client for the Viettel Cloud Network API. It has
+one method for each operation in the Network API spec.
 
 ## Dependency setup
 
@@ -50,6 +50,9 @@ func main() {
 ```
 
 ## Operations
+
+The table lists the main operations. The package has more. Read
+`operations.go` for the full list.
 
 | Method | HTTP |
 | --- | --- |

@@ -189,6 +189,18 @@ func (c *Client) DeleteVolumeBackup(ctx context.Context, VolumeBackupID core.UUI
 	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 202)
 }
 
+// RestoreVolumeBackup Restore Volume Backup
+//
+// POST /v2/block-storage/volume-backups/{volume_backup_id}/restore/
+func (c *Client) RestoreVolumeBackup(ctx context.Context, VolumeBackupID core.UUID, params RestoreVolumeBackupParams, body VolumeBackupRestoreSchema) error {
+	genParams := params
+	resp, err := c.gen.RestoreVolumeBackupWithResponse(ctx, VolumeBackupID, &genParams, body)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 202)
+}
+
 // ListVolumeBackupPolicies List Volume Backup Policies
 //
 // GET /v2/block-storage/volume-backup-policies/

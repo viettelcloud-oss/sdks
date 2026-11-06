@@ -120,6 +120,7 @@ type PartialUpdateServerGroupParams = gen.PartialUpdateServerGroupParams
 type PermissionDenied = gen.PermissionDenied
 type ProviderError = gen.ProviderError
 type ServerGroupAlgorithm = gen.ServerGroupAlgorithm
+type ServerGroupBackendTLSMode = gen.ServerGroupBackendTLSMode
 type ServerGroupBatchMember = gen.ServerGroupBatchMember
 type ServerGroupBatchUpdateMemberSchema = gen.ServerGroupBatchUpdateMemberSchema
 type ServerGroupCreateSchema = gen.ServerGroupCreateSchema
@@ -232,6 +233,7 @@ const (
 	ServerGroupAlgorithmROUNDROBIN                                         = gen.ServerGroupAlgorithmROUNDROBIN
 	ServerGroupAlgorithmSOURCEIP                                           = gen.ServerGroupAlgorithmSOURCEIP
 	ServerGroupAlgorithmSOURCEIPPORT                                       = gen.ServerGroupAlgorithmSOURCEIPPORT
+	ServerGroupBackendTLSModeENCRYPTONLY                                   = gen.ServerGroupBackendTLSModeENCRYPTONLY
 	ServerGroupHealthCheckHttpConfigMonitorTypeHTTP                        = gen.ServerGroupHealthCheckHttpConfigMonitorTypeHTTP
 	ServerGroupHealthCheckHttpConfigMonitorTypeHTTPS                       = gen.ServerGroupHealthCheckHttpConfigMonitorTypeHTTPS
 	ServerGroupHealthCheckOtherConfigMonitorTypePING                       = gen.ServerGroupHealthCheckOtherConfigMonitorTypePING

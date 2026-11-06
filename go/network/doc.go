@@ -1,7 +1,7 @@
-// Package network provides the Viettel Cloud SDK client for VPCs and elastic IPs.
+// Package network provides the Viettel Cloud SDK client for the Network API.
 //
-// It covers the VPC lifecycle (create, get, update, delete) and elastic IP
-// management (create, get, delete). Create a client with NewClient and
+// The client has one method for each operation in the Network API spec. See
+// operations.go for the full list. Create a client with NewClient and
 // authenticate with WithPAT. Generated HTTP plumbing stays under internal/gen;
 // consumers use only this facade package.
 package network

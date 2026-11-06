@@ -1,7 +1,7 @@
 # Viettel Cloud Server SDK
 
-Package `server` manages the virtual server lifecycle: create, get, partial
-update, and delete.
+Package `server` is the Go client for the Viettel Cloud Server API. It has one
+method for each operation in the Server API spec.
 
 ## Dependency setup
 
@@ -50,6 +50,9 @@ func main() {
 ```
 
 ## Operations
+
+The table lists the main operations. The package has more. Read
+`operations.go` for the full list.
 
 | Method | HTTP |
 | --- | --- |

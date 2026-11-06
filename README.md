@@ -14,13 +14,17 @@ github.com/viettelcloud-oss/sdks/go
 | Package | Import path | Description |
 | --- | --- | --- |
 | Server | `github.com/viettelcloud-oss/sdks/go/server` | Virtual server lifecycle and related resources |
-| Network | `github.com/viettelcloud-oss/sdks/go/network` | Networks, subnets, routers and related resources |
+| Network | `github.com/viettelcloud-oss/sdks/go/network` | VPCs, subnets, route tables, security groups, elastic IPs and related resources |
 | Block Storage | `github.com/viettelcloud-oss/sdks/go/blockstorage` | Volumes, snapshots, backups and related resources |
-| Load Balancer | `github.com/viettelcloud-oss/sdks/go/loadbalancer` | Load balancers, listeners, pools and health monitors |
-| Project | `github.com/viettelcloud-oss/sdks/go/project` | Projects, regions, service quotas, project members and custom roles |
+| Load Balancer | `github.com/viettelcloud-oss/sdks/go/loadbalancer` | Load balancers, listeners, server groups and L7 policies |
+| Project | `github.com/viettelcloud-oss/sdks/go/project` | Projects, regions, zones, project members and custom roles |
 | CaaS | `github.com/viettelcloud-oss/sdks/go/caas` | Container groups, revisions and container instances |
 | DBaaS | `github.com/viettelcloud-oss/sdks/go/dbaas` | Database instances, flavors and configurations |
 | DBaaS Cluster | `github.com/viettelcloud-oss/sdks/go/dbaascluster` | Database clusters, storage classes and resource packages |
+| File Storage | `github.com/viettelcloud-oss/sdks/go/filestorage` | Filesystems, access rules, snapshots and snapshot policies |
+| API Gateway | `github.com/viettelcloud-oss/sdks/go/apigateway` | APIs, stages, routes, upstreams, authenticators and custom domains |
+| Observability | `github.com/viettelcloud-oss/sdks/go/observability` | Dashboards, metric and log rules, receivers, log stores and incidents |
+| KMS | `github.com/viettelcloud-oss/sdks/go/kms` | Keys, certificates and secrets |
 | Core | `github.com/viettelcloud-oss/sdks/go/core` | Shared options, errors, retry and pagination primitives |
 
 Generated HTTP bindings live under each service's `internal/gen` package.
@@ -144,6 +148,14 @@ go/
 │   └── internal/gen/
 ├── dbaascluster/
 │   └── internal/gen/
+├── filestorage/
+│   └── internal/gen/
+├── apigateway/
+│   └── internal/gen/
+├── observability/
+│   └── internal/gen/
+├── kms/
+│   └── internal/gen/
 └── blockstorage/
     └── internal/gen/
 ```
@@ -157,8 +169,8 @@ build it.
 
 ## Development
 
-Run `make -C go verify` before pushing; it is exactly what the merge-request
-pipeline runs.
+Run `make -C go verify` before you push. The merge-request pipeline runs the
+same target. It also checks the format of the merge request title.
 
 Go SDK generation, validation, CI and release instructions are documented in:
 
