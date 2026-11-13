@@ -1215,7 +1215,7 @@ type ServerRebuildSchema struct {
 
 // ServerRescueSchema Schema for rescuing a server.
 type ServerRescueSchema struct {
-	ImageId nullable.Nullable[core.UUID] `json:"image_id,omitempty"`
+	ImageId core.UUID `json:"image_id"`
 }
 
 // ServerResizeSchema Schema for resizing a server.
@@ -1655,6 +1655,7 @@ type ListVdcsParams struct {
 	RegionId   *core.UUID `form:"region_id,omitempty" json:"region_id,omitempty"`
 	Region     *string    `form:"region,omitempty" json:"region,omitempty"`
 	ZoneId     *core.UUID `form:"zone_id,omitempty" json:"zone_id,omitempty"`
+	Ordering   *string    `form:"ordering,omitempty" json:"ordering,omitempty"`
 	PageSize   *int       `form:"page_size,omitempty" json:"page_size,omitempty"`
 	PageNumber *int       `form:"page_number,omitempty" json:"page_number,omitempty"`
 	ProjectID  core.UUID  `json:"Project-ID"`
@@ -1668,6 +1669,7 @@ type GetVdcParams struct {
 // ListVdcComputesParams defines parameters for ListVdcComputes.
 type ListVdcComputesParams struct {
 	ComputeName *string   `form:"compute_name,omitempty" json:"compute_name,omitempty"`
+	Ordering    *string   `form:"ordering,omitempty" json:"ordering,omitempty"`
 	PageSize    *int      `form:"page_size,omitempty" json:"page_size,omitempty"`
 	PageNumber  *int      `form:"page_number,omitempty" json:"page_number,omitempty"`
 	ProjectID   core.UUID `json:"Project-ID"`
@@ -1679,6 +1681,7 @@ type ListVdcServersParams struct {
 	Compute    *string   `form:"compute,omitempty" json:"compute,omitempty"`
 	ElasticIp  *string   `form:"elastic_ip,omitempty" json:"elastic_ip,omitempty"`
 	PrivateIp  *string   `form:"private_ip,omitempty" json:"private_ip,omitempty"`
+	Ordering   *string   `form:"ordering,omitempty" json:"ordering,omitempty"`
 	PageSize   *int      `form:"page_size,omitempty" json:"page_size,omitempty"`
 	PageNumber *int      `form:"page_number,omitempty" json:"page_number,omitempty"`
 	ProjectID  core.UUID `json:"Project-ID"`
@@ -8156,6 +8159,18 @@ func NewListVdcsRequest(server string, params *ListVdcsParams) (*http.Request, e
 
 		}
 
+		if params.Ordering != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "ordering", *params.Ordering, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.PageSize != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
@@ -8301,6 +8316,18 @@ func NewListVdcComputesRequest(server string, vdcId core.UUID, params *ListVdcCo
 
 		}
 
+		if params.Ordering != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "ordering", *params.Ordering, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.PageSize != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
@@ -8426,6 +8453,18 @@ func NewListVdcServersRequest(server string, vdcId core.UUID, params *ListVdcSer
 		if params.PrivateIp != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "private_ip", *params.PrivateIp, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Ordering != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "ordering", *params.Ordering, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -10989,6 +11028,8 @@ type GetVdcResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -11022,6 +11063,8 @@ type ListVdcComputesResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -11055,6 +11098,8 @@ type ListVdcServersResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -15332,6 +15377,13 @@ func ParseGetVdcResponse(rsp *http.Response) (*GetVdcResponse, error) {
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -15393,6 +15445,13 @@ func ParseListVdcComputesResponse(rsp *http.Response) (*ListVdcComputesResponse,
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -15453,6 +15512,13 @@ func ParseListVdcServersResponse(rsp *http.Response) (*ListVdcServersResponse, e
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError

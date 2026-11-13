@@ -1322,13 +1322,16 @@ type VolumeRetypeSchema struct {
 
 // VolumeSchema defines model for VolumeSchema.
 type VolumeSchema struct {
-	Attachable     bool                                                `json:"attachable"`
-	Attachments    nullable.Nullable[[]NestedVolumeAttachmentSchema]   `json:"attachments,omitempty"`
-	BackupPolicy   nullable.Nullable[NestedVolumeBackupPolicySchema]   `json:"backup_policy,omitempty"`
-	Bootable       bool                                                `json:"bootable"`
-	CreateFrom     NestedVolumeOriginSchema                            `json:"create_from"`
-	CreatedAt      time.Time                                           `json:"created_at"`
-	Description    nullable.Nullable[string]                           `json:"description,omitempty"`
+	Attachable   bool                                              `json:"attachable"`
+	Attachments  nullable.Nullable[[]NestedVolumeAttachmentSchema] `json:"attachments,omitempty"`
+	BackupPolicy nullable.Nullable[NestedVolumeBackupPolicySchema] `json:"backup_policy,omitempty"`
+	Bootable     bool                                              `json:"bootable"`
+	CreateFrom   NestedVolumeOriginSchema                          `json:"create_from"`
+	CreatedAt    time.Time                                         `json:"created_at"`
+	Description  nullable.Nullable[string]                         `json:"description,omitempty"`
+
+	// DeviceId The disk serial ID inside VM
+	DeviceId       nullable.Nullable[string]                           `json:"device_id,omitempty"`
 	Encrypted      nullable.Nullable[bool]                             `json:"encrypted,omitempty"`
 	Id             core.UUID                                           `json:"id"`
 	Iops           int                                                 `json:"iops"`
