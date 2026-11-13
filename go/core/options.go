@@ -34,7 +34,8 @@ type ResolvedClientConfig struct {
 // ResolveClientOptions applies options and constructs a client configuration.
 // A custom http.Client is cloned so transport wrapping does not mutate the
 // caller's instance; its jar, redirect policy, timeout and other fields remain
-// intact.
+// intact. If the client has no CheckRedirect, the SDK sets a policy that
+// follows only same-origin redirects.
 func ResolveClientOptions(opts ...ClientOption) ResolvedClientConfig {
 	var cfg clientOptions
 	for _, option := range opts {
@@ -76,6 +77,9 @@ func ResolveClientOptions(opts ...ClientOption) ResolvedClientConfig {
 		httpClient = &clone
 	} else {
 		httpClient = &http.Client{Timeout: defaultHTTPTimeout}
+	}
+	if httpClient.CheckRedirect == nil {
+		httpClient.CheckRedirect = sameOriginRedirectPolicy
 	}
 
 	transport := httpClient.Transport
