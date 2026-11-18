@@ -399,12 +399,48 @@ func (c *Client) ListDbVersionAdvancedConfigParams(ctx context.Context, VersionI
 	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
 }
 
+// GetOperationLogs Get Operation Logs
+//
+// GET /v2/dbaas/db-instances/{instance_id}/operation-logs/
+func (c *Client) GetOperationLogs(ctx context.Context, InstanceID core.UUID, params GetOperationLogsParams) (*DBaaSOperationLogListSchema, error) {
+	genParams := params
+	resp, err := c.gen.GetOperationLogsWithResponse(ctx, InstanceID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
 // GetSslCaCert Get Ssl Ca Cert
 //
 // GET /v2/dbaas/db-instances/{instance_id}/ssl-ca-cert/
 func (c *Client) GetSslCaCert(ctx context.Context, InstanceID core.UUID, params GetSslCaCertParams) (*SSLCACertSchema, error) {
 	genParams := params
 	resp, err := c.gen.GetSslCaCertWithResponse(ctx, InstanceID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// ListLogFiles List Log Files
+//
+// GET /v2/dbaas/db-instances/{instance_id}/log-files/
+func (c *Client) ListLogFiles(ctx context.Context, InstanceID core.UUID, params ListLogFilesParams) (*DBaaSLogFileListSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListLogFilesWithResponse(ctx, InstanceID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// GetLogFileDownloadUrl Get Log File Download Url
+//
+// GET /v2/dbaas/db-instances/{instance_id}/log-files/{file_id}/get-download-url/
+func (c *Client) GetLogFileDownloadUrl(ctx context.Context, InstanceID core.UUID, FileID string, params GetLogFileDownloadUrlParams) (*LogFileDownloadUrlSchema, error) {
+	genParams := params
+	resp, err := c.gen.GetLogFileDownloadUrlWithResponse(ctx, InstanceID, FileID, &genParams)
 	if err != nil {
 		return nil, err
 	}
@@ -493,6 +529,30 @@ func (c *Client) ListAdvancedConfigs(ctx context.Context, InstanceID core.UUID, 
 		return nil, err
 	}
 	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// ListCurrentQueries List Current Queries
+//
+// GET /v2/dbaas/db-instances/{instance_id}/queries/
+func (c *Client) ListCurrentQueries(ctx context.Context, InstanceID core.UUID, params ListCurrentQueriesParams) (*DBaaSCurrentQueryListSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListCurrentQueriesWithResponse(ctx, InstanceID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// KillQuery Kill Query
+//
+// POST /v2/dbaas/db-instances/{instance_id}/queries/{pid}/kill/
+func (c *Client) KillQuery(ctx context.Context, InstanceID core.UUID, Pid string, params KillQueryParams) error {
+	genParams := params
+	resp, err := c.gen.KillQueryWithResponse(ctx, InstanceID, Pid, &genParams)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
 }
 
 // UpdateAllowedCidrs Update Allowed Cidrs
@@ -828,6 +888,36 @@ func (c *Client) ListDbVersionAdvancedConfigParamsIter(ctx context.Context, Vers
 	})
 }
 
+// GetOperationLogsIter returns an iterator over all DBaaSOperationLogSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) GetOperationLogsIter(ctx context.Context, InstanceID core.UUID, params GetOperationLogsParams) iter.Seq2[*DBaaSOperationLogSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[DBaaSOperationLogSchema], error) {
+		p := params
+		p.Page = &page
+		p.PageSize = &size
+		pageResult, err := c.GetOperationLogs(ctx, InstanceID, p)
+		if err != nil {
+			return core.Page[DBaaSOperationLogSchema]{}, err
+		}
+		return core.Page[DBaaSOperationLogSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListLogFilesIter returns an iterator over all DBaaSLogFileSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListLogFilesIter(ctx context.Context, InstanceID core.UUID, params ListLogFilesParams) iter.Seq2[*DBaaSLogFileSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[DBaaSLogFileSchema], error) {
+		p := params
+		p.Page = &page
+		p.PageSize = &size
+		pageResult, err := c.ListLogFiles(ctx, InstanceID, p)
+		if err != nil {
+			return core.Page[DBaaSLogFileSchema]{}, err
+		}
+		return core.Page[DBaaSLogFileSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
 // ListConnectionPoolsIter returns an iterator over all DBaaSPgPoolSchema pages.
 // Automatically advances pages until all results are exhausted.
 func (c *Client) ListConnectionPoolsIter(ctx context.Context, InstanceID core.UUID, params ListConnectionPoolsParams) iter.Seq2[*DBaaSPgPoolSchema, error] {
@@ -840,6 +930,21 @@ func (c *Client) ListConnectionPoolsIter(ctx context.Context, InstanceID core.UU
 			return core.Page[DBaaSPgPoolSchema]{}, err
 		}
 		return core.Page[DBaaSPgPoolSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListCurrentQueriesIter returns an iterator over all DBaaSCurrentQuerySchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListCurrentQueriesIter(ctx context.Context, InstanceID core.UUID, params ListCurrentQueriesParams) iter.Seq2[*DBaaSCurrentQuerySchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[DBaaSCurrentQuerySchema], error) {
+		p := params
+		p.Page = &page
+		p.PageSize = &size
+		pageResult, err := c.ListCurrentQueries(ctx, InstanceID, p)
+		if err != nil {
+			return core.Page[DBaaSCurrentQuerySchema]{}, err
+		}
+		return core.Page[DBaaSCurrentQuerySchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
 	})
 }
 

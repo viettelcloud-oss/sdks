@@ -441,6 +441,54 @@ func (c *Client) UpdateRouteTableInternetAccess(ctx context.Context, RouteTableI
 	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
 }
 
+// ListRouteTableRoutes List Route Table Routes
+//
+// GET /v2/network/rt-routes/
+func (c *Client) ListRouteTableRoutes(ctx context.Context, params ListRouteTableRoutesParams) (*PagedRouteTableRouteSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListRouteTableRoutesWithResponse(ctx, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// CreateRouteTableRoute Create Route Table Route
+//
+// POST /v2/network/rt-routes/
+func (c *Client) CreateRouteTableRoute(ctx context.Context, params CreateRouteTableRouteParams, body RouteTableRouteCreateSchema) (*RouteTableRouteSchema, error) {
+	genParams := params
+	resp, err := c.gen.CreateRouteTableRouteWithResponse(ctx, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON201, 201)
+}
+
+// GetRouteTableRoute Get Route Table Route
+//
+// GET /v2/network/rt-routes/{route_table_route_id}/
+func (c *Client) GetRouteTableRoute(ctx context.Context, RouteTableRouteID core.UUID, params GetRouteTableRouteParams) (*RouteTableRouteSchema, error) {
+	genParams := params
+	resp, err := c.gen.GetRouteTableRouteWithResponse(ctx, RouteTableRouteID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// DeleteRouteTableRoute Delete Route Table Route
+//
+// DELETE /v2/network/rt-routes/{route_table_route_id}/
+func (c *Client) DeleteRouteTableRoute(ctx context.Context, RouteTableRouteID core.UUID, params DeleteRouteTableRouteParams) error {
+	genParams := params
+	resp, err := c.gen.DeleteRouteTableRouteWithResponse(ctx, RouteTableRouteID, &genParams)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
+}
+
 // ListVpcPeerings List Vpc Peerings
 //
 // GET /v2/network/vpc-peerings/
@@ -771,6 +819,21 @@ func (c *Client) ListRouteTableSubnetsIter(ctx context.Context, RouteTableID cor
 			return core.Page[RouteTableSubnetSchema]{}, err
 		}
 		return core.Page[RouteTableSubnetSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListRouteTableRoutesIter returns an iterator over all RouteTableRouteSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListRouteTableRoutesIter(ctx context.Context, params ListRouteTableRoutesParams) iter.Seq2[*RouteTableRouteSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[RouteTableRouteSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListRouteTableRoutes(ctx, p)
+		if err != nil {
+			return core.Page[RouteTableRouteSchema]{}, err
+		}
+		return core.Page[RouteTableRouteSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
 	})
 }
 

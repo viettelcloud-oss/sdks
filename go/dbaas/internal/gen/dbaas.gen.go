@@ -80,6 +80,27 @@ func (e BackupType) Valid() bool {
 	}
 }
 
+// Defines values for DBInstanceLogType.
+const (
+	DBInstanceLogTypeError   DBInstanceLogType = "error"
+	DBInstanceLogTypeGeneral DBInstanceLogType = "general"
+	DBInstanceLogTypeSlow    DBInstanceLogType = "slow"
+)
+
+// Valid indicates whether the value is a known member of the DBInstanceLogType enum.
+func (e DBInstanceLogType) Valid() bool {
+	switch e {
+	case DBInstanceLogTypeError:
+		return true
+	case DBInstanceLogTypeGeneral:
+		return true
+	case DBInstanceLogTypeSlow:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for DBInstanceOperationalStatus.
 const (
 	DBInstanceOperationalStatusCIDRSUPDATING    DBInstanceOperationalStatus = "CIDRS_UPDATING"
@@ -362,6 +383,36 @@ func (e EnableAutoIncreaseVolumeSizeSchemaEnableAutoIncreaseVolumeSize) Valid() 
 	}
 }
 
+// Defines values for OperationLogActionType.
+const (
+	OperationLogActionTypeBACKUP OperationLogActionType = "BACKUP"
+	OperationLogActionTypeCREATE OperationLogActionType = "CREATE"
+	OperationLogActionTypeDELETE OperationLogActionType = "DELETE"
+	OperationLogActionTypeEXPORT OperationLogActionType = "EXPORT"
+	OperationLogActionTypeIMPORT OperationLogActionType = "IMPORT"
+	OperationLogActionTypeUPDATE OperationLogActionType = "UPDATE"
+)
+
+// Valid indicates whether the value is a known member of the OperationLogActionType enum.
+func (e OperationLogActionType) Valid() bool {
+	switch e {
+	case OperationLogActionTypeBACKUP:
+		return true
+	case OperationLogActionTypeCREATE:
+		return true
+	case OperationLogActionTypeDELETE:
+		return true
+	case OperationLogActionTypeEXPORT:
+		return true
+	case OperationLogActionTypeIMPORT:
+		return true
+	case OperationLogActionTypeUPDATE:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for PoolMode.
 const (
 	PoolModeSession     PoolMode = "session"
@@ -592,6 +643,9 @@ type DBInstanceFlavorUpdateSchema struct {
 	FlavorId core.UUID `json:"flavor_id"`
 }
 
+// DBInstanceLogType defines model for DBInstanceLogType.
+type DBInstanceLogType string
+
 // DBInstanceOperationalStatus defines model for DBInstanceOperationalStatus.
 type DBInstanceOperationalStatus string
 
@@ -744,6 +798,62 @@ type DBVersionAdvancedConfigParamSchema struct {
 	ValueRange      string                    `json:"value_range"`
 }
 
+// DBaaSCurrentQueryListSchema A page of the queries a database instance is running right now.
+type DBaaSCurrentQueryListSchema struct {
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []DBaaSCurrentQuerySchema `json:"results"`
+}
+
+// DBaaSCurrentQuerySchema defines model for DBaaSCurrentQuerySchema.
+type DBaaSCurrentQuerySchema struct {
+	Command       nullable.Nullable[string] `json:"command,omitempty"`
+	Database      nullable.Nullable[string] `json:"database,omitempty"`
+	ExecutionTime int                       `json:"execution_time"`
+	Host          nullable.Nullable[string] `json:"host,omitempty"`
+	Pid           nullable.Nullable[string] `json:"pid,omitempty"`
+	User          nullable.Nullable[string] `json:"user,omitempty"`
+}
+
+// DBaaSLogFileListSchema A page of the log files a database instance has produced.
+type DBaaSLogFileListSchema struct {
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []DBaaSLogFileSchema      `json:"results"`
+}
+
+// DBaaSLogFileSchema defines model for DBaaSLogFileSchema.
+type DBaaSLogFileSchema struct {
+	CreatedAt nullable.Nullable[time.Time] `json:"created_at,omitempty"`
+	FileId    string                       `json:"file_id"`
+	Name      string                       `json:"name"`
+	Size      nullable.Nullable[int]       `json:"size,omitempty"`
+	Type      string                       `json:"type"`
+}
+
+// DBaaSOperationLogListSchema A page of the operations performed on a database instance.
+type DBaaSOperationLogListSchema struct {
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []DBaaSOperationLogSchema `json:"results"`
+}
+
+// DBaaSOperationLogSchema defines model for DBaaSOperationLogSchema.
+type DBaaSOperationLogSchema struct {
+	ActionType     string    `json:"action_type"`
+	ActorName      string    `json:"actor_name"`
+	ActorType      string    `json:"actor_type"`
+	CreatedAt      time.Time `json:"created_at"`
+	Description    string    `json:"description"`
+	IsDbiExisted   bool      `json:"is_dbi_existed"`
+	RelatedDbiId   string    `json:"related_dbi_id"`
+	RelatedDbiName string    `json:"related_dbi_name"`
+	Status         string    `json:"status"`
+}
+
 // DBaaSPgPoolListSchema A page of the connection pools configured on a PostgreSQL instance.
 type DBaaSPgPoolListSchema struct {
 	Count    int                       `json:"count"`
@@ -871,6 +981,11 @@ type FlavorMappingSchema struct {
 	Zone         NestedZoneSchema              `json:"zone"`
 }
 
+// LogFileDownloadUrlSchema defines model for LogFileDownloadUrlSchema.
+type LogFileDownloadUrlSchema struct {
+	PublicUrl string `json:"public_url"`
+}
+
 // NestedAutoBackupConfigSchema defines model for NestedAutoBackupConfigSchema.
 type NestedAutoBackupConfigSchema struct {
 	BackupInterval BackupInterval               `json:"backup_interval"`
@@ -974,6 +1089,9 @@ type NestedZoneSchema struct {
 	Id          core.UUID `json:"id"`
 	Name        string    `json:"name"`
 }
+
+// OperationLogActionType defines model for OperationLogActionType.
+type OperationLogActionType string
 
 // PagedDBInstanceBackupSchema defines model for PagedDBInstanceBackupSchema.
 type PagedDBInstanceBackupSchema struct {
@@ -1367,6 +1485,29 @@ type UpdateDbInstanceFlavorParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
+// ListLogFilesParams defines parameters for ListLogFiles.
+type ListLogFilesParams struct {
+	Page         *int               `form:"page,omitempty" json:"page,omitempty"`
+	PageSize     *int               `form:"page_size,omitempty" json:"page_size,omitempty"`
+	Name         *string            `form:"name,omitempty" json:"name,omitempty"`
+	LogType      *DBInstanceLogType `form:"log_type,omitempty" json:"log_type,omitempty"`
+	TimeDuration *int               `form:"time_duration,omitempty" json:"time_duration,omitempty"`
+	ProjectID    core.UUID          `json:"Project-ID"`
+}
+
+// GetLogFileDownloadUrlParams defines parameters for GetLogFileDownloadUrl.
+type GetLogFileDownloadUrlParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// GetOperationLogsParams defines parameters for GetOperationLogs.
+type GetOperationLogsParams struct {
+	Page       *int                    `form:"page,omitempty" json:"page,omitempty"`
+	PageSize   *int                    `form:"page_size,omitempty" json:"page_size,omitempty"`
+	ActionType *OperationLogActionType `form:"action_type,omitempty" json:"action_type,omitempty"`
+	ProjectID  core.UUID               `json:"Project-ID"`
+}
+
 // ListPrivilegeDatabasesParams defines parameters for ListPrivilegeDatabases.
 type ListPrivilegeDatabasesParams struct {
 	Page      *int      `form:"page,omitempty" json:"page,omitempty"`
@@ -1426,6 +1567,18 @@ type GrantPrivilegeUserDatabasesParams struct {
 // RevokePrivilegeUserDatabaseParams defines parameters for RevokePrivilegeUserDatabase.
 type RevokePrivilegeUserDatabaseParams struct {
 	Host      *string   `form:"host,omitempty" json:"host,omitempty"`
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// ListCurrentQueriesParams defines parameters for ListCurrentQueries.
+type ListCurrentQueriesParams struct {
+	Page      *int      `form:"page,omitempty" json:"page,omitempty"`
+	PageSize  *int      `form:"page_size,omitempty" json:"page_size,omitempty"`
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// KillQueryParams defines parameters for KillQuery.
+type KillQueryParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
@@ -2498,6 +2651,33 @@ type ClientInterface interface {
 	// Corresponds with PUT /v2/dbaas/db-instances/{instance_id}/flavor/ (the `UpdateDbInstanceFlavor` operationId).
 	UpdateDbInstanceFlavor(ctx context.Context, instanceId core.UUID, params *UpdateDbInstanceFlavorParams, body UpdateDbInstanceFlavorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListLogFiles List Log Files
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dbaas:db_instance:get`
+	//
+	// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/log-files/ (the `ListLogFiles` operationId).
+	ListLogFiles(ctx context.Context, instanceId core.UUID, params *ListLogFilesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetLogFileDownloadUrl Get Log File Download Url
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dbaas:db_instance:get`
+	//
+	// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/log-files/{file_id}/get-download-url/ (the `GetLogFileDownloadUrl` operationId).
+	GetLogFileDownloadUrl(ctx context.Context, instanceId core.UUID, fileId string, params *GetLogFileDownloadUrlParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetOperationLogs Get Operation Logs
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dbaas:db_instance:get`
+	//
+	// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/operation-logs/ (the `GetOperationLogs` operationId).
+	GetOperationLogs(ctx context.Context, instanceId core.UUID, params *GetOperationLogsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListPrivilegeDatabases List Privilege Databases
 	//
 	// **Required permissions:**
@@ -2639,6 +2819,24 @@ type ClientInterface interface {
 	//
 	// Corresponds with DELETE /v2/dbaas/db-instances/{instance_id}/privilege/users/{user_name}/databases/{db_name}/ (the `RevokePrivilegeUserDatabase` operationId).
 	RevokePrivilegeUserDatabase(ctx context.Context, instanceId core.UUID, userName string, dbName string, params *RevokePrivilegeUserDatabaseParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListCurrentQueries List Current Queries
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dbaas:db_instance:get`
+	//
+	// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/queries/ (the `ListCurrentQueries` operationId).
+	ListCurrentQueries(ctx context.Context, instanceId core.UUID, params *ListCurrentQueriesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// KillQuery Kill Query
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dbaas:db_instance_query:kill`
+	//
+	// Corresponds with POST /v2/dbaas/db-instances/{instance_id}/queries/{pid}/kill/ (the `KillQuery` operationId).
+	KillQuery(ctx context.Context, instanceId core.UUID, pid string, params *KillQueryParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateRootPasswordWithBody Update Root Password
 	//
@@ -3604,6 +3802,63 @@ func (c *Client) UpdateDbInstanceFlavor(ctx context.Context, instanceId core.UUI
 	return c.Client.Do(req)
 }
 
+// ListLogFiles List Log Files
+//
+// **Required permissions:**
+//
+// - `urn:action:dbaas:db_instance:get`
+//
+// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/log-files/ (the `ListLogFiles` operationId).
+func (c *Client) ListLogFiles(ctx context.Context, instanceId core.UUID, params *ListLogFilesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListLogFilesRequest(c.Server, instanceId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetLogFileDownloadUrl Get Log File Download Url
+//
+// **Required permissions:**
+//
+// - `urn:action:dbaas:db_instance:get`
+//
+// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/log-files/{file_id}/get-download-url/ (the `GetLogFileDownloadUrl` operationId).
+func (c *Client) GetLogFileDownloadUrl(ctx context.Context, instanceId core.UUID, fileId string, params *GetLogFileDownloadUrlParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetLogFileDownloadUrlRequest(c.Server, instanceId, fileId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetOperationLogs Get Operation Logs
+//
+// **Required permissions:**
+//
+// - `urn:action:dbaas:db_instance:get`
+//
+// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/operation-logs/ (the `GetOperationLogs` operationId).
+func (c *Client) GetOperationLogs(ctx context.Context, instanceId core.UUID, params *GetOperationLogsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetOperationLogsRequest(c.Server, instanceId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // ListPrivilegeDatabases List Privilege Databases
 //
 // **Required permissions:**
@@ -3876,6 +4131,44 @@ func (c *Client) GrantPrivilegeUserDatabases(ctx context.Context, instanceId cor
 // Corresponds with DELETE /v2/dbaas/db-instances/{instance_id}/privilege/users/{user_name}/databases/{db_name}/ (the `RevokePrivilegeUserDatabase` operationId).
 func (c *Client) RevokePrivilegeUserDatabase(ctx context.Context, instanceId core.UUID, userName string, dbName string, params *RevokePrivilegeUserDatabaseParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewRevokePrivilegeUserDatabaseRequest(c.Server, instanceId, userName, dbName, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListCurrentQueries List Current Queries
+//
+// **Required permissions:**
+//
+// - `urn:action:dbaas:db_instance:get`
+//
+// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/queries/ (the `ListCurrentQueries` operationId).
+func (c *Client) ListCurrentQueries(ctx context.Context, instanceId core.UUID, params *ListCurrentQueriesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListCurrentQueriesRequest(c.Server, instanceId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// KillQuery Kill Query
+//
+// **Required permissions:**
+//
+// - `urn:action:dbaas:db_instance_query:kill`
+//
+// Corresponds with POST /v2/dbaas/db-instances/{instance_id}/queries/{pid}/kill/ (the `KillQuery` operationId).
+func (c *Client) KillQuery(ctx context.Context, instanceId core.UUID, pid string, params *KillQueryParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewKillQueryRequest(c.Server, instanceId, pid, params)
 	if err != nil {
 		return nil, err
 	}
@@ -6066,6 +6359,280 @@ func NewUpdateDbInstanceFlavorRequestWithBody(server string, instanceId core.UUI
 	return req, nil
 }
 
+// NewListLogFilesRequest constructs an http.Request for the ListLogFiles method
+func NewListLogFilesRequest(server string, instanceId core.UUID, params *ListLogFilesParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "instance_id", instanceId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/dbaas/db-instances/%s/log-files/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Page != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page", *params.Page, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Name != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "name", *params.Name, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.LogType != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "log_type", *params.LogType, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.TimeDuration != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "time_duration", *params.TimeDuration, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetLogFileDownloadUrlRequest constructs an http.Request for the GetLogFileDownloadUrl method
+func NewGetLogFileDownloadUrlRequest(server string, instanceId core.UUID, fileId string, params *GetLogFileDownloadUrlParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "instance_id", instanceId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "file_id", fileId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/dbaas/db-instances/%s/log-files/%s/get-download-url/", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetOperationLogsRequest constructs an http.Request for the GetOperationLogs method
+func NewGetOperationLogsRequest(server string, instanceId core.UUID, params *GetOperationLogsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "instance_id", instanceId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/dbaas/db-instances/%s/operation-logs/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Page != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page", *params.Page, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.ActionType != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "action_type", *params.ActionType, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
 // NewListPrivilegeDatabasesRequest constructs an http.Request for the ListPrivilegeDatabases method
 func NewListPrivilegeDatabasesRequest(server string, instanceId core.UUID, params *ListPrivilegeDatabasesParams) (*http.Request, error) {
 	var err error
@@ -6836,6 +7403,146 @@ func NewRevokePrivilegeUserDatabaseRequest(server string, instanceId core.UUID, 
 	}
 
 	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListCurrentQueriesRequest constructs an http.Request for the ListCurrentQueries method
+func NewListCurrentQueriesRequest(server string, instanceId core.UUID, params *ListCurrentQueriesParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "instance_id", instanceId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/dbaas/db-instances/%s/queries/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Page != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page", *params.Page, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewKillQueryRequest constructs an http.Request for the KillQuery method
+func NewKillQueryRequest(server string, instanceId core.UUID, pid string, params *KillQueryParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "instance_id", instanceId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "pid", pid, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/dbaas/db-instances/%s/queries/%s/kill/", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -8547,6 +9254,39 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with PUT /v2/dbaas/db-instances/{instance_id}/flavor/ (the `UpdateDbInstanceFlavor` operationId).
 	UpdateDbInstanceFlavorWithResponse(ctx context.Context, instanceId core.UUID, params *UpdateDbInstanceFlavorParams, body UpdateDbInstanceFlavorJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateDbInstanceFlavorResponse, error)
 
+	// ListLogFilesWithResponse List Log Files
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dbaas:db_instance:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/log-files/ (the `ListLogFiles` operationId).
+	ListLogFilesWithResponse(ctx context.Context, instanceId core.UUID, params *ListLogFilesParams, reqEditors ...RequestEditorFn) (*ListLogFilesResponse, error)
+
+	// GetLogFileDownloadUrlWithResponse Get Log File Download Url
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dbaas:db_instance:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/log-files/{file_id}/get-download-url/ (the `GetLogFileDownloadUrl` operationId).
+	GetLogFileDownloadUrlWithResponse(ctx context.Context, instanceId core.UUID, fileId string, params *GetLogFileDownloadUrlParams, reqEditors ...RequestEditorFn) (*GetLogFileDownloadUrlResponse, error)
+
+	// GetOperationLogsWithResponse Get Operation Logs
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dbaas:db_instance:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/operation-logs/ (the `GetOperationLogs` operationId).
+	GetOperationLogsWithResponse(ctx context.Context, instanceId core.UUID, params *GetOperationLogsParams, reqEditors ...RequestEditorFn) (*GetOperationLogsResponse, error)
+
 	// ListPrivilegeDatabasesWithResponse List Privilege Databases
 	//
 	// **Required permissions:**
@@ -8700,6 +9440,28 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with DELETE /v2/dbaas/db-instances/{instance_id}/privilege/users/{user_name}/databases/{db_name}/ (the `RevokePrivilegeUserDatabase` operationId).
 	RevokePrivilegeUserDatabaseWithResponse(ctx context.Context, instanceId core.UUID, userName string, dbName string, params *RevokePrivilegeUserDatabaseParams, reqEditors ...RequestEditorFn) (*RevokePrivilegeUserDatabaseResponse, error)
+
+	// ListCurrentQueriesWithResponse List Current Queries
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dbaas:db_instance:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/queries/ (the `ListCurrentQueries` operationId).
+	ListCurrentQueriesWithResponse(ctx context.Context, instanceId core.UUID, params *ListCurrentQueriesParams, reqEditors ...RequestEditorFn) (*ListCurrentQueriesResponse, error)
+
+	// KillQueryWithResponse Kill Query
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:dbaas:db_instance_query:kill`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/dbaas/db-instances/{instance_id}/queries/{pid}/kill/ (the `KillQuery` operationId).
+	KillQueryWithResponse(ctx context.Context, instanceId core.UUID, pid string, params *KillQueryParams, reqEditors ...RequestEditorFn) (*KillQueryResponse, error)
 
 	// UpdateRootPasswordWithBodyWithResponse Update Root Password
 	//
@@ -9748,6 +10510,105 @@ func (r UpdateDbInstanceFlavorResponse) StatusCode() int {
 	return 0
 }
 
+type ListLogFilesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *DBaaSLogFileListSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListLogFilesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListLogFilesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetLogFileDownloadUrlResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *LogFileDownloadUrlSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetLogFileDownloadUrlResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetLogFileDownloadUrlResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetOperationLogsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *DBaaSOperationLogListSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetOperationLogsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetOperationLogsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type ListPrivilegeDatabasesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -10072,6 +10933,70 @@ func (r RevokePrivilegeUserDatabaseResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r RevokePrivilegeUserDatabaseResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListCurrentQueriesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *DBaaSCurrentQueryListSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListCurrentQueriesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListCurrentQueriesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type KillQueryResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r KillQueryResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r KillQueryResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -11352,6 +12277,57 @@ func (c *ClientWithResponses) UpdateDbInstanceFlavorWithResponse(ctx context.Con
 	return ParseUpdateDbInstanceFlavorResponse(rsp)
 }
 
+// ListLogFilesWithResponse List Log Files
+//
+// **Required permissions:**
+//
+// - `urn:action:dbaas:db_instance:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/log-files/ (the `ListLogFiles` operationId).
+func (c *ClientWithResponses) ListLogFilesWithResponse(ctx context.Context, instanceId core.UUID, params *ListLogFilesParams, reqEditors ...RequestEditorFn) (*ListLogFilesResponse, error) {
+	rsp, err := c.ListLogFiles(ctx, instanceId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListLogFilesResponse(rsp)
+}
+
+// GetLogFileDownloadUrlWithResponse Get Log File Download Url
+//
+// **Required permissions:**
+//
+// - `urn:action:dbaas:db_instance:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/log-files/{file_id}/get-download-url/ (the `GetLogFileDownloadUrl` operationId).
+func (c *ClientWithResponses) GetLogFileDownloadUrlWithResponse(ctx context.Context, instanceId core.UUID, fileId string, params *GetLogFileDownloadUrlParams, reqEditors ...RequestEditorFn) (*GetLogFileDownloadUrlResponse, error) {
+	rsp, err := c.GetLogFileDownloadUrl(ctx, instanceId, fileId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetLogFileDownloadUrlResponse(rsp)
+}
+
+// GetOperationLogsWithResponse Get Operation Logs
+//
+// **Required permissions:**
+//
+// - `urn:action:dbaas:db_instance:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/operation-logs/ (the `GetOperationLogs` operationId).
+func (c *ClientWithResponses) GetOperationLogsWithResponse(ctx context.Context, instanceId core.UUID, params *GetOperationLogsParams, reqEditors ...RequestEditorFn) (*GetOperationLogsResponse, error) {
+	rsp, err := c.GetOperationLogs(ctx, instanceId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetOperationLogsResponse(rsp)
+}
+
 // ListPrivilegeDatabasesWithResponse List Privilege Databases
 //
 // **Required permissions:**
@@ -11588,6 +12564,40 @@ func (c *ClientWithResponses) RevokePrivilegeUserDatabaseWithResponse(ctx contex
 		return nil, err
 	}
 	return ParseRevokePrivilegeUserDatabaseResponse(rsp)
+}
+
+// ListCurrentQueriesWithResponse List Current Queries
+//
+// **Required permissions:**
+//
+// - `urn:action:dbaas:db_instance:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/queries/ (the `ListCurrentQueries` operationId).
+func (c *ClientWithResponses) ListCurrentQueriesWithResponse(ctx context.Context, instanceId core.UUID, params *ListCurrentQueriesParams, reqEditors ...RequestEditorFn) (*ListCurrentQueriesResponse, error) {
+	rsp, err := c.ListCurrentQueries(ctx, instanceId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListCurrentQueriesResponse(rsp)
+}
+
+// KillQueryWithResponse Kill Query
+//
+// **Required permissions:**
+//
+// - `urn:action:dbaas:db_instance_query:kill`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/dbaas/db-instances/{instance_id}/queries/{pid}/kill/ (the `KillQuery` operationId).
+func (c *ClientWithResponses) KillQueryWithResponse(ctx context.Context, instanceId core.UUID, pid string, params *KillQueryParams, reqEditors ...RequestEditorFn) (*KillQueryResponse, error) {
+	rsp, err := c.KillQuery(ctx, instanceId, pid, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseKillQueryResponse(rsp)
 }
 
 // UpdateRootPasswordWithBodyWithResponse Update Root Password
@@ -13498,6 +14508,189 @@ func ParseUpdateDbInstanceFlavorResponse(rsp *http.Response) (*UpdateDbInstanceF
 	return response, nil
 }
 
+// ParseListLogFilesResponse parses an HTTP response from a ListLogFilesWithResponse call
+func ParseListLogFilesResponse(rsp *http.Response) (*ListLogFilesResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListLogFilesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DBaaSLogFileListSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetLogFileDownloadUrlResponse parses an HTTP response from a GetLogFileDownloadUrlWithResponse call
+func ParseGetLogFileDownloadUrlResponse(rsp *http.Response) (*GetLogFileDownloadUrlResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetLogFileDownloadUrlResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest LogFileDownloadUrlSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetOperationLogsResponse parses an HTTP response from a GetOperationLogsWithResponse call
+func ParseGetOperationLogsResponse(rsp *http.Response) (*GetOperationLogsResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetOperationLogsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DBaaSOperationLogListSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseListPrivilegeDatabasesResponse parses an HTTP response from a ListPrivilegeDatabasesWithResponse call
 func ParseListPrivilegeDatabasesResponse(rsp *http.Response) (*ListPrivilegeDatabasesResponse, error) {
 	bodyBytes, err := core.ReadResponseBody(rsp)
@@ -14067,6 +15260,124 @@ func ParseRevokePrivilegeUserDatabaseResponse(rsp *http.Response) (*RevokePrivil
 			return nil, err
 		}
 		response.JSON202 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListCurrentQueriesResponse parses an HTTP response from a ListCurrentQueriesWithResponse call
+func ParseListCurrentQueriesResponse(rsp *http.Response) (*ListCurrentQueriesResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListCurrentQueriesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DBaaSCurrentQueryListSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseKillQueryResponse parses an HTTP response from a KillQueryWithResponse call
+func ParseKillQueryResponse(rsp *http.Response) (*KillQueryResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &KillQueryResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest ValidationError

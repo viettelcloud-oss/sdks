@@ -176,6 +176,30 @@ func (c *Client) GetFilesystemType(ctx context.Context, FilesystemTypeID core.UU
 	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
 }
 
+// MigrateFilesystem Migrate Filesystem
+//
+// POST /v2/file-storage/filesystems/{filesystem_id}/migrations/
+func (c *Client) MigrateFilesystem(ctx context.Context, FilesystemID core.UUID, params MigrateFilesystemParams, body FilesystemMigrateSchema) (*FilesystemMigrationSchema, error) {
+	genParams := params
+	resp, err := c.gen.MigrateFilesystemWithResponse(ctx, FilesystemID, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON202, 202)
+}
+
+// GetFilesystemMigration Get Filesystem Migration
+//
+// GET /v2/file-storage/filesystems/{filesystem_id}/migrations/{migration_id}/
+func (c *Client) GetFilesystemMigration(ctx context.Context, FilesystemID core.UUID, MigrationID core.UUID, params GetFilesystemMigrationParams) (*FilesystemMigrationSchema, error) {
+	genParams := params
+	resp, err := c.gen.GetFilesystemMigrationWithResponse(ctx, FilesystemID, MigrationID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
 // ListFilesystemSnapshotPolicies List Filesystem Snapshot Policies
 //
 // GET /v2/file-storage/snapshot-policies/

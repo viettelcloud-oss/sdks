@@ -64,6 +64,36 @@ func (e FilesystemAccessRuleState) Valid() bool {
 	}
 }
 
+// Defines values for FilesystemMigrationState.
+const (
+	FilesystemMigrationStateCompleted       FilesystemMigrationState = "Completed"
+	FilesystemMigrationStateCompleting      FilesystemMigrationState = "Completing"
+	FilesystemMigrationStateFailed          FilesystemMigrationState = "Failed"
+	FilesystemMigrationStateMigrating       FilesystemMigrationState = "Migrating"
+	FilesystemMigrationStatePendingComplete FilesystemMigrationState = "Pending_complete"
+	FilesystemMigrationStateStarting        FilesystemMigrationState = "Starting"
+)
+
+// Valid indicates whether the value is a known member of the FilesystemMigrationState enum.
+func (e FilesystemMigrationState) Valid() bool {
+	switch e {
+	case FilesystemMigrationStateCompleted:
+		return true
+	case FilesystemMigrationStateCompleting:
+		return true
+	case FilesystemMigrationStateFailed:
+		return true
+	case FilesystemMigrationStateMigrating:
+		return true
+	case FilesystemMigrationStatePendingComplete:
+		return true
+	case FilesystemMigrationStateStarting:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for FilesystemProtocol.
 const (
 	FilesystemProtocolNFS FilesystemProtocol = "NFS"
@@ -295,6 +325,26 @@ type FilesystemCreateSchema struct {
 	SnapshotId       nullable.Nullable[core.UUID]          `json:"snapshot_id,omitempty"`
 	SubnetId         nullable.Nullable[core.UUID]          `json:"subnet_id,omitempty"`
 }
+
+// FilesystemMigrateSchema defines model for FilesystemMigrateSchema.
+type FilesystemMigrateSchema struct {
+	NewFsTypeId nullable.Nullable[core.UUID] `json:"new_fs_type_id,omitempty"`
+	NewSubnetId nullable.Nullable[core.UUID] `json:"new_subnet_id,omitempty"`
+}
+
+// FilesystemMigrationSchema defines model for FilesystemMigrationSchema.
+type FilesystemMigrationSchema struct {
+	CreatedAt     time.Time                `json:"created_at"`
+	FilesystemId  core.UUID                `json:"filesystem_id"`
+	Id            core.UUID                `json:"id"`
+	IsRunning     bool                     `json:"is_running"`
+	TaskState     FilesystemMigrationState `json:"task_state"`
+	TotalProgress int                      `json:"total_progress"`
+	UpdatedAt     time.Time                `json:"updated_at"`
+}
+
+// FilesystemMigrationState defines model for FilesystemMigrationState.
+type FilesystemMigrationState string
 
 // FilesystemProtocol defines model for FilesystemProtocol.
 type FilesystemProtocol string
@@ -656,6 +706,16 @@ type ApplySnapshotPolicyParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
+// MigrateFilesystemParams defines parameters for MigrateFilesystem.
+type MigrateFilesystemParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// GetFilesystemMigrationParams defines parameters for GetFilesystemMigration.
+type GetFilesystemMigrationParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
 // ResizeFilesystemParams defines parameters for ResizeFilesystem.
 type ResizeFilesystemParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
@@ -716,6 +776,9 @@ type UpdateFilesystemJSONRequestBody = FilesystemUpdateSchema
 
 // ApplySnapshotPolicyJSONRequestBody defines body for ApplySnapshotPolicy for application/json ContentType.
 type ApplySnapshotPolicyJSONRequestBody = FilesystemApplyPolicySchema
+
+// MigrateFilesystemJSONRequestBody defines body for MigrateFilesystem for application/json ContentType.
+type MigrateFilesystemJSONRequestBody = FilesystemMigrateSchema
 
 // ResizeFilesystemJSONRequestBody defines body for ResizeFilesystem for application/json ContentType.
 type ResizeFilesystemJSONRequestBody = FilesystemResizeSchema
@@ -1022,6 +1085,37 @@ type ClientInterface interface {
 	//
 	// Corresponds with POST /v2/file-storage/filesystems/{filesystem_id}/apply-snapshot-policy/ (the `ApplySnapshotPolicy` operationId).
 	ApplySnapshotPolicy(ctx context.Context, filesystemId core.UUID, params *ApplySnapshotPolicyParams, body ApplySnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// MigrateFilesystemWithBody Migrate Filesystem
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:filesystem:filesystem_migration:create`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v2/file-storage/filesystems/{filesystem_id}/migrations/ (the `MigrateFilesystem` operationId).
+	MigrateFilesystemWithBody(ctx context.Context, filesystemId core.UUID, params *MigrateFilesystemParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// MigrateFilesystem Migrate Filesystem
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:filesystem:filesystem_migration:create`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v2/file-storage/filesystems/{filesystem_id}/migrations/ (the `MigrateFilesystem` operationId).
+	MigrateFilesystem(ctx context.Context, filesystemId core.UUID, params *MigrateFilesystemParams, body MigrateFilesystemJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetFilesystemMigration Get Filesystem Migration
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:filesystem:filesystem_migration:get`
+	//
+	// Corresponds with GET /v2/file-storage/filesystems/{filesystem_id}/migrations/{migration_id}/ (the `GetFilesystemMigration` operationId).
+	GetFilesystemMigration(ctx context.Context, filesystemId core.UUID, migrationId core.UUID, params *GetFilesystemMigrationParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ResizeFilesystemWithBody Resize Filesystem
 	//
@@ -1569,6 +1663,67 @@ func (c *Client) ApplySnapshotPolicyWithBody(ctx context.Context, filesystemId c
 // Corresponds with POST /v2/file-storage/filesystems/{filesystem_id}/apply-snapshot-policy/ (the `ApplySnapshotPolicy` operationId).
 func (c *Client) ApplySnapshotPolicy(ctx context.Context, filesystemId core.UUID, params *ApplySnapshotPolicyParams, body ApplySnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewApplySnapshotPolicyRequest(c.Server, filesystemId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// MigrateFilesystemWithBody Migrate Filesystem
+//
+// **Required permissions:**
+//
+// - `urn:action:filesystem:filesystem_migration:create`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/file-storage/filesystems/{filesystem_id}/migrations/ (the `MigrateFilesystem` operationId).
+func (c *Client) MigrateFilesystemWithBody(ctx context.Context, filesystemId core.UUID, params *MigrateFilesystemParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewMigrateFilesystemRequestWithBody(c.Server, filesystemId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// MigrateFilesystem Migrate Filesystem
+//
+// **Required permissions:**
+//
+// - `urn:action:filesystem:filesystem_migration:create`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/file-storage/filesystems/{filesystem_id}/migrations/ (the `MigrateFilesystem` operationId).
+func (c *Client) MigrateFilesystem(ctx context.Context, filesystemId core.UUID, params *MigrateFilesystemParams, body MigrateFilesystemJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewMigrateFilesystemRequest(c.Server, filesystemId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetFilesystemMigration Get Filesystem Migration
+//
+// **Required permissions:**
+//
+// - `urn:action:filesystem:filesystem_migration:get`
+//
+// Corresponds with GET /v2/file-storage/filesystems/{filesystem_id}/migrations/{migration_id}/ (the `GetFilesystemMigration` operationId).
+func (c *Client) GetFilesystemMigration(ctx context.Context, filesystemId core.UUID, migrationId core.UUID, params *GetFilesystemMigrationParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetFilesystemMigrationRequest(c.Server, filesystemId, migrationId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -3071,6 +3226,120 @@ func NewApplySnapshotPolicyRequestWithBody(server string, filesystemId core.UUID
 	return req, nil
 }
 
+// NewMigrateFilesystemRequest calls the generic MigrateFilesystem builder with application/json body
+func NewMigrateFilesystemRequest(server string, filesystemId core.UUID, params *MigrateFilesystemParams, body MigrateFilesystemJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewMigrateFilesystemRequestWithBody(server, filesystemId, params, "application/json", bodyReader)
+}
+
+// NewMigrateFilesystemRequestWithBody constructs an http.Request for the MigrateFilesystem method, with any body, and a specified content type
+func NewMigrateFilesystemRequestWithBody(server string, filesystemId core.UUID, params *MigrateFilesystemParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "filesystem_id", filesystemId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/file-storage/filesystems/%s/migrations/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetFilesystemMigrationRequest constructs an http.Request for the GetFilesystemMigration method
+func NewGetFilesystemMigrationRequest(server string, filesystemId core.UUID, migrationId core.UUID, params *GetFilesystemMigrationParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "filesystem_id", filesystemId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "migration_id", migrationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/file-storage/filesystems/%s/migrations/%s/", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
 // NewResizeFilesystemRequest calls the generic ResizeFilesystem builder with application/json body
 func NewResizeFilesystemRequest(server string, filesystemId core.UUID, params *ResizeFilesystemParams, body ResizeFilesystemJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -3825,6 +4094,39 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /v2/file-storage/filesystems/{filesystem_id}/apply-snapshot-policy/ (the `ApplySnapshotPolicy` operationId).
 	ApplySnapshotPolicyWithResponse(ctx context.Context, filesystemId core.UUID, params *ApplySnapshotPolicyParams, body ApplySnapshotPolicyJSONRequestBody, reqEditors ...RequestEditorFn) (*ApplySnapshotPolicyResponse, error)
 
+	// MigrateFilesystemWithBodyWithResponse Migrate Filesystem
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:filesystem:filesystem_migration:create`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/file-storage/filesystems/{filesystem_id}/migrations/ (the `MigrateFilesystem` operationId).
+	MigrateFilesystemWithBodyWithResponse(ctx context.Context, filesystemId core.UUID, params *MigrateFilesystemParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*MigrateFilesystemResponse, error)
+
+	// MigrateFilesystemWithResponse Migrate Filesystem
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:filesystem:filesystem_migration:create`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/file-storage/filesystems/{filesystem_id}/migrations/ (the `MigrateFilesystem` operationId).
+	MigrateFilesystemWithResponse(ctx context.Context, filesystemId core.UUID, params *MigrateFilesystemParams, body MigrateFilesystemJSONRequestBody, reqEditors ...RequestEditorFn) (*MigrateFilesystemResponse, error)
+
+	// GetFilesystemMigrationWithResponse Get Filesystem Migration
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:filesystem:filesystem_migration:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/file-storage/filesystems/{filesystem_id}/migrations/{migration_id}/ (the `GetFilesystemMigration` operationId).
+	GetFilesystemMigrationWithResponse(ctx context.Context, filesystemId core.UUID, migrationId core.UUID, params *GetFilesystemMigrationParams, reqEditors ...RequestEditorFn) (*GetFilesystemMigrationResponse, error)
+
 	// ResizeFilesystemWithBodyWithResponse Resize Filesystem
 	//
 	// **Required permissions:**
@@ -4489,6 +4791,72 @@ func (r ApplySnapshotPolicyResponse) StatusCode() int {
 	return 0
 }
 
+type MigrateFilesystemResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON202 the response for an HTTP 202 `application/json` response
+	JSON202 *FilesystemMigrationSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r MigrateFilesystemResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r MigrateFilesystemResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetFilesystemMigrationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *FilesystemMigrationSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetFilesystemMigrationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetFilesystemMigrationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type ResizeFilesystemResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -5095,6 +5463,57 @@ func (c *ClientWithResponses) ApplySnapshotPolicyWithResponse(ctx context.Contex
 		return nil, err
 	}
 	return ParseApplySnapshotPolicyResponse(rsp)
+}
+
+// MigrateFilesystemWithBodyWithResponse Migrate Filesystem
+//
+// **Required permissions:**
+//
+// - `urn:action:filesystem:filesystem_migration:create`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/file-storage/filesystems/{filesystem_id}/migrations/ (the `MigrateFilesystem` operationId).
+func (c *ClientWithResponses) MigrateFilesystemWithBodyWithResponse(ctx context.Context, filesystemId core.UUID, params *MigrateFilesystemParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*MigrateFilesystemResponse, error) {
+	rsp, err := c.MigrateFilesystemWithBody(ctx, filesystemId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseMigrateFilesystemResponse(rsp)
+}
+
+// MigrateFilesystemWithResponse Migrate Filesystem
+//
+// **Required permissions:**
+//
+// - `urn:action:filesystem:filesystem_migration:create`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/file-storage/filesystems/{filesystem_id}/migrations/ (the `MigrateFilesystem` operationId).
+func (c *ClientWithResponses) MigrateFilesystemWithResponse(ctx context.Context, filesystemId core.UUID, params *MigrateFilesystemParams, body MigrateFilesystemJSONRequestBody, reqEditors ...RequestEditorFn) (*MigrateFilesystemResponse, error) {
+	rsp, err := c.MigrateFilesystem(ctx, filesystemId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseMigrateFilesystemResponse(rsp)
+}
+
+// GetFilesystemMigrationWithResponse Get Filesystem Migration
+//
+// **Required permissions:**
+//
+// - `urn:action:filesystem:filesystem_migration:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/file-storage/filesystems/{filesystem_id}/migrations/{migration_id}/ (the `GetFilesystemMigration` operationId).
+func (c *ClientWithResponses) GetFilesystemMigrationWithResponse(ctx context.Context, filesystemId core.UUID, migrationId core.UUID, params *GetFilesystemMigrationParams, reqEditors ...RequestEditorFn) (*GetFilesystemMigrationResponse, error) {
+	rsp, err := c.GetFilesystemMigration(ctx, filesystemId, migrationId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetFilesystemMigrationResponse(rsp)
 }
 
 // ResizeFilesystemWithBodyWithResponse Resize Filesystem
@@ -6247,6 +6666,128 @@ func ParseApplySnapshotPolicyResponse(rsp *http.Response) (*ApplySnapshotPolicyR
 	switch {
 	case rsp.StatusCode == 204:
 		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseMigrateFilesystemResponse parses an HTTP response from a MigrateFilesystemWithResponse call
+func ParseMigrateFilesystemResponse(rsp *http.Response) (*MigrateFilesystemResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &MigrateFilesystemResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
+		var dest FilesystemMigrationSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON202 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetFilesystemMigrationResponse parses an HTTP response from a GetFilesystemMigrationWithResponse call
+func ParseGetFilesystemMigrationResponse(rsp *http.Response) (*GetFilesystemMigrationResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetFilesystemMigrationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest FilesystemMigrationSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest ValidationError
