@@ -141,6 +141,7 @@ const (
 	DBClusterEngineTypeMemcached   DBClusterEngineType = "memcached"
 	DBClusterEngineTypeMongodb     DBClusterEngineType = "mongodb"
 	DBClusterEngineTypeOpensearch  DBClusterEngineType = "opensearch"
+	DBClusterEngineTypeRabbitmq    DBClusterEngineType = "rabbitmq"
 	DBClusterEngineTypeStarrocks   DBClusterEngineType = "starrocks"
 	DBClusterEngineTypeTimescaledb DBClusterEngineType = "timescaledb"
 )
@@ -157,6 +158,8 @@ func (e DBClusterEngineType) Valid() bool {
 	case DBClusterEngineTypeMongodb:
 		return true
 	case DBClusterEngineTypeOpensearch:
+		return true
+	case DBClusterEngineTypeRabbitmq:
 		return true
 	case DBClusterEngineTypeStarrocks:
 		return true
@@ -177,6 +180,7 @@ const (
 	DBClusterNodeRoleMongoNode         DBClusterNodeRole = "mongo_node"
 	DBClusterNodeRoleMongoShard        DBClusterNodeRole = "mongo_shard"
 	DBClusterNodeRoleOpensearchNode    DBClusterNodeRole = "opensearch_node"
+	DBClusterNodeRoleRabbitmqNode      DBClusterNodeRole = "rabbitmq_node"
 	DBClusterNodeRoleStarrocksBe       DBClusterNodeRole = "starrocks_be"
 	DBClusterNodeRoleStarrocksFe       DBClusterNodeRole = "starrocks_fe"
 	DBClusterNodeRoleTimescaledbDb     DBClusterNodeRole = "timescaledb_db"
@@ -200,6 +204,8 @@ func (e DBClusterNodeRole) Valid() bool {
 	case DBClusterNodeRoleMongoShard:
 		return true
 	case DBClusterNodeRoleOpensearchNode:
+		return true
+	case DBClusterNodeRoleRabbitmqNode:
 		return true
 	case DBClusterNodeRoleStarrocksBe:
 		return true
@@ -295,6 +301,7 @@ const (
 	DBClusterTopologyKindMongoRs       DBClusterTopologyKind = "mongo_rs"
 	DBClusterTopologyKindMongoSharding DBClusterTopologyKind = "mongo_sharding"
 	DBClusterTopologyKindOpensearch    DBClusterTopologyKind = "opensearch"
+	DBClusterTopologyKindRabbitmq      DBClusterTopologyKind = "rabbitmq"
 	DBClusterTopologyKindStarrocks     DBClusterTopologyKind = "starrocks"
 	DBClusterTopologyKindTimescaledb   DBClusterTopologyKind = "timescaledb"
 )
@@ -313,6 +320,8 @@ func (e DBClusterTopologyKind) Valid() bool {
 	case DBClusterTopologyKindMongoSharding:
 		return true
 	case DBClusterTopologyKindOpensearch:
+		return true
+	case DBClusterTopologyKindRabbitmq:
 		return true
 	case DBClusterTopologyKindStarrocks:
 		return true
@@ -732,7 +741,7 @@ type DBClusterCreateSchema struct {
 	EnableSsl                    *bool                                  `json:"enable_ssl,omitempty"`
 	Engine                       nullable.Nullable[DBClusterEngineType] `json:"engine,omitempty"`
 
-	// EngineConfig The modern alternative to topology_config: send this with node_pools instead of topology_config. Required for memcached, starrocks and mariadb, which accept no other form. OpenSearch may omit both fields.
+	// EngineConfig The modern alternative to topology_config: send this with node_pools instead of topology_config. Required for memcached, starrocks and mariadb, which accept no other form. OpenSearch and RabbitMQ may omit both fields.
 	EngineConfig      nullable.Nullable[map[string]interface{}] `json:"engine_config,omitempty"`
 	EngineVersionId   nullable.Nullable[core.UUID]              `json:"engine_version_id,omitempty"`
 	InitBackupId      nullable.Nullable[core.UUID]              `json:"init_backup_id,omitempty"`
@@ -758,7 +767,7 @@ type DBClusterCreateSchema struct {
 	// Topology Required with engine_config for an engine with several topologies (MongoDB: mongo_rs or mongo_sharding).
 	Topology nullable.Nullable[DBClusterTopologyKind] `json:"topology,omitempty"`
 
-	// TopologyConfig Use node_pools and engine_config. Not supported for memcached, starrocks or mariadb.
+	// TopologyConfig Use node_pools and engine_config. Not supported for memcached, starrocks, mariadb or rabbitmq.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	TopologyConfig nullable.Nullable[DBClusterTopologyConfig] `json:"topology_config,omitempty"`
 	ZoneId         nullable.Nullable[core.UUID]               `json:"zone_id,omitempty"`

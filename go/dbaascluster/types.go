@@ -123,6 +123,7 @@ const (
 	DBClusterEngineTypeMemcached                 = gen.DBClusterEngineTypeMemcached
 	DBClusterEngineTypeMongodb                   = gen.DBClusterEngineTypeMongodb
 	DBClusterEngineTypeOpensearch                = gen.DBClusterEngineTypeOpensearch
+	DBClusterEngineTypeRabbitmq                  = gen.DBClusterEngineTypeRabbitmq
 	DBClusterEngineTypeStarrocks                 = gen.DBClusterEngineTypeStarrocks
 	DBClusterEngineTypeTimescaledb               = gen.DBClusterEngineTypeTimescaledb
 	DBClusterNodeRoleCassandraNode               = gen.DBClusterNodeRoleCassandraNode
@@ -133,6 +134,7 @@ const (
 	DBClusterNodeRoleMongoNode                   = gen.DBClusterNodeRoleMongoNode
 	DBClusterNodeRoleMongoShard                  = gen.DBClusterNodeRoleMongoShard
 	DBClusterNodeRoleOpensearchNode              = gen.DBClusterNodeRoleOpensearchNode
+	DBClusterNodeRoleRabbitmqNode                = gen.DBClusterNodeRoleRabbitmqNode
 	DBClusterNodeRoleStarrocksBe                 = gen.DBClusterNodeRoleStarrocksBe
 	DBClusterNodeRoleStarrocksFe                 = gen.DBClusterNodeRoleStarrocksFe
 	DBClusterNodeRoleTimescaledbDb               = gen.DBClusterNodeRoleTimescaledbDb
@@ -159,6 +161,7 @@ const (
 	DBClusterTopologyKindMongoRs                 = gen.DBClusterTopologyKindMongoRs
 	DBClusterTopologyKindMongoSharding           = gen.DBClusterTopologyKindMongoSharding
 	DBClusterTopologyKindOpensearch              = gen.DBClusterTopologyKindOpensearch
+	DBClusterTopologyKindRabbitmq                = gen.DBClusterTopologyKindRabbitmq
 	DBClusterTopologyKindStarrocks               = gen.DBClusterTopologyKindStarrocks
 	DBClusterTopologyKindTimescaledb             = gen.DBClusterTopologyKindTimescaledb
 	DBClusterVolumeSpeedN100k                    = gen.DBClusterVolumeSpeedN100k

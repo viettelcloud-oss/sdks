@@ -64,6 +64,27 @@ func (e ElasticIPStatus) Valid() bool {
 	}
 }
 
+// Defines values for NextHopType.
+const (
+	NextHopTypeDirectConnect NextHopType = "direct_connect"
+	NextHopTypeNatGateway    NextHopType = "nat_gateway"
+	NextHopTypeVpcPeering    NextHopType = "vpc_peering"
+)
+
+// Valid indicates whether the value is a known member of the NextHopType enum.
+func (e NextHopType) Valid() bool {
+	switch e {
+	case NextHopTypeDirectConnect:
+		return true
+	case NextHopTypeNatGateway:
+		return true
+	case NextHopTypeVpcPeering:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for PrivateIPDeviceOwner.
 const (
 	PrivateIPDeviceOwnerLoadbalancer PrivateIPDeviceOwner = "loadbalancer"
@@ -418,10 +439,24 @@ type EstimatedPaygCostSchema struct {
 	Total         EstimatedCostComponentSchema   `json:"total"`
 }
 
+// NestedDirectConnectSchema defines model for NestedDirectConnectSchema.
+type NestedDirectConnectSchema struct {
+	DisplayName string    `json:"display_name"`
+	Id          core.UUID `json:"id"`
+	Name        string    `json:"name"`
+}
+
 // NestedElasticIPAllowedVIPSchema defines model for NestedElasticIPAllowedVIPSchema.
 type NestedElasticIPAllowedVIPSchema struct {
 	Id        core.UUID                 `json:"id"`
 	IpAddress nullable.Nullable[string] `json:"ip_address,omitempty"`
+}
+
+// NestedNATGatewaySchema defines model for NestedNATGatewaySchema.
+type NestedNATGatewaySchema struct {
+	DisplayName string    `json:"display_name"`
+	Id          core.UUID `json:"id"`
+	Name        string    `json:"name"`
 }
 
 // NestedPeeredVPCSchema Nested schema for a VPC on one side of a VPC Peering.
@@ -453,6 +488,12 @@ type NestedRegionSchema struct {
 	Name        string    `json:"name"`
 }
 
+// NestedRouteTableSchema defines model for NestedRouteTableSchema.
+type NestedRouteTableSchema struct {
+	Id   core.UUID `json:"id"`
+	Name string    `json:"name"`
+}
+
 // NestedSecurityGroupSchema defines model for NestedSecurityGroupSchema.
 type NestedSecurityGroupSchema struct {
 	Id   core.UUID `json:"id"`
@@ -479,6 +520,12 @@ type NestedUserSchema struct {
 	Username string    `json:"username"`
 }
 
+// NestedVPCPeeringSchema defines model for NestedVPCPeeringSchema.
+type NestedVPCPeeringSchema struct {
+	Id   core.UUID `json:"id"`
+	Name string    `json:"name"`
+}
+
 // NestedVPCSchema defines model for NestedVPCSchema.
 type NestedVPCSchema struct {
 	DisplayName string    `json:"display_name"`
@@ -492,6 +539,9 @@ type NestedZoneSchema struct {
 	Id          core.UUID `json:"id"`
 	Name        string    `json:"name"`
 }
+
+// NextHopType defines model for NextHopType.
+type NextHopType string
 
 // PagedDirectConnectSchema defines model for PagedDirectConnectSchema.
 type PagedDirectConnectSchema struct {
@@ -515,6 +565,14 @@ type PagedPrivateIPSchema struct {
 	Next     nullable.Nullable[string] `json:"next,omitempty"`
 	Previous nullable.Nullable[string] `json:"previous,omitempty"`
 	Results  []PrivateIPSchema         `json:"results"`
+}
+
+// PagedRouteTableRouteSchema defines model for PagedRouteTableRouteSchema.
+type PagedRouteTableRouteSchema struct {
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []RouteTableRouteSchema   `json:"results"`
 }
 
 // PagedRouteTableSchema defines model for PagedRouteTableSchema.
@@ -623,6 +681,29 @@ type PrivateIPUpdateSchema struct {
 // RouteTableInternetAccessUpdateSchema defines model for RouteTableInternetAccessUpdateSchema.
 type RouteTableInternetAccessUpdateSchema struct {
 	Enabled bool `json:"enabled"`
+}
+
+// RouteTableRouteCreateSchema defines model for RouteTableRouteCreateSchema.
+type RouteTableRouteCreateSchema struct {
+	Destination            string                       `json:"destination"`
+	NexthopDirectConnectId nullable.Nullable[core.UUID] `json:"nexthop_direct_connect_id,omitempty"`
+	NexthopNatGatewayId    nullable.Nullable[core.UUID] `json:"nexthop_nat_gateway_id,omitempty"`
+	NexthopPeeringId       nullable.Nullable[core.UUID] `json:"nexthop_peering_id,omitempty"`
+	NexthopType            NextHopType                  `json:"nexthop_type"`
+	RouteTableId           core.UUID                    `json:"route_table_id"`
+}
+
+// RouteTableRouteSchema defines model for RouteTableRouteSchema.
+type RouteTableRouteSchema struct {
+	CreatedAt            time.Time                                    `json:"created_at"`
+	Destination          string                                       `json:"destination"`
+	Id                   core.UUID                                    `json:"id"`
+	NexthopDirectConnect nullable.Nullable[NestedDirectConnectSchema] `json:"nexthop_direct_connect,omitempty"`
+	NexthopNatGateway    nullable.Nullable[NestedNATGatewaySchema]    `json:"nexthop_nat_gateway,omitempty"`
+	NexthopPeering       nullable.Nullable[NestedVPCPeeringSchema]    `json:"nexthop_peering,omitempty"`
+	NexthopType          NextHopType                                  `json:"nexthop_type"`
+	RouteTable           NestedRouteTableSchema                       `json:"route_table"`
+	UpdatedAt            time.Time                                    `json:"updated_at"`
 }
 
 // RouteTableSchema defines model for RouteTableSchema.
@@ -1001,6 +1082,31 @@ type ListRouteTableSubnetsParams struct {
 	ProjectID  core.UUID `json:"Project-ID"`
 }
 
+// ListRouteTableRoutesParams defines parameters for ListRouteTableRoutes.
+type ListRouteTableRoutesParams struct {
+	RouteTableId *core.UUID   `form:"route_table_id,omitempty" json:"route_table_id,omitempty"`
+	Destination  *string      `form:"destination,omitempty" json:"destination,omitempty"`
+	NexthopType  *NextHopType `form:"nexthop_type,omitempty" json:"nexthop_type,omitempty"`
+	PageSize     *int         `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber   *int         `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID    core.UUID    `json:"Project-ID"`
+}
+
+// CreateRouteTableRouteParams defines parameters for CreateRouteTableRoute.
+type CreateRouteTableRouteParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// DeleteRouteTableRouteParams defines parameters for DeleteRouteTableRoute.
+type DeleteRouteTableRouteParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// GetRouteTableRouteParams defines parameters for GetRouteTableRoute.
+type GetRouteTableRouteParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
 // ListSecurityGroupRulesParams defines parameters for ListSecurityGroupRules.
 type ListSecurityGroupRulesParams struct {
 	SecurityGroupId *core.UUID    `form:"security_group_id,omitempty" json:"security_group_id,omitempty"`
@@ -1236,6 +1342,9 @@ type UpdatePrivateIpAllowedVipsJSONRequestBody = PrivateIPAllowedVIPsUpdateSchem
 
 // UpdateRouteTableInternetAccessJSONRequestBody defines body for UpdateRouteTableInternetAccess for application/json ContentType.
 type UpdateRouteTableInternetAccessJSONRequestBody = RouteTableInternetAccessUpdateSchema
+
+// CreateRouteTableRouteJSONRequestBody defines body for CreateRouteTableRoute for application/json ContentType.
+type CreateRouteTableRouteJSONRequestBody = RouteTableRouteCreateSchema
 
 // CreateSecurityGroupRuleJSONRequestBody defines body for CreateSecurityGroupRule for application/json ContentType.
 type CreateSecurityGroupRuleJSONRequestBody = SecurityGroupRuleCreateSchema
@@ -1751,6 +1860,55 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /v2/network/route-tables/{route_table_id}/subnets/ (the `ListRouteTableSubnets` operationId).
 	ListRouteTableSubnets(ctx context.Context, routeTableId core.UUID, params *ListRouteTableSubnetsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListRouteTableRoutes List Route Table Routes
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route:list`
+	//
+	// Corresponds with GET /v2/network/rt-routes/ (the `ListRouteTableRoutes` operationId).
+	ListRouteTableRoutes(ctx context.Context, params *ListRouteTableRoutesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateRouteTableRouteWithBody Create Route Table Route
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route:create`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v2/network/rt-routes/ (the `CreateRouteTableRoute` operationId).
+	CreateRouteTableRouteWithBody(ctx context.Context, params *CreateRouteTableRouteParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateRouteTableRoute Create Route Table Route
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route:create`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v2/network/rt-routes/ (the `CreateRouteTableRoute` operationId).
+	CreateRouteTableRoute(ctx context.Context, params *CreateRouteTableRouteParams, body CreateRouteTableRouteJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteRouteTableRoute Delete Route Table Route
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route:delete`
+	//
+	// Corresponds with DELETE /v2/network/rt-routes/{route_table_route_id}/ (the `DeleteRouteTableRoute` operationId).
+	DeleteRouteTableRoute(ctx context.Context, routeTableRouteId core.UUID, params *DeleteRouteTableRouteParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetRouteTableRoute Get Route Table Route
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route:get`
+	//
+	// Corresponds with GET /v2/network/rt-routes/{route_table_route_id}/ (the `GetRouteTableRoute` operationId).
+	GetRouteTableRoute(ctx context.Context, routeTableRouteId core.UUID, params *GetRouteTableRouteParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListSecurityGroupRules List Security Group Rules
 	//
@@ -3060,6 +3218,105 @@ func (c *Client) UpdateRouteTableInternetAccess(ctx context.Context, routeTableI
 // Corresponds with GET /v2/network/route-tables/{route_table_id}/subnets/ (the `ListRouteTableSubnets` operationId).
 func (c *Client) ListRouteTableSubnets(ctx context.Context, routeTableId core.UUID, params *ListRouteTableSubnetsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListRouteTableSubnetsRequest(c.Server, routeTableId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListRouteTableRoutes List Route Table Routes
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route:list`
+//
+// Corresponds with GET /v2/network/rt-routes/ (the `ListRouteTableRoutes` operationId).
+func (c *Client) ListRouteTableRoutes(ctx context.Context, params *ListRouteTableRoutesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListRouteTableRoutesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateRouteTableRouteWithBody Create Route Table Route
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route:create`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/network/rt-routes/ (the `CreateRouteTableRoute` operationId).
+func (c *Client) CreateRouteTableRouteWithBody(ctx context.Context, params *CreateRouteTableRouteParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateRouteTableRouteRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateRouteTableRoute Create Route Table Route
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route:create`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/network/rt-routes/ (the `CreateRouteTableRoute` operationId).
+func (c *Client) CreateRouteTableRoute(ctx context.Context, params *CreateRouteTableRouteParams, body CreateRouteTableRouteJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateRouteTableRouteRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteRouteTableRoute Delete Route Table Route
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route:delete`
+//
+// Corresponds with DELETE /v2/network/rt-routes/{route_table_route_id}/ (the `DeleteRouteTableRoute` operationId).
+func (c *Client) DeleteRouteTableRoute(ctx context.Context, routeTableRouteId core.UUID, params *DeleteRouteTableRouteParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteRouteTableRouteRequest(c.Server, routeTableRouteId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetRouteTableRoute Get Route Table Route
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route:get`
+//
+// Corresponds with GET /v2/network/rt-routes/{route_table_route_id}/ (the `GetRouteTableRoute` operationId).
+func (c *Client) GetRouteTableRoute(ctx context.Context, routeTableRouteId core.UUID, params *GetRouteTableRouteParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetRouteTableRouteRequest(c.Server, routeTableRouteId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -5737,6 +5994,268 @@ func NewListRouteTableSubnetsRequest(server string, routeTableId core.UUID, para
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListRouteTableRoutesRequest constructs an http.Request for the ListRouteTableRoutes method
+func NewListRouteTableRoutesRequest(server string, params *ListRouteTableRoutesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/rt-routes/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.RouteTableId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "route_table_id", *params.RouteTableId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Destination != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "destination", *params.Destination, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.NexthopType != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "nexthop_type", *params.NexthopType, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewCreateRouteTableRouteRequest calls the generic CreateRouteTableRoute builder with application/json body
+func NewCreateRouteTableRouteRequest(server string, params *CreateRouteTableRouteParams, body CreateRouteTableRouteJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateRouteTableRouteRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCreateRouteTableRouteRequestWithBody constructs an http.Request for the CreateRouteTableRoute method, with any body, and a specified content type
+func NewCreateRouteTableRouteRequestWithBody(server string, params *CreateRouteTableRouteParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/rt-routes/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteRouteTableRouteRequest constructs an http.Request for the DeleteRouteTableRoute method
+func NewDeleteRouteTableRouteRequest(server string, routeTableRouteId core.UUID, params *DeleteRouteTableRouteParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "route_table_route_id", routeTableRouteId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/rt-routes/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetRouteTableRouteRequest constructs an http.Request for the GetRouteTableRoute method
+func NewGetRouteTableRouteRequest(server string, routeTableRouteId core.UUID, params *GetRouteTableRouteParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "route_table_route_id", routeTableRouteId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/network/rt-routes/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
 	}
 
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
@@ -8444,6 +8963,61 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /v2/network/route-tables/{route_table_id}/subnets/ (the `ListRouteTableSubnets` operationId).
 	ListRouteTableSubnetsWithResponse(ctx context.Context, routeTableId core.UUID, params *ListRouteTableSubnetsParams, reqEditors ...RequestEditorFn) (*ListRouteTableSubnetsResponse, error)
 
+	// ListRouteTableRoutesWithResponse List Route Table Routes
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route:list`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/network/rt-routes/ (the `ListRouteTableRoutes` operationId).
+	ListRouteTableRoutesWithResponse(ctx context.Context, params *ListRouteTableRoutesParams, reqEditors ...RequestEditorFn) (*ListRouteTableRoutesResponse, error)
+
+	// CreateRouteTableRouteWithBodyWithResponse Create Route Table Route
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route:create`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/network/rt-routes/ (the `CreateRouteTableRoute` operationId).
+	CreateRouteTableRouteWithBodyWithResponse(ctx context.Context, params *CreateRouteTableRouteParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateRouteTableRouteResponse, error)
+
+	// CreateRouteTableRouteWithResponse Create Route Table Route
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route:create`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/network/rt-routes/ (the `CreateRouteTableRoute` operationId).
+	CreateRouteTableRouteWithResponse(ctx context.Context, params *CreateRouteTableRouteParams, body CreateRouteTableRouteJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateRouteTableRouteResponse, error)
+
+	// DeleteRouteTableRouteWithResponse Delete Route Table Route
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route:delete`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v2/network/rt-routes/{route_table_route_id}/ (the `DeleteRouteTableRoute` operationId).
+	DeleteRouteTableRouteWithResponse(ctx context.Context, routeTableRouteId core.UUID, params *DeleteRouteTableRouteParams, reqEditors ...RequestEditorFn) (*DeleteRouteTableRouteResponse, error)
+
+	// GetRouteTableRouteWithResponse Get Route Table Route
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:network:route:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/network/rt-routes/{route_table_route_id}/ (the `GetRouteTableRoute` operationId).
+	GetRouteTableRouteWithResponse(ctx context.Context, routeTableRouteId core.UUID, params *GetRouteTableRouteParams, reqEditors ...RequestEditorFn) (*GetRouteTableRouteResponse, error)
+
 	// ListSecurityGroupRulesWithResponse List Security Group Rules
 	//
 	// List the Security Group Rules owned by the project.
@@ -9807,6 +10381,136 @@ func (r ListRouteTableSubnetsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r ListRouteTableSubnetsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListRouteTableRoutesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedRouteTableRouteSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListRouteTableRoutesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListRouteTableRoutesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateRouteTableRouteResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *RouteTableRouteSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateRouteTableRouteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateRouteTableRouteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteRouteTableRouteResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteRouteTableRouteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteRouteTableRouteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetRouteTableRouteResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *RouteTableRouteSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetRouteTableRouteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetRouteTableRouteResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -11477,6 +12181,91 @@ func (c *ClientWithResponses) ListRouteTableSubnetsWithResponse(ctx context.Cont
 		return nil, err
 	}
 	return ParseListRouteTableSubnetsResponse(rsp)
+}
+
+// ListRouteTableRoutesWithResponse List Route Table Routes
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route:list`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/network/rt-routes/ (the `ListRouteTableRoutes` operationId).
+func (c *ClientWithResponses) ListRouteTableRoutesWithResponse(ctx context.Context, params *ListRouteTableRoutesParams, reqEditors ...RequestEditorFn) (*ListRouteTableRoutesResponse, error) {
+	rsp, err := c.ListRouteTableRoutes(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListRouteTableRoutesResponse(rsp)
+}
+
+// CreateRouteTableRouteWithBodyWithResponse Create Route Table Route
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route:create`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/network/rt-routes/ (the `CreateRouteTableRoute` operationId).
+func (c *ClientWithResponses) CreateRouteTableRouteWithBodyWithResponse(ctx context.Context, params *CreateRouteTableRouteParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateRouteTableRouteResponse, error) {
+	rsp, err := c.CreateRouteTableRouteWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateRouteTableRouteResponse(rsp)
+}
+
+// CreateRouteTableRouteWithResponse Create Route Table Route
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route:create`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/network/rt-routes/ (the `CreateRouteTableRoute` operationId).
+func (c *ClientWithResponses) CreateRouteTableRouteWithResponse(ctx context.Context, params *CreateRouteTableRouteParams, body CreateRouteTableRouteJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateRouteTableRouteResponse, error) {
+	rsp, err := c.CreateRouteTableRoute(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateRouteTableRouteResponse(rsp)
+}
+
+// DeleteRouteTableRouteWithResponse Delete Route Table Route
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route:delete`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v2/network/rt-routes/{route_table_route_id}/ (the `DeleteRouteTableRoute` operationId).
+func (c *ClientWithResponses) DeleteRouteTableRouteWithResponse(ctx context.Context, routeTableRouteId core.UUID, params *DeleteRouteTableRouteParams, reqEditors ...RequestEditorFn) (*DeleteRouteTableRouteResponse, error) {
+	rsp, err := c.DeleteRouteTableRoute(ctx, routeTableRouteId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteRouteTableRouteResponse(rsp)
+}
+
+// GetRouteTableRouteWithResponse Get Route Table Route
+//
+// **Required permissions:**
+//
+// - `urn:action:network:route:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/network/rt-routes/{route_table_route_id}/ (the `GetRouteTableRoute` operationId).
+func (c *ClientWithResponses) GetRouteTableRouteWithResponse(ctx context.Context, routeTableRouteId core.UUID, params *GetRouteTableRouteParams, reqEditors ...RequestEditorFn) (*GetRouteTableRouteResponse, error) {
+	rsp, err := c.GetRouteTableRoute(ctx, routeTableRouteId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetRouteTableRouteResponse(rsp)
 }
 
 // ListSecurityGroupRulesWithResponse List Security Group Rules
@@ -13722,6 +14511,246 @@ func ParseListRouteTableSubnetsResponse(rsp *http.Response) (*ListRouteTableSubn
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest PagedRouteTableSubnetSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListRouteTableRoutesResponse parses an HTTP response from a ListRouteTableRoutesWithResponse call
+func ParseListRouteTableRoutesResponse(rsp *http.Response) (*ListRouteTableRoutesResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListRouteTableRoutesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedRouteTableRouteSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateRouteTableRouteResponse parses an HTTP response from a CreateRouteTableRouteWithResponse call
+func ParseCreateRouteTableRouteResponse(rsp *http.Response) (*CreateRouteTableRouteResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateRouteTableRouteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest RouteTableRouteSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteRouteTableRouteResponse parses an HTTP response from a DeleteRouteTableRouteWithResponse call
+func ParseDeleteRouteTableRouteResponse(rsp *http.Response) (*DeleteRouteTableRouteResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteRouteTableRouteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetRouteTableRouteResponse parses an HTTP response from a GetRouteTableRouteWithResponse call
+func ParseGetRouteTableRouteResponse(rsp *http.Response) (*GetRouteTableRouteResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetRouteTableRouteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RouteTableRouteSchema
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
