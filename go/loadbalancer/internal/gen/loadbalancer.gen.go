@@ -916,11 +916,13 @@ type LBServerGroupMemberCreateSchema struct {
 
 // ListenerAuthUserChangePasswordSchema defines model for ListenerAuthUserChangePasswordSchema.
 type ListenerAuthUserChangePasswordSchema struct {
+	// Password Password must contain at least one lowercase (a-z), one uppercase letter (A-Z), one digit (0-9), and one special character (!, @, #,...).
 	Password *string `json:"password,omitempty"`
 }
 
 // ListenerAuthUserCreateSchema defines model for ListenerAuthUserCreateSchema.
 type ListenerAuthUserCreateSchema struct {
+	// Password Password must contain at least one lowercase (a-z), one uppercase letter (A-Z), one digit (0-9), and one special character (!, @, #,...).
 	Password *string `json:"password,omitempty"`
 	Username string  `json:"username"`
 }
@@ -9608,6 +9610,8 @@ type ChangePasswordListenerAuthUserResponse struct {
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
 	JSON200 *ListenerAuthUserSchema
+	// JSON202 the response for an HTTP 202 `application/json` response
+	JSON202 *ListenerAuthUserSchema
 	// JSON400 the response for an HTTP 400 `application/json` response
 	JSON400 *ValidationError
 	// JSON401 the response for an HTTP 401 `application/json` response
@@ -9738,6 +9742,8 @@ type PartialUpdateListenerRateLimitResponse struct {
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
 	JSON200 *ListenerRateLimitSchema
+	// JSON202 the response for an HTTP 202 `application/json` response
+	JSON202 *ListenerRateLimitSchema
 	// JSON400 the response for an HTTP 400 `application/json` response
 	JSON400 *ValidationError
 	// JSON401 the response for an HTTP 401 `application/json` response
@@ -12962,7 +12968,7 @@ func ParseDeleteListenerAuthUserResponse(rsp *http.Response) (*DeleteListenerAut
 	}
 
 	switch {
-	case rsp.StatusCode == 204:
+	case rsp.StatusCode == 202:
 		break // No content-type
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
@@ -13025,6 +13031,13 @@ func ParseChangePasswordListenerAuthUserResponse(rsp *http.Response) (*ChangePas
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
+		var dest ListenerAuthUserSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON202 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest ValidationError
@@ -13202,7 +13215,7 @@ func ParseDeleteListenerRateLimitResponse(rsp *http.Response) (*DeleteListenerRa
 	}
 
 	switch {
-	case rsp.StatusCode == 204:
+	case rsp.StatusCode == 202:
 		break // No content-type
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
@@ -13265,6 +13278,13 @@ func ParsePartialUpdateListenerRateLimitResponse(rsp *http.Response) (*PartialUp
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
+		var dest ListenerRateLimitSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON202 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest ValidationError

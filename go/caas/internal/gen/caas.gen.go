@@ -447,7 +447,7 @@ type ContainerGroupCreateSchema struct {
 	Name       string                       `json:"name"`
 	RegionId   core.UUID                    `json:"region_id"`
 
-	// Scaling ContainerGroupScalingSchema is exactly one of: ContainerGroupAutoScalingSchema, ContainerGroupManualScalingSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+	// Scaling ContainerGroupScalingSchema is exactly one of: ContainerGroupAutoScalingSchema, ContainerGroupManualScalingSchema. Use the As*/From* helpers to read or set the active variant.
 	Scaling  ContainerGroupScalingSchema `json:"scaling"`
 	SubnetId core.UUID                   `json:"subnet_id"`
 	Volumes  *[]CaaSVolumeCreateSchema   `json:"volumes,omitempty"`
@@ -513,7 +513,7 @@ type ContainerGroupRolloutSchema struct {
 	RevisionId core.UUID `json:"revision_id"`
 }
 
-// ContainerGroupScalingSchema ContainerGroupScalingSchema is exactly one of: ContainerGroupAutoScalingSchema, ContainerGroupManualScalingSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+// ContainerGroupScalingSchema ContainerGroupScalingSchema is exactly one of: ContainerGroupAutoScalingSchema, ContainerGroupManualScalingSchema. Use the As*/From* helpers to read or set the active variant.
 type ContainerGroupScalingSchema struct {
 	union json.RawMessage
 }
@@ -547,7 +547,7 @@ type ContainerGroupStatus string
 type ContainerGroupUpdateSchema struct {
 	Containers []ContainerCreateSchema `json:"containers"`
 
-	// Scaling ContainerGroupScalingSchema is exactly one of: ContainerGroupAutoScalingSchema, ContainerGroupManualScalingSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+	// Scaling ContainerGroupScalingSchema is exactly one of: ContainerGroupAutoScalingSchema, ContainerGroupManualScalingSchema. Use the As*/From* helpers to read or set the active variant.
 	Scaling ContainerGroupScalingSchema `json:"scaling"`
 	Volumes *[]CaaSVolumeCreateSchema   `json:"volumes,omitempty"`
 }
@@ -1001,10 +1001,6 @@ func (t ContainerGroupScalingSchema) AsContainerGroupAutoScalingSchema() (Contai
 // FromContainerGroupAutoScalingSchema overwrites any union data inside the ContainerGroupScalingSchema as the provided ContainerGroupAutoScalingSchema
 func (t *ContainerGroupScalingSchema) FromContainerGroupAutoScalingSchema(v ContainerGroupAutoScalingSchema) error {
 	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-	b, err = runtime.JSONMerge(b, []byte(`{"auto_scaling":"True"}`))
 	t.union = b
 	return err
 }
@@ -1012,10 +1008,6 @@ func (t *ContainerGroupScalingSchema) FromContainerGroupAutoScalingSchema(v Cont
 // MergeContainerGroupAutoScalingSchema performs a merge with any union data inside the ContainerGroupScalingSchema, using the provided ContainerGroupAutoScalingSchema
 func (t *ContainerGroupScalingSchema) MergeContainerGroupAutoScalingSchema(v ContainerGroupAutoScalingSchema) error {
 	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-	b, err = runtime.JSONMerge(b, []byte(`{"auto_scaling":"True"}`))
 	if err != nil {
 		return err
 	}
@@ -1035,10 +1027,6 @@ func (t ContainerGroupScalingSchema) AsContainerGroupManualScalingSchema() (Cont
 // FromContainerGroupManualScalingSchema overwrites any union data inside the ContainerGroupScalingSchema as the provided ContainerGroupManualScalingSchema
 func (t *ContainerGroupScalingSchema) FromContainerGroupManualScalingSchema(v ContainerGroupManualScalingSchema) error {
 	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-	b, err = runtime.JSONMerge(b, []byte(`{"auto_scaling":"False"}`))
 	t.union = b
 	return err
 }
@@ -1049,37 +1037,10 @@ func (t *ContainerGroupScalingSchema) MergeContainerGroupManualScalingSchema(v C
 	if err != nil {
 		return err
 	}
-	b, err = runtime.JSONMerge(b, []byte(`{"auto_scaling":"False"}`))
-	if err != nil {
-		return err
-	}
 
 	merged, err := runtime.JSONMerge(t.union, b)
 	t.union = merged
 	return err
-}
-
-func (t ContainerGroupScalingSchema) Discriminator() (string, error) {
-	var discriminator struct {
-		Discriminator string `json:"auto_scaling"`
-	}
-	err := json.Unmarshal(t.union, &discriminator)
-	return discriminator.Discriminator, err
-}
-
-func (t ContainerGroupScalingSchema) ValueByDiscriminator() (interface{}, error) {
-	discriminator, err := t.Discriminator()
-	if err != nil {
-		return nil, err
-	}
-	switch discriminator {
-	case "False":
-		return t.AsContainerGroupManualScalingSchema()
-	case "True":
-		return t.AsContainerGroupAutoScalingSchema()
-	default:
-		return nil, errors.New("unknown discriminator value: " + discriminator)
-	}
 }
 
 func (t ContainerGroupScalingSchema) MarshalJSON() ([]byte, error) {

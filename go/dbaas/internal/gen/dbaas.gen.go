@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -434,6 +433,33 @@ func (e PoolMode) Valid() bool {
 	}
 }
 
+// Defines values for PoolStatus.
+const (
+	PoolStatusACTIVE   PoolStatus = "ACTIVE"
+	PoolStatusCREATING PoolStatus = "CREATING"
+	PoolStatusDELETING PoolStatus = "DELETING"
+	PoolStatusFAILED   PoolStatus = "FAILED"
+	PoolStatusUPDATING PoolStatus = "UPDATING"
+)
+
+// Valid indicates whether the value is a known member of the PoolStatus enum.
+func (e PoolStatus) Valid() bool {
+	switch e {
+	case PoolStatusACTIVE:
+		return true
+	case PoolStatusCREATING:
+		return true
+	case PoolStatusDELETING:
+		return true
+	case PoolStatusFAILED:
+		return true
+	case PoolStatusUPDATING:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for Solution.
 const (
 	SolutionBasic    Solution = "basic"
@@ -579,7 +605,7 @@ type DBInstanceBackupPartialUpdateSchema struct {
 	Name        *string `json:"name,omitempty"`
 }
 
-// DBInstanceBackupPolicySchema DBInstanceBackupPolicySchema is exactly one of: EnableAutoBackupSchema, DisableAutoBackupSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+// DBInstanceBackupPolicySchema DBInstanceBackupPolicySchema is exactly one of: EnableAutoBackupSchema, DisableAutoBackupSchema. Use the As*/From* helpers to read or set the active variant.
 type DBInstanceBackupPolicySchema struct {
 	union json.RawMessage
 }
@@ -618,7 +644,7 @@ type DBInstanceBackupUpdateSchema struct {
 
 // DBInstanceCreateSchema defines model for DBInstanceCreateSchema.
 type DBInstanceCreateSchema struct {
-	// BackupPolicy DBInstanceBackupPolicySchema is exactly one of: EnableAutoBackupSchema, DisableAutoBackupSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+	// BackupPolicy DBInstanceBackupPolicySchema is exactly one of: EnableAutoBackupSchema, DisableAutoBackupSchema. Use the As*/From* helpers to read or set the active variant.
 	BackupPolicy       *DBInstanceBackupPolicySchema              `json:"backup_policy,omitempty"`
 	DatabaseType       DatabaseType                               `json:"database_type"`
 	DbVersionId        core.UUID                                  `json:"db_version_id"`
@@ -651,10 +677,10 @@ type DBInstanceOperationalStatus string
 
 // DBInstancePartialUpdateSchema defines model for DBInstancePartialUpdateSchema.
 type DBInstancePartialUpdateSchema struct {
-	// AutoIncreaseVolumeSizeConfig UpdateAutoIncreaseVolumeSizeConfigSchema is exactly one of: EnableAutoIncreaseVolumeSizeSchema, DisableAutoIncreaseVolumeSizeSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+	// AutoIncreaseVolumeSizeConfig UpdateAutoIncreaseVolumeSizeConfigSchema is exactly one of: EnableAutoIncreaseVolumeSizeSchema, DisableAutoIncreaseVolumeSizeSchema. Use the As*/From* helpers to read or set the active variant.
 	AutoIncreaseVolumeSizeConfig *UpdateAutoIncreaseVolumeSizeConfigSchema `json:"auto_increase_volume_size_config,omitempty"`
 
-	// BackupPolicy DBInstanceBackupPolicySchema is exactly one of: EnableAutoBackupSchema, DisableAutoBackupSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+	// BackupPolicy DBInstanceBackupPolicySchema is exactly one of: EnableAutoBackupSchema, DisableAutoBackupSchema. Use the As*/From* helpers to read or set the active variant.
 	BackupPolicy *DBInstanceBackupPolicySchema `json:"backup_policy,omitempty"`
 	Description  *string                       `json:"description,omitempty"`
 	KeepBackup   *bool                         `json:"keep_backup,omitempty"`
@@ -753,6 +779,7 @@ type DBInstanceStatus string
 
 // DBInstanceVolumeSizeUpdateSchema defines model for DBInstanceVolumeSizeUpdateSchema.
 type DBInstanceVolumeSizeUpdateSchema struct {
+	// Size New disk size in GB; must be greater than the current one.
 	Size int `json:"size"`
 }
 
@@ -864,12 +891,12 @@ type DBaaSPgPoolListSchema struct {
 
 // DBaaSPgPoolSchema defines model for DBaaSPgPoolSchema.
 type DBaaSPgPoolSchema struct {
-	Database string `json:"database"`
-	Id       string `json:"id"`
-	Mode     string `json:"mode"`
-	Name     string `json:"name"`
-	Size     int    `json:"size"`
-	Status   string `json:"status"`
+	Database string     `json:"database"`
+	Id       string     `json:"id"`
+	Mode     string     `json:"mode"`
+	Name     string     `json:"name"`
+	Size     int        `json:"size"`
+	Status   PoolStatus `json:"status"`
 }
 
 // DBaaSRegionFlavorSchema defines model for DBaaSRegionFlavorSchema.
@@ -938,7 +965,9 @@ type DiskType string
 
 // EnableAutoBackupSchema defines model for EnableAutoBackupSchema.
 type EnableAutoBackupSchema struct {
-	BackupInterval   BackupInterval                         `json:"backup_interval"`
+	BackupInterval BackupInterval `json:"backup_interval"`
+
+	// DayOfWeek Required when backup_interval is weekly; omit it when daily.
 	DayOfWeek        nullable.Nullable[DayOfWeek]           `json:"day_of_week,omitempty"`
 	EnableAutoBackup EnableAutoBackupSchemaEnableAutoBackup `json:"enable_auto_backup"`
 	MaxAutoBackup    int                                    `json:"max_auto_backup"`
@@ -1182,6 +1211,9 @@ type PoolPartialUpdateSchema struct {
 	Size *int      `json:"size,omitempty"`
 }
 
+// PoolStatus defines model for PoolStatus.
+type PoolStatus string
+
 // PrivilegeDatabaseCreateSchema defines model for PrivilegeDatabaseCreateSchema.
 type PrivilegeDatabaseCreateSchema struct {
 	CharacterSet string `json:"character_set"`
@@ -1275,7 +1307,7 @@ type UpdateAllowedCidrsSchema struct {
 	AllowedCidrs []string `json:"allowed_cidrs"`
 }
 
-// UpdateAutoIncreaseVolumeSizeConfigSchema UpdateAutoIncreaseVolumeSizeConfigSchema is exactly one of: EnableAutoIncreaseVolumeSizeSchema, DisableAutoIncreaseVolumeSizeSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+// UpdateAutoIncreaseVolumeSizeConfigSchema UpdateAutoIncreaseVolumeSizeConfigSchema is exactly one of: EnableAutoIncreaseVolumeSizeSchema, DisableAutoIncreaseVolumeSizeSchema. Use the As*/From* helpers to read or set the active variant.
 type UpdateAutoIncreaseVolumeSizeConfigSchema struct {
 	union json.RawMessage
 }
@@ -1329,10 +1361,12 @@ type ListDbInstanceBackupsParams struct {
 	DbInstanceId *[]core.UUID    `form:"db_instance_id,omitempty" json:"db_instance_id,omitempty"`
 	DbVersionId  *[]core.UUID    `form:"db_version_id,omitempty" json:"db_version_id,omitempty"`
 	RegionId     *core.UUID      `form:"region_id,omitempty" json:"region_id,omitempty"`
-	Ordering     *string         `form:"ordering,omitempty" json:"ordering,omitempty"`
-	PageSize     *int            `form:"page_size,omitempty" json:"page_size,omitempty"`
-	PageNumber   *int            `form:"page_number,omitempty" json:"page_number,omitempty"`
-	ProjectID    core.UUID       `json:"Project-ID"`
+
+	// Ordering Comma-separated fields to sort by, each prefixed with `-` to sort descending: name, status, backup_timestamp, created_at, updated_at. Other fields are ignored. Defaults to `-updated_at,pk`.
+	Ordering   *string   `form:"ordering,omitempty" json:"ordering,omitempty"`
+	PageSize   *int      `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber *int      `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID  core.UUID `json:"Project-ID"`
 }
 
 // CreateDbInstanceBackupParams defines parameters for CreateDbInstanceBackup.
@@ -1399,17 +1433,21 @@ type UpdateDbInstanceReplicaParams struct {
 
 // ListDbInstancesParams defines parameters for ListDbInstances.
 type ListDbInstancesParams struct {
-	Name         *string             `form:"name,omitempty" json:"name,omitempty"`
+	Name *string `form:"name,omitempty" json:"name,omitempty"`
+
+	// Status Matches the status shown on the instance, including an operation in progress; repeated values are combined with OR.
 	Status       *[]DBInstanceStatus `form:"status,omitempty" json:"status,omitempty"`
 	DatabaseType *DatabaseType       `form:"database_type,omitempty" json:"database_type,omitempty"`
 	RegionId     *core.UUID          `form:"region_id,omitempty" json:"region_id,omitempty"`
 	RegionName   *string             `form:"region_name,omitempty" json:"region_name,omitempty"`
 	PrivateUrl   *string             `form:"private_url,omitempty" json:"private_url,omitempty"`
 	PublicUrl    *string             `form:"public_url,omitempty" json:"public_url,omitempty"`
-	Ordering     *string             `form:"ordering,omitempty" json:"ordering,omitempty"`
-	PageSize     *int                `form:"page_size,omitempty" json:"page_size,omitempty"`
-	PageNumber   *int                `form:"page_number,omitempty" json:"page_number,omitempty"`
-	ProjectID    core.UUID           `json:"Project-ID"`
+
+	// Ordering Comma-separated fields to sort by, each prefixed with `-` to sort descending: name, status, created_at, updated_at. Other fields are ignored. Defaults to `-updated_at,pk`.
+	Ordering   *string   `form:"ordering,omitempty" json:"ordering,omitempty"`
+	PageSize   *int      `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber *int      `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID  core.UUID `json:"Project-ID"`
 }
 
 // CreateDbInstanceParams defines parameters for CreateDbInstance.
@@ -1967,10 +2005,6 @@ func (t DBInstanceBackupPolicySchema) AsEnableAutoBackupSchema() (EnableAutoBack
 // FromEnableAutoBackupSchema overwrites any union data inside the DBInstanceBackupPolicySchema as the provided EnableAutoBackupSchema
 func (t *DBInstanceBackupPolicySchema) FromEnableAutoBackupSchema(v EnableAutoBackupSchema) error {
 	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-	b, err = runtime.JSONMerge(b, []byte(`{"enable_auto_backup":"True"}`))
 	t.union = b
 	return err
 }
@@ -1978,10 +2012,6 @@ func (t *DBInstanceBackupPolicySchema) FromEnableAutoBackupSchema(v EnableAutoBa
 // MergeEnableAutoBackupSchema performs a merge with any union data inside the DBInstanceBackupPolicySchema, using the provided EnableAutoBackupSchema
 func (t *DBInstanceBackupPolicySchema) MergeEnableAutoBackupSchema(v EnableAutoBackupSchema) error {
 	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-	b, err = runtime.JSONMerge(b, []byte(`{"enable_auto_backup":"True"}`))
 	if err != nil {
 		return err
 	}
@@ -2001,10 +2031,6 @@ func (t DBInstanceBackupPolicySchema) AsDisableAutoBackupSchema() (DisableAutoBa
 // FromDisableAutoBackupSchema overwrites any union data inside the DBInstanceBackupPolicySchema as the provided DisableAutoBackupSchema
 func (t *DBInstanceBackupPolicySchema) FromDisableAutoBackupSchema(v DisableAutoBackupSchema) error {
 	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-	b, err = runtime.JSONMerge(b, []byte(`{"enable_auto_backup":"False"}`))
 	t.union = b
 	return err
 }
@@ -2015,37 +2041,10 @@ func (t *DBInstanceBackupPolicySchema) MergeDisableAutoBackupSchema(v DisableAut
 	if err != nil {
 		return err
 	}
-	b, err = runtime.JSONMerge(b, []byte(`{"enable_auto_backup":"False"}`))
-	if err != nil {
-		return err
-	}
 
 	merged, err := runtime.JSONMerge(t.union, b)
 	t.union = merged
 	return err
-}
-
-func (t DBInstanceBackupPolicySchema) Discriminator() (string, error) {
-	var discriminator struct {
-		Discriminator string `json:"enable_auto_backup"`
-	}
-	err := json.Unmarshal(t.union, &discriminator)
-	return discriminator.Discriminator, err
-}
-
-func (t DBInstanceBackupPolicySchema) ValueByDiscriminator() (interface{}, error) {
-	discriminator, err := t.Discriminator()
-	if err != nil {
-		return nil, err
-	}
-	switch discriminator {
-	case "False":
-		return t.AsDisableAutoBackupSchema()
-	case "True":
-		return t.AsEnableAutoBackupSchema()
-	default:
-		return nil, errors.New("unknown discriminator value: " + discriminator)
-	}
 }
 
 func (t DBInstanceBackupPolicySchema) MarshalJSON() ([]byte, error) {
@@ -2068,10 +2067,6 @@ func (t UpdateAutoIncreaseVolumeSizeConfigSchema) AsEnableAutoIncreaseVolumeSize
 // FromEnableAutoIncreaseVolumeSizeSchema overwrites any union data inside the UpdateAutoIncreaseVolumeSizeConfigSchema as the provided EnableAutoIncreaseVolumeSizeSchema
 func (t *UpdateAutoIncreaseVolumeSizeConfigSchema) FromEnableAutoIncreaseVolumeSizeSchema(v EnableAutoIncreaseVolumeSizeSchema) error {
 	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-	b, err = runtime.JSONMerge(b, []byte(`{"enable_auto_increase_volume_size":"True"}`))
 	t.union = b
 	return err
 }
@@ -2079,10 +2074,6 @@ func (t *UpdateAutoIncreaseVolumeSizeConfigSchema) FromEnableAutoIncreaseVolumeS
 // MergeEnableAutoIncreaseVolumeSizeSchema performs a merge with any union data inside the UpdateAutoIncreaseVolumeSizeConfigSchema, using the provided EnableAutoIncreaseVolumeSizeSchema
 func (t *UpdateAutoIncreaseVolumeSizeConfigSchema) MergeEnableAutoIncreaseVolumeSizeSchema(v EnableAutoIncreaseVolumeSizeSchema) error {
 	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-	b, err = runtime.JSONMerge(b, []byte(`{"enable_auto_increase_volume_size":"True"}`))
 	if err != nil {
 		return err
 	}
@@ -2102,10 +2093,6 @@ func (t UpdateAutoIncreaseVolumeSizeConfigSchema) AsDisableAutoIncreaseVolumeSiz
 // FromDisableAutoIncreaseVolumeSizeSchema overwrites any union data inside the UpdateAutoIncreaseVolumeSizeConfigSchema as the provided DisableAutoIncreaseVolumeSizeSchema
 func (t *UpdateAutoIncreaseVolumeSizeConfigSchema) FromDisableAutoIncreaseVolumeSizeSchema(v DisableAutoIncreaseVolumeSizeSchema) error {
 	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-	b, err = runtime.JSONMerge(b, []byte(`{"enable_auto_increase_volume_size":"False"}`))
 	t.union = b
 	return err
 }
@@ -2116,37 +2103,10 @@ func (t *UpdateAutoIncreaseVolumeSizeConfigSchema) MergeDisableAutoIncreaseVolum
 	if err != nil {
 		return err
 	}
-	b, err = runtime.JSONMerge(b, []byte(`{"enable_auto_increase_volume_size":"False"}`))
-	if err != nil {
-		return err
-	}
 
 	merged, err := runtime.JSONMerge(t.union, b)
 	t.union = merged
 	return err
-}
-
-func (t UpdateAutoIncreaseVolumeSizeConfigSchema) Discriminator() (string, error) {
-	var discriminator struct {
-		Discriminator string `json:"enable_auto_increase_volume_size"`
-	}
-	err := json.Unmarshal(t.union, &discriminator)
-	return discriminator.Discriminator, err
-}
-
-func (t UpdateAutoIncreaseVolumeSizeConfigSchema) ValueByDiscriminator() (interface{}, error) {
-	discriminator, err := t.Discriminator()
-	if err != nil {
-		return nil, err
-	}
-	switch discriminator {
-	case "False":
-		return t.AsDisableAutoIncreaseVolumeSizeSchema()
-	case "True":
-		return t.AsEnableAutoIncreaseVolumeSizeSchema()
-	default:
-		return nil, errors.New("unknown discriminator value: " + discriminator)
-	}
 }
 
 func (t UpdateAutoIncreaseVolumeSizeConfigSchema) MarshalJSON() ([]byte, error) {
@@ -2430,6 +2390,11 @@ type ClientInterface interface {
 
 	// CreateDbInstanceWithBody Create Db Instance
 	//
+	// Creates a DB instance, restored from `restore.backup_id` when it is set.
+	//
+	// Returns 404 when the region, DB version, flavor, volume type, subnet or
+	// backup does not exist or belongs to another project.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:create`
@@ -2441,6 +2406,11 @@ type ClientInterface interface {
 
 	// CreateDbInstance Create Db Instance
 	//
+	// Creates a DB instance, restored from `restore.backup_id` when it is set.
+	//
+	// Returns 404 when the region, DB version, flavor, volume type, subnet or
+	// backup does not exist or belongs to another project.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:create`
@@ -2451,6 +2421,10 @@ type ClientInterface interface {
 	CreateDbInstance(ctx context.Context, params *CreateDbInstanceParams, body CreateDbInstanceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteDbInstance Delete Db Instance
+	//
+	// Deletes the instance. Its status must be ACTIVE or ERROR.
+	//
+	// Returns 409 `resource_busy` while another operation runs on the instance.
 	//
 	// **Required permissions:**
 	//
@@ -2504,6 +2478,12 @@ type ClientInterface interface {
 	// Applies advanced configuration changes to the instance.
 	// Static parameters may require an instance restart to take effect.
 	//
+	// Each parameter must belong to the DB version of the instance (names match
+	// case-insensitively), and its value must match the type, range, length and
+	// choices the version defines. A boolean, integer or float value may also be
+	// sent as a string, such as the version's `default_value`.
+	// Returns 409 `resource_busy` while another operation runs on the instance.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance_advanced_config:apply`
@@ -2517,6 +2497,12 @@ type ClientInterface interface {
 	//
 	// Applies advanced configuration changes to the instance.
 	// Static parameters may require an instance restart to take effect.
+	//
+	// Each parameter must belong to the DB version of the instance (names match
+	// case-insensitively), and its value must match the type, range, length and
+	// choices the version defines. A boolean, integer or float value may also be
+	// sent as a string, such as the version's `default_value`.
+	// Returns 409 `resource_busy` while another operation runs on the instance.
 	//
 	// **Required permissions:**
 	//
@@ -2560,6 +2546,10 @@ type ClientInterface interface {
 
 	// ListConnectionPools List Connection Pools
 	//
+	// Lists the connection pools of a PostgreSQL instance.
+	//
+	// Returns 404 when the instance is not PostgreSQL.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:get`
@@ -2568,6 +2558,12 @@ type ClientInterface interface {
 	ListConnectionPools(ctx context.Context, instanceId core.UUID, params *ListConnectionPoolsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateConnectionPoolWithBody Create Connection Pool
+	//
+	// Creates a connection pool on a PostgreSQL instance.
+	//
+	// The instance status must be ACTIVE: otherwise it returns 400, and 409
+	// `resource_busy` while another operation runs on the instance. Returns 409
+	// `pool_name_exists` when a pool with exactly this name already exists.
 	//
 	// **Required permissions:**
 	//
@@ -2580,6 +2576,12 @@ type ClientInterface interface {
 
 	// CreateConnectionPool Create Connection Pool
 	//
+	// Creates a connection pool on a PostgreSQL instance.
+	//
+	// The instance status must be ACTIVE: otherwise it returns 400, and 409
+	// `resource_busy` while another operation runs on the instance. Returns 409
+	// `pool_name_exists` when a pool with exactly this name already exists.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance_connection_pool:create`
@@ -2591,23 +2593,41 @@ type ClientInterface interface {
 
 	// DeleteConnectionPool Delete Connection Pool
 	//
+	// Deletes a connection pool of a PostgreSQL instance.
+	//
+	// The instance status must be ACTIVE: otherwise it returns 400, and 409
+	// `resource_busy` while another operation runs on the instance. The pool
+	// status must be ACTIVE or FAILED: otherwise it returns 409
+	// `pool_not_deletable`.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance_connection_pool:delete`
 	//
 	// Corresponds with DELETE /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/ (the `DeleteConnectionPool` operationId).
-	DeleteConnectionPool(ctx context.Context, instanceId core.UUID, poolId string, params *DeleteConnectionPoolParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	DeleteConnectionPool(ctx context.Context, instanceId core.UUID, poolId core.UUID, params *DeleteConnectionPoolParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetConnectionPool Get Connection Pool
+	//
+	// Gets a connection pool of a PostgreSQL instance.
+	//
+	// Returns 404 when the pool belongs to another instance or the instance is
+	// not PostgreSQL.
 	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:get`
 	//
 	// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/ (the `GetConnectionPool` operationId).
-	GetConnectionPool(ctx context.Context, instanceId core.UUID, poolId string, params *GetConnectionPoolParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetConnectionPool(ctx context.Context, instanceId core.UUID, poolId core.UUID, params *GetConnectionPoolParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateConnectionPoolWithBody Update Connection Pool
+	//
+	// Changes the mode or size of a connection pool of a PostgreSQL instance.
+	//
+	// The instance status must be ACTIVE: otherwise it returns 400, and 409
+	// `resource_busy` while another operation runs on the instance. Returns 404
+	// when the pool belongs to another instance.
 	//
 	// **Required permissions:**
 	//
@@ -2616,9 +2636,15 @@ type ClientInterface interface {
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PATCH /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/ (the `UpdateConnectionPool` operationId).
-	UpdateConnectionPoolWithBody(ctx context.Context, instanceId core.UUID, poolId string, params *UpdateConnectionPoolParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	UpdateConnectionPoolWithBody(ctx context.Context, instanceId core.UUID, poolId core.UUID, params *UpdateConnectionPoolParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateConnectionPool Update Connection Pool
+	//
+	// Changes the mode or size of a connection pool of a PostgreSQL instance.
+	//
+	// The instance status must be ACTIVE: otherwise it returns 400, and 409
+	// `resource_busy` while another operation runs on the instance. Returns 404
+	// when the pool belongs to another instance.
 	//
 	// **Required permissions:**
 	//
@@ -2627,9 +2653,13 @@ type ClientInterface interface {
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with PATCH /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/ (the `UpdateConnectionPool` operationId).
-	UpdateConnectionPool(ctx context.Context, instanceId core.UUID, poolId string, params *UpdateConnectionPoolParams, body UpdateConnectionPoolJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	UpdateConnectionPool(ctx context.Context, instanceId core.UUID, poolId core.UUID, params *UpdateConnectionPoolParams, body UpdateConnectionPoolJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateDbInstanceFlavorWithBody Update Db Instance Flavor
+	//
+	// Changes the flavor of the instance. Its status must be ACTIVE.
+	//
+	// Returns 409 `resource_busy` while another operation runs on the instance.
 	//
 	// **Required permissions:**
 	//
@@ -2641,6 +2671,10 @@ type ClientInterface interface {
 	UpdateDbInstanceFlavorWithBody(ctx context.Context, instanceId core.UUID, params *UpdateDbInstanceFlavorParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateDbInstanceFlavor Update Db Instance Flavor
+	//
+	// Changes the flavor of the instance. Its status must be ACTIVE.
+	//
+	// Returns 409 `resource_busy` while another operation runs on the instance.
 	//
 	// **Required permissions:**
 	//
@@ -2689,6 +2723,11 @@ type ClientInterface interface {
 
 	// CreatePrivilegeDatabaseWithBody Create Privilege Database
 	//
+	// Creates a database on the instance.
+	//
+	// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+	// and 409 `resource_busy` while another operation runs on the instance.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:create_database`
@@ -2700,6 +2739,11 @@ type ClientInterface interface {
 
 	// CreatePrivilegeDatabase Create Privilege Database
 	//
+	// Creates a database on the instance.
+	//
+	// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+	// and 409 `resource_busy` while another operation runs on the instance.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:create_database`
@@ -2710,6 +2754,13 @@ type ClientInterface interface {
 	CreatePrivilegeDatabase(ctx context.Context, instanceId core.UUID, params *CreatePrivilegeDatabaseParams, body CreatePrivilegeDatabaseJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeletePrivilegeDatabase Delete Privilege Database
+	//
+	// Deletes a database of the instance.
+	//
+	// Its status must be ACTIVE or ABNORMAL: otherwise it returns 409
+	// `instance_not_active`, and 409 `resource_busy` while another operation runs
+	// on the instance.
+	// Returns 404 when the database does not exist.
 	//
 	// **Required permissions:**
 	//
@@ -2729,6 +2780,12 @@ type ClientInterface interface {
 
 	// CreatePrivilegeUserWithBody Create Privilege User
 	//
+	// Creates a database user on the instance.
+	//
+	// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+	// and 409 `resource_busy` while another operation runs on the instance.
+	// Returns 409 `user_name_exists` when the user already exists on that host.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:create_user`
@@ -2739,6 +2796,12 @@ type ClientInterface interface {
 	CreatePrivilegeUserWithBody(ctx context.Context, instanceId core.UUID, params *CreatePrivilegeUserParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreatePrivilegeUser Create Privilege User
+	//
+	// Creates a database user on the instance.
+	//
+	// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+	// and 409 `resource_busy` while another operation runs on the instance.
+	// Returns 409 `user_name_exists` when the user already exists on that host.
 	//
 	// **Required permissions:**
 	//
@@ -2751,6 +2814,13 @@ type ClientInterface interface {
 
 	// DeletePrivilegeUser Delete Privilege User
 	//
+	// Deletes a database user of the instance.
+	//
+	// Its status must be ACTIVE or ABNORMAL: otherwise it returns 409
+	// `instance_not_active`, and 409 `resource_busy` while another operation runs
+	// on the instance.
+	// Returns 404 when the user does not exist.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:delete_user`
@@ -2759,6 +2829,13 @@ type ClientInterface interface {
 	DeletePrivilegeUser(ctx context.Context, instanceId core.UUID, userName string, params *DeletePrivilegeUserParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdatePrivilegeUserWithBody Update Privilege User
+	//
+	// Updates a database user of the instance.
+	//
+	// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+	// and 409 `resource_busy` while another operation runs on the instance.
+	// Returns 404 when the user does not exist, and 409 `user_host_exists` when
+	// `new_host` already holds a user with that name.
 	//
 	// **Required permissions:**
 	//
@@ -2770,6 +2847,13 @@ type ClientInterface interface {
 	UpdatePrivilegeUserWithBody(ctx context.Context, instanceId core.UUID, userName string, params *UpdatePrivilegeUserParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdatePrivilegeUser Update Privilege User
+	//
+	// Updates a database user of the instance.
+	//
+	// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+	// and 409 `resource_busy` while another operation runs on the instance.
+	// Returns 404 when the user does not exist, and 409 `user_host_exists` when
+	// `new_host` already holds a user with that name.
 	//
 	// **Required permissions:**
 	//
@@ -2791,6 +2875,12 @@ type ClientInterface interface {
 
 	// GrantPrivilegeUserDatabasesWithBody Grant Privilege User Databases
 	//
+	// Grants a database user access to databases of the instance.
+	//
+	// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+	// and 409 `resource_busy` while another operation runs on the instance.
+	// Returns 404 when the user does not exist.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:grant_database_access`
@@ -2802,6 +2892,12 @@ type ClientInterface interface {
 
 	// GrantPrivilegeUserDatabases Grant Privilege User Databases
 	//
+	// Grants a database user access to databases of the instance.
+	//
+	// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+	// and 409 `resource_busy` while another operation runs on the instance.
+	// Returns 404 when the user does not exist.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:grant_database_access`
@@ -2812,6 +2908,13 @@ type ClientInterface interface {
 	GrantPrivilegeUserDatabases(ctx context.Context, instanceId core.UUID, userName string, params *GrantPrivilegeUserDatabasesParams, body GrantPrivilegeUserDatabasesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RevokePrivilegeUserDatabase Revoke Privilege User Database
+	//
+	// Revokes a database user's access to a database.
+	//
+	// Its status must be ACTIVE or ABNORMAL: otherwise it returns 409
+	// `instance_not_active`, and 409 `resource_busy` while another operation runs
+	// on the instance.
+	// Returns 404 when the user does not exist or has no access to the database.
 	//
 	// **Required permissions:**
 	//
@@ -2893,6 +2996,10 @@ type ClientInterface interface {
 
 	// UpdateDbInstanceVolumeSizeWithBody Update Db Instance Volume Size
 	//
+	// Extends the disk of the instance. Its status must be ACTIVE.
+	//
+	// Returns 409 `resource_busy` while another operation runs on the instance.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:extend_volume_size`
@@ -2903,6 +3010,10 @@ type ClientInterface interface {
 	UpdateDbInstanceVolumeSizeWithBody(ctx context.Context, instanceId core.UUID, params *UpdateDbInstanceVolumeSizeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateDbInstanceVolumeSize Update Db Instance Volume Size
+	//
+	// Extends the disk of the instance. Its status must be ACTIVE.
+	//
+	// Returns 409 `resource_busy` while another operation runs on the instance.
 	//
 	// **Required permissions:**
 	//
@@ -3371,6 +3482,11 @@ func (c *Client) ListDbInstances(ctx context.Context, params *ListDbInstancesPar
 
 // CreateDbInstanceWithBody Create Db Instance
 //
+// Creates a DB instance, restored from `restore.backup_id` when it is set.
+//
+// Returns 404 when the region, DB version, flavor, volume type, subnet or
+// backup does not exist or belongs to another project.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:create`
@@ -3392,6 +3508,11 @@ func (c *Client) CreateDbInstanceWithBody(ctx context.Context, params *CreateDbI
 
 // CreateDbInstance Create Db Instance
 //
+// Creates a DB instance, restored from `restore.backup_id` when it is set.
+//
+// Returns 404 when the region, DB version, flavor, volume type, subnet or
+// backup does not exist or belongs to another project.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:create`
@@ -3412,6 +3533,10 @@ func (c *Client) CreateDbInstance(ctx context.Context, params *CreateDbInstanceP
 }
 
 // DeleteDbInstance Delete Db Instance
+//
+// Deletes the instance. Its status must be ACTIVE or ERROR.
+//
+// Returns 409 `resource_busy` while another operation runs on the instance.
 //
 // **Required permissions:**
 //
@@ -3515,6 +3640,12 @@ func (c *Client) ListAdvancedConfigs(ctx context.Context, instanceId core.UUID, 
 // Applies advanced configuration changes to the instance.
 // Static parameters may require an instance restart to take effect.
 //
+// Each parameter must belong to the DB version of the instance (names match
+// case-insensitively), and its value must match the type, range, length and
+// choices the version defines. A boolean, integer or float value may also be
+// sent as a string, such as the version's `default_value`.
+// Returns 409 `resource_busy` while another operation runs on the instance.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance_advanced_config:apply`
@@ -3538,6 +3669,12 @@ func (c *Client) ApplyAdvancedConfigsWithBody(ctx context.Context, instanceId co
 //
 // Applies advanced configuration changes to the instance.
 // Static parameters may require an instance restart to take effect.
+//
+// Each parameter must belong to the DB version of the instance (names match
+// case-insensitively), and its value must match the type, range, length and
+// choices the version defines. A boolean, integer or float value may also be
+// sent as a string, such as the version's `default_value`.
+// Returns 409 `resource_busy` while another operation runs on the instance.
 //
 // **Required permissions:**
 //
@@ -3621,6 +3758,10 @@ func (c *Client) UpdateAllowedCidrs(ctx context.Context, instanceId core.UUID, p
 
 // ListConnectionPools List Connection Pools
 //
+// Lists the connection pools of a PostgreSQL instance.
+//
+// Returns 404 when the instance is not PostgreSQL.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:get`
@@ -3639,6 +3780,12 @@ func (c *Client) ListConnectionPools(ctx context.Context, instanceId core.UUID, 
 }
 
 // CreateConnectionPoolWithBody Create Connection Pool
+//
+// Creates a connection pool on a PostgreSQL instance.
+//
+// The instance status must be ACTIVE: otherwise it returns 400, and 409
+// `resource_busy` while another operation runs on the instance. Returns 409
+// `pool_name_exists` when a pool with exactly this name already exists.
 //
 // **Required permissions:**
 //
@@ -3661,6 +3808,12 @@ func (c *Client) CreateConnectionPoolWithBody(ctx context.Context, instanceId co
 
 // CreateConnectionPool Create Connection Pool
 //
+// Creates a connection pool on a PostgreSQL instance.
+//
+// The instance status must be ACTIVE: otherwise it returns 400, and 409
+// `resource_busy` while another operation runs on the instance. Returns 409
+// `pool_name_exists` when a pool with exactly this name already exists.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance_connection_pool:create`
@@ -3682,12 +3835,19 @@ func (c *Client) CreateConnectionPool(ctx context.Context, instanceId core.UUID,
 
 // DeleteConnectionPool Delete Connection Pool
 //
+// Deletes a connection pool of a PostgreSQL instance.
+//
+// The instance status must be ACTIVE: otherwise it returns 400, and 409
+// `resource_busy` while another operation runs on the instance. The pool
+// status must be ACTIVE or FAILED: otherwise it returns 409
+// `pool_not_deletable`.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance_connection_pool:delete`
 //
 // Corresponds with DELETE /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/ (the `DeleteConnectionPool` operationId).
-func (c *Client) DeleteConnectionPool(ctx context.Context, instanceId core.UUID, poolId string, params *DeleteConnectionPoolParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+func (c *Client) DeleteConnectionPool(ctx context.Context, instanceId core.UUID, poolId core.UUID, params *DeleteConnectionPoolParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteConnectionPoolRequest(c.Server, instanceId, poolId, params)
 	if err != nil {
 		return nil, err
@@ -3701,12 +3861,17 @@ func (c *Client) DeleteConnectionPool(ctx context.Context, instanceId core.UUID,
 
 // GetConnectionPool Get Connection Pool
 //
+// Gets a connection pool of a PostgreSQL instance.
+//
+// Returns 404 when the pool belongs to another instance or the instance is
+// not PostgreSQL.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:get`
 //
 // Corresponds with GET /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/ (the `GetConnectionPool` operationId).
-func (c *Client) GetConnectionPool(ctx context.Context, instanceId core.UUID, poolId string, params *GetConnectionPoolParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+func (c *Client) GetConnectionPool(ctx context.Context, instanceId core.UUID, poolId core.UUID, params *GetConnectionPoolParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetConnectionPoolRequest(c.Server, instanceId, poolId, params)
 	if err != nil {
 		return nil, err
@@ -3720,6 +3885,12 @@ func (c *Client) GetConnectionPool(ctx context.Context, instanceId core.UUID, po
 
 // UpdateConnectionPoolWithBody Update Connection Pool
 //
+// Changes the mode or size of a connection pool of a PostgreSQL instance.
+//
+// The instance status must be ACTIVE: otherwise it returns 400, and 409
+// `resource_busy` while another operation runs on the instance. Returns 404
+// when the pool belongs to another instance.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance_connection_pool:update`
@@ -3727,7 +3898,7 @@ func (c *Client) GetConnectionPool(ctx context.Context, instanceId core.UUID, po
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PATCH /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/ (the `UpdateConnectionPool` operationId).
-func (c *Client) UpdateConnectionPoolWithBody(ctx context.Context, instanceId core.UUID, poolId string, params *UpdateConnectionPoolParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+func (c *Client) UpdateConnectionPoolWithBody(ctx context.Context, instanceId core.UUID, poolId core.UUID, params *UpdateConnectionPoolParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateConnectionPoolRequestWithBody(c.Server, instanceId, poolId, params, contentType, body)
 	if err != nil {
 		return nil, err
@@ -3741,6 +3912,12 @@ func (c *Client) UpdateConnectionPoolWithBody(ctx context.Context, instanceId co
 
 // UpdateConnectionPool Update Connection Pool
 //
+// Changes the mode or size of a connection pool of a PostgreSQL instance.
+//
+// The instance status must be ACTIVE: otherwise it returns 400, and 409
+// `resource_busy` while another operation runs on the instance. Returns 404
+// when the pool belongs to another instance.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance_connection_pool:update`
@@ -3748,7 +3925,7 @@ func (c *Client) UpdateConnectionPoolWithBody(ctx context.Context, instanceId co
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with PATCH /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/ (the `UpdateConnectionPool` operationId).
-func (c *Client) UpdateConnectionPool(ctx context.Context, instanceId core.UUID, poolId string, params *UpdateConnectionPoolParams, body UpdateConnectionPoolJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+func (c *Client) UpdateConnectionPool(ctx context.Context, instanceId core.UUID, poolId core.UUID, params *UpdateConnectionPoolParams, body UpdateConnectionPoolJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateConnectionPoolRequest(c.Server, instanceId, poolId, params, body)
 	if err != nil {
 		return nil, err
@@ -3761,6 +3938,10 @@ func (c *Client) UpdateConnectionPool(ctx context.Context, instanceId core.UUID,
 }
 
 // UpdateDbInstanceFlavorWithBody Update Db Instance Flavor
+//
+// Changes the flavor of the instance. Its status must be ACTIVE.
+//
+// Returns 409 `resource_busy` while another operation runs on the instance.
 //
 // **Required permissions:**
 //
@@ -3782,6 +3963,10 @@ func (c *Client) UpdateDbInstanceFlavorWithBody(ctx context.Context, instanceId 
 }
 
 // UpdateDbInstanceFlavor Update Db Instance Flavor
+//
+// Changes the flavor of the instance. Its status must be ACTIVE.
+//
+// Returns 409 `resource_busy` while another operation runs on the instance.
 //
 // **Required permissions:**
 //
@@ -3880,6 +4065,11 @@ func (c *Client) ListPrivilegeDatabases(ctx context.Context, instanceId core.UUI
 
 // CreatePrivilegeDatabaseWithBody Create Privilege Database
 //
+// Creates a database on the instance.
+//
+// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+// and 409 `resource_busy` while another operation runs on the instance.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:create_database`
@@ -3901,6 +4091,11 @@ func (c *Client) CreatePrivilegeDatabaseWithBody(ctx context.Context, instanceId
 
 // CreatePrivilegeDatabase Create Privilege Database
 //
+// Creates a database on the instance.
+//
+// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+// and 409 `resource_busy` while another operation runs on the instance.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:create_database`
@@ -3921,6 +4116,13 @@ func (c *Client) CreatePrivilegeDatabase(ctx context.Context, instanceId core.UU
 }
 
 // DeletePrivilegeDatabase Delete Privilege Database
+//
+// Deletes a database of the instance.
+//
+// Its status must be ACTIVE or ABNORMAL: otherwise it returns 409
+// `instance_not_active`, and 409 `resource_busy` while another operation runs
+// on the instance.
+// Returns 404 when the database does not exist.
 //
 // **Required permissions:**
 //
@@ -3960,6 +4162,12 @@ func (c *Client) ListPrivilegeUsers(ctx context.Context, instanceId core.UUID, p
 
 // CreatePrivilegeUserWithBody Create Privilege User
 //
+// Creates a database user on the instance.
+//
+// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+// and 409 `resource_busy` while another operation runs on the instance.
+// Returns 409 `user_name_exists` when the user already exists on that host.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:create_user`
@@ -3980,6 +4188,12 @@ func (c *Client) CreatePrivilegeUserWithBody(ctx context.Context, instanceId cor
 }
 
 // CreatePrivilegeUser Create Privilege User
+//
+// Creates a database user on the instance.
+//
+// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+// and 409 `resource_busy` while another operation runs on the instance.
+// Returns 409 `user_name_exists` when the user already exists on that host.
 //
 // **Required permissions:**
 //
@@ -4002,6 +4216,13 @@ func (c *Client) CreatePrivilegeUser(ctx context.Context, instanceId core.UUID, 
 
 // DeletePrivilegeUser Delete Privilege User
 //
+// Deletes a database user of the instance.
+//
+// Its status must be ACTIVE or ABNORMAL: otherwise it returns 409
+// `instance_not_active`, and 409 `resource_busy` while another operation runs
+// on the instance.
+// Returns 404 when the user does not exist.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:delete_user`
@@ -4020,6 +4241,13 @@ func (c *Client) DeletePrivilegeUser(ctx context.Context, instanceId core.UUID, 
 }
 
 // UpdatePrivilegeUserWithBody Update Privilege User
+//
+// Updates a database user of the instance.
+//
+// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+// and 409 `resource_busy` while another operation runs on the instance.
+// Returns 404 when the user does not exist, and 409 `user_host_exists` when
+// `new_host` already holds a user with that name.
 //
 // **Required permissions:**
 //
@@ -4041,6 +4269,13 @@ func (c *Client) UpdatePrivilegeUserWithBody(ctx context.Context, instanceId cor
 }
 
 // UpdatePrivilegeUser Update Privilege User
+//
+// Updates a database user of the instance.
+//
+// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+// and 409 `resource_busy` while another operation runs on the instance.
+// Returns 404 when the user does not exist, and 409 `user_host_exists` when
+// `new_host` already holds a user with that name.
 //
 // **Required permissions:**
 //
@@ -4082,6 +4317,12 @@ func (c *Client) ListPrivilegeUserDatabases(ctx context.Context, instanceId core
 
 // GrantPrivilegeUserDatabasesWithBody Grant Privilege User Databases
 //
+// Grants a database user access to databases of the instance.
+//
+// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+// and 409 `resource_busy` while another operation runs on the instance.
+// Returns 404 when the user does not exist.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:grant_database_access`
@@ -4103,6 +4344,12 @@ func (c *Client) GrantPrivilegeUserDatabasesWithBody(ctx context.Context, instan
 
 // GrantPrivilegeUserDatabases Grant Privilege User Databases
 //
+// Grants a database user access to databases of the instance.
+//
+// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+// and 409 `resource_busy` while another operation runs on the instance.
+// Returns 404 when the user does not exist.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:grant_database_access`
@@ -4123,6 +4370,13 @@ func (c *Client) GrantPrivilegeUserDatabases(ctx context.Context, instanceId cor
 }
 
 // RevokePrivilegeUserDatabase Revoke Privilege User Database
+//
+// Revokes a database user's access to a database.
+//
+// Its status must be ACTIVE or ABNORMAL: otherwise it returns 409
+// `instance_not_active`, and 409 `resource_busy` while another operation runs
+// on the instance.
+// Returns 404 when the user does not exist or has no access to the database.
 //
 // **Required permissions:**
 //
@@ -4284,6 +4538,10 @@ func (c *Client) UpgradeMinorVersion(ctx context.Context, instanceId core.UUID, 
 
 // UpdateDbInstanceVolumeSizeWithBody Update Db Instance Volume Size
 //
+// Extends the disk of the instance. Its status must be ACTIVE.
+//
+// Returns 409 `resource_busy` while another operation runs on the instance.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:extend_volume_size`
@@ -4304,6 +4562,10 @@ func (c *Client) UpdateDbInstanceVolumeSizeWithBody(ctx context.Context, instanc
 }
 
 // UpdateDbInstanceVolumeSize Update Db Instance Volume Size
+//
+// Extends the disk of the instance. Its status must be ACTIVE.
+//
+// Returns 409 `resource_busy` while another operation runs on the instance.
 //
 // **Required permissions:**
 //
@@ -6125,7 +6387,7 @@ func NewCreateConnectionPoolRequestWithBody(server string, instanceId core.UUID,
 }
 
 // NewDeleteConnectionPoolRequest constructs an http.Request for the DeleteConnectionPool method
-func NewDeleteConnectionPoolRequest(server string, instanceId core.UUID, poolId string, params *DeleteConnectionPoolParams) (*http.Request, error) {
+func NewDeleteConnectionPoolRequest(server string, instanceId core.UUID, poolId core.UUID, params *DeleteConnectionPoolParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -6137,7 +6399,7 @@ func NewDeleteConnectionPoolRequest(server string, instanceId core.UUID, poolId 
 
 	var pathParam1 string
 
-	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "pool_id", poolId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "pool_id", poolId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
 	if err != nil {
 		return nil, err
 	}
@@ -6179,7 +6441,7 @@ func NewDeleteConnectionPoolRequest(server string, instanceId core.UUID, poolId 
 }
 
 // NewGetConnectionPoolRequest constructs an http.Request for the GetConnectionPool method
-func NewGetConnectionPoolRequest(server string, instanceId core.UUID, poolId string, params *GetConnectionPoolParams) (*http.Request, error) {
+func NewGetConnectionPoolRequest(server string, instanceId core.UUID, poolId core.UUID, params *GetConnectionPoolParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -6191,7 +6453,7 @@ func NewGetConnectionPoolRequest(server string, instanceId core.UUID, poolId str
 
 	var pathParam1 string
 
-	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "pool_id", poolId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "pool_id", poolId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
 	if err != nil {
 		return nil, err
 	}
@@ -6233,7 +6495,7 @@ func NewGetConnectionPoolRequest(server string, instanceId core.UUID, poolId str
 }
 
 // NewUpdateConnectionPoolRequest calls the generic UpdateConnectionPool builder with application/json body
-func NewUpdateConnectionPoolRequest(server string, instanceId core.UUID, poolId string, params *UpdateConnectionPoolParams, body UpdateConnectionPoolJSONRequestBody) (*http.Request, error) {
+func NewUpdateConnectionPoolRequest(server string, instanceId core.UUID, poolId core.UUID, params *UpdateConnectionPoolParams, body UpdateConnectionPoolJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
@@ -6244,7 +6506,7 @@ func NewUpdateConnectionPoolRequest(server string, instanceId core.UUID, poolId 
 }
 
 // NewUpdateConnectionPoolRequestWithBody constructs an http.Request for the UpdateConnectionPool method, with any body, and a specified content type
-func NewUpdateConnectionPoolRequestWithBody(server string, instanceId core.UUID, poolId string, params *UpdateConnectionPoolParams, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateConnectionPoolRequestWithBody(server string, instanceId core.UUID, poolId core.UUID, params *UpdateConnectionPoolParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -6256,7 +6518,7 @@ func NewUpdateConnectionPoolRequestWithBody(server string, instanceId core.UUID,
 
 	var pathParam1 string
 
-	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "pool_id", poolId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "pool_id", poolId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
 	if err != nil {
 		return nil, err
 	}
@@ -9019,6 +9281,11 @@ type ClientWithResponsesInterface interface {
 
 	// CreateDbInstanceWithBodyWithResponse Create Db Instance
 	//
+	// Creates a DB instance, restored from `restore.backup_id` when it is set.
+	//
+	// Returns 404 when the region, DB version, flavor, volume type, subnet or
+	// backup does not exist or belongs to another project.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:create`
@@ -9030,6 +9297,11 @@ type ClientWithResponsesInterface interface {
 
 	// CreateDbInstanceWithResponse Create Db Instance
 	//
+	// Creates a DB instance, restored from `restore.backup_id` when it is set.
+	//
+	// Returns 404 when the region, DB version, flavor, volume type, subnet or
+	// backup does not exist or belongs to another project.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:create`
@@ -9040,6 +9312,10 @@ type ClientWithResponsesInterface interface {
 	CreateDbInstanceWithResponse(ctx context.Context, params *CreateDbInstanceParams, body CreateDbInstanceJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateDbInstanceResponse, error)
 
 	// DeleteDbInstanceWithResponse Delete Db Instance
+	//
+	// Deletes the instance. Its status must be ACTIVE or ERROR.
+	//
+	// Returns 409 `resource_busy` while another operation runs on the instance.
 	//
 	// **Required permissions:**
 	//
@@ -9099,6 +9375,12 @@ type ClientWithResponsesInterface interface {
 	// Applies advanced configuration changes to the instance.
 	// Static parameters may require an instance restart to take effect.
 	//
+	// Each parameter must belong to the DB version of the instance (names match
+	// case-insensitively), and its value must match the type, range, length and
+	// choices the version defines. A boolean, integer or float value may also be
+	// sent as a string, such as the version's `default_value`.
+	// Returns 409 `resource_busy` while another operation runs on the instance.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance_advanced_config:apply`
@@ -9112,6 +9394,12 @@ type ClientWithResponsesInterface interface {
 	//
 	// Applies advanced configuration changes to the instance.
 	// Static parameters may require an instance restart to take effect.
+	//
+	// Each parameter must belong to the DB version of the instance (names match
+	// case-insensitively), and its value must match the type, range, length and
+	// choices the version defines. A boolean, integer or float value may also be
+	// sent as a string, such as the version's `default_value`.
+	// Returns 409 `resource_busy` while another operation runs on the instance.
 	//
 	// **Required permissions:**
 	//
@@ -9157,6 +9445,10 @@ type ClientWithResponsesInterface interface {
 
 	// ListConnectionPoolsWithResponse List Connection Pools
 	//
+	// Lists the connection pools of a PostgreSQL instance.
+	//
+	// Returns 404 when the instance is not PostgreSQL.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:get`
@@ -9167,6 +9459,12 @@ type ClientWithResponsesInterface interface {
 	ListConnectionPoolsWithResponse(ctx context.Context, instanceId core.UUID, params *ListConnectionPoolsParams, reqEditors ...RequestEditorFn) (*ListConnectionPoolsResponse, error)
 
 	// CreateConnectionPoolWithBodyWithResponse Create Connection Pool
+	//
+	// Creates a connection pool on a PostgreSQL instance.
+	//
+	// The instance status must be ACTIVE: otherwise it returns 400, and 409
+	// `resource_busy` while another operation runs on the instance. Returns 409
+	// `pool_name_exists` when a pool with exactly this name already exists.
 	//
 	// **Required permissions:**
 	//
@@ -9179,6 +9477,12 @@ type ClientWithResponsesInterface interface {
 
 	// CreateConnectionPoolWithResponse Create Connection Pool
 	//
+	// Creates a connection pool on a PostgreSQL instance.
+	//
+	// The instance status must be ACTIVE: otherwise it returns 400, and 409
+	// `resource_busy` while another operation runs on the instance. Returns 409
+	// `pool_name_exists` when a pool with exactly this name already exists.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance_connection_pool:create`
@@ -9190,6 +9494,13 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteConnectionPoolWithResponse Delete Connection Pool
 	//
+	// Deletes a connection pool of a PostgreSQL instance.
+	//
+	// The instance status must be ACTIVE: otherwise it returns 400, and 409
+	// `resource_busy` while another operation runs on the instance. The pool
+	// status must be ACTIVE or FAILED: otherwise it returns 409
+	// `pool_not_deletable`.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance_connection_pool:delete`
@@ -9197,9 +9508,14 @@ type ClientWithResponsesInterface interface {
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with DELETE /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/ (the `DeleteConnectionPool` operationId).
-	DeleteConnectionPoolWithResponse(ctx context.Context, instanceId core.UUID, poolId string, params *DeleteConnectionPoolParams, reqEditors ...RequestEditorFn) (*DeleteConnectionPoolResponse, error)
+	DeleteConnectionPoolWithResponse(ctx context.Context, instanceId core.UUID, poolId core.UUID, params *DeleteConnectionPoolParams, reqEditors ...RequestEditorFn) (*DeleteConnectionPoolResponse, error)
 
 	// GetConnectionPoolWithResponse Get Connection Pool
+	//
+	// Gets a connection pool of a PostgreSQL instance.
+	//
+	// Returns 404 when the pool belongs to another instance or the instance is
+	// not PostgreSQL.
 	//
 	// **Required permissions:**
 	//
@@ -9208,9 +9524,15 @@ type ClientWithResponsesInterface interface {
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with GET /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/ (the `GetConnectionPool` operationId).
-	GetConnectionPoolWithResponse(ctx context.Context, instanceId core.UUID, poolId string, params *GetConnectionPoolParams, reqEditors ...RequestEditorFn) (*GetConnectionPoolResponse, error)
+	GetConnectionPoolWithResponse(ctx context.Context, instanceId core.UUID, poolId core.UUID, params *GetConnectionPoolParams, reqEditors ...RequestEditorFn) (*GetConnectionPoolResponse, error)
 
 	// UpdateConnectionPoolWithBodyWithResponse Update Connection Pool
+	//
+	// Changes the mode or size of a connection pool of a PostgreSQL instance.
+	//
+	// The instance status must be ACTIVE: otherwise it returns 400, and 409
+	// `resource_busy` while another operation runs on the instance. Returns 404
+	// when the pool belongs to another instance.
 	//
 	// **Required permissions:**
 	//
@@ -9219,9 +9541,15 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PATCH /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/ (the `UpdateConnectionPool` operationId).
-	UpdateConnectionPoolWithBodyWithResponse(ctx context.Context, instanceId core.UUID, poolId string, params *UpdateConnectionPoolParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateConnectionPoolResponse, error)
+	UpdateConnectionPoolWithBodyWithResponse(ctx context.Context, instanceId core.UUID, poolId core.UUID, params *UpdateConnectionPoolParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateConnectionPoolResponse, error)
 
 	// UpdateConnectionPoolWithResponse Update Connection Pool
+	//
+	// Changes the mode or size of a connection pool of a PostgreSQL instance.
+	//
+	// The instance status must be ACTIVE: otherwise it returns 400, and 409
+	// `resource_busy` while another operation runs on the instance. Returns 404
+	// when the pool belongs to another instance.
 	//
 	// **Required permissions:**
 	//
@@ -9230,9 +9558,13 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PATCH /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/ (the `UpdateConnectionPool` operationId).
-	UpdateConnectionPoolWithResponse(ctx context.Context, instanceId core.UUID, poolId string, params *UpdateConnectionPoolParams, body UpdateConnectionPoolJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateConnectionPoolResponse, error)
+	UpdateConnectionPoolWithResponse(ctx context.Context, instanceId core.UUID, poolId core.UUID, params *UpdateConnectionPoolParams, body UpdateConnectionPoolJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateConnectionPoolResponse, error)
 
 	// UpdateDbInstanceFlavorWithBodyWithResponse Update Db Instance Flavor
+	//
+	// Changes the flavor of the instance. Its status must be ACTIVE.
+	//
+	// Returns 409 `resource_busy` while another operation runs on the instance.
 	//
 	// **Required permissions:**
 	//
@@ -9244,6 +9576,10 @@ type ClientWithResponsesInterface interface {
 	UpdateDbInstanceFlavorWithBodyWithResponse(ctx context.Context, instanceId core.UUID, params *UpdateDbInstanceFlavorParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateDbInstanceFlavorResponse, error)
 
 	// UpdateDbInstanceFlavorWithResponse Update Db Instance Flavor
+	//
+	// Changes the flavor of the instance. Its status must be ACTIVE.
+	//
+	// Returns 409 `resource_busy` while another operation runs on the instance.
 	//
 	// **Required permissions:**
 	//
@@ -9300,6 +9636,11 @@ type ClientWithResponsesInterface interface {
 
 	// CreatePrivilegeDatabaseWithBodyWithResponse Create Privilege Database
 	//
+	// Creates a database on the instance.
+	//
+	// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+	// and 409 `resource_busy` while another operation runs on the instance.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:create_database`
@@ -9311,6 +9652,11 @@ type ClientWithResponsesInterface interface {
 
 	// CreatePrivilegeDatabaseWithResponse Create Privilege Database
 	//
+	// Creates a database on the instance.
+	//
+	// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+	// and 409 `resource_busy` while another operation runs on the instance.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:create_database`
@@ -9321,6 +9667,13 @@ type ClientWithResponsesInterface interface {
 	CreatePrivilegeDatabaseWithResponse(ctx context.Context, instanceId core.UUID, params *CreatePrivilegeDatabaseParams, body CreatePrivilegeDatabaseJSONRequestBody, reqEditors ...RequestEditorFn) (*CreatePrivilegeDatabaseResponse, error)
 
 	// DeletePrivilegeDatabaseWithResponse Delete Privilege Database
+	//
+	// Deletes a database of the instance.
+	//
+	// Its status must be ACTIVE or ABNORMAL: otherwise it returns 409
+	// `instance_not_active`, and 409 `resource_busy` while another operation runs
+	// on the instance.
+	// Returns 404 when the database does not exist.
 	//
 	// **Required permissions:**
 	//
@@ -9344,6 +9697,12 @@ type ClientWithResponsesInterface interface {
 
 	// CreatePrivilegeUserWithBodyWithResponse Create Privilege User
 	//
+	// Creates a database user on the instance.
+	//
+	// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+	// and 409 `resource_busy` while another operation runs on the instance.
+	// Returns 409 `user_name_exists` when the user already exists on that host.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:create_user`
@@ -9354,6 +9713,12 @@ type ClientWithResponsesInterface interface {
 	CreatePrivilegeUserWithBodyWithResponse(ctx context.Context, instanceId core.UUID, params *CreatePrivilegeUserParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreatePrivilegeUserResponse, error)
 
 	// CreatePrivilegeUserWithResponse Create Privilege User
+	//
+	// Creates a database user on the instance.
+	//
+	// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+	// and 409 `resource_busy` while another operation runs on the instance.
+	// Returns 409 `user_name_exists` when the user already exists on that host.
 	//
 	// **Required permissions:**
 	//
@@ -9366,6 +9731,13 @@ type ClientWithResponsesInterface interface {
 
 	// DeletePrivilegeUserWithResponse Delete Privilege User
 	//
+	// Deletes a database user of the instance.
+	//
+	// Its status must be ACTIVE or ABNORMAL: otherwise it returns 409
+	// `instance_not_active`, and 409 `resource_busy` while another operation runs
+	// on the instance.
+	// Returns 404 when the user does not exist.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:delete_user`
@@ -9377,6 +9749,13 @@ type ClientWithResponsesInterface interface {
 
 	// UpdatePrivilegeUserWithBodyWithResponse Update Privilege User
 	//
+	// Updates a database user of the instance.
+	//
+	// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+	// and 409 `resource_busy` while another operation runs on the instance.
+	// Returns 404 when the user does not exist, and 409 `user_host_exists` when
+	// `new_host` already holds a user with that name.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:update_user`
@@ -9387,6 +9766,13 @@ type ClientWithResponsesInterface interface {
 	UpdatePrivilegeUserWithBodyWithResponse(ctx context.Context, instanceId core.UUID, userName string, params *UpdatePrivilegeUserParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdatePrivilegeUserResponse, error)
 
 	// UpdatePrivilegeUserWithResponse Update Privilege User
+	//
+	// Updates a database user of the instance.
+	//
+	// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+	// and 409 `resource_busy` while another operation runs on the instance.
+	// Returns 404 when the user does not exist, and 409 `user_host_exists` when
+	// `new_host` already holds a user with that name.
 	//
 	// **Required permissions:**
 	//
@@ -9410,6 +9796,12 @@ type ClientWithResponsesInterface interface {
 
 	// GrantPrivilegeUserDatabasesWithBodyWithResponse Grant Privilege User Databases
 	//
+	// Grants a database user access to databases of the instance.
+	//
+	// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+	// and 409 `resource_busy` while another operation runs on the instance.
+	// Returns 404 when the user does not exist.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:grant_database_access`
@@ -9421,6 +9813,12 @@ type ClientWithResponsesInterface interface {
 
 	// GrantPrivilegeUserDatabasesWithResponse Grant Privilege User Databases
 	//
+	// Grants a database user access to databases of the instance.
+	//
+	// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+	// and 409 `resource_busy` while another operation runs on the instance.
+	// Returns 404 when the user does not exist.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:grant_database_access`
@@ -9431,6 +9829,13 @@ type ClientWithResponsesInterface interface {
 	GrantPrivilegeUserDatabasesWithResponse(ctx context.Context, instanceId core.UUID, userName string, params *GrantPrivilegeUserDatabasesParams, body GrantPrivilegeUserDatabasesJSONRequestBody, reqEditors ...RequestEditorFn) (*GrantPrivilegeUserDatabasesResponse, error)
 
 	// RevokePrivilegeUserDatabaseWithResponse Revoke Privilege User Database
+	//
+	// Revokes a database user's access to a database.
+	//
+	// Its status must be ACTIVE or ABNORMAL: otherwise it returns 409
+	// `instance_not_active`, and 409 `resource_busy` while another operation runs
+	// on the instance.
+	// Returns 404 when the user does not exist or has no access to the database.
 	//
 	// **Required permissions:**
 	//
@@ -9520,6 +9925,10 @@ type ClientWithResponsesInterface interface {
 
 	// UpdateDbInstanceVolumeSizeWithBodyWithResponse Update Db Instance Volume Size
 	//
+	// Extends the disk of the instance. Its status must be ACTIVE.
+	//
+	// Returns 409 `resource_busy` while another operation runs on the instance.
+	//
 	// **Required permissions:**
 	//
 	// - `urn:action:dbaas:db_instance:extend_volume_size`
@@ -9530,6 +9939,10 @@ type ClientWithResponsesInterface interface {
 	UpdateDbInstanceVolumeSizeWithBodyWithResponse(ctx context.Context, instanceId core.UUID, params *UpdateDbInstanceVolumeSizeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateDbInstanceVolumeSizeResponse, error)
 
 	// UpdateDbInstanceVolumeSizeWithResponse Update Db Instance Volume Size
+	//
+	// Extends the disk of the instance. Its status must be ACTIVE.
+	//
+	// Returns 409 `resource_busy` while another operation runs on the instance.
 	//
 	// **Required permissions:**
 	//
@@ -10075,6 +10488,8 @@ type CreateDbInstanceResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10106,6 +10521,10 @@ type DeleteDbInstanceResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10139,6 +10558,8 @@ type GetDbInstanceResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10234,6 +10655,10 @@ type ApplyAdvancedConfigsResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10331,6 +10756,8 @@ type ListConnectionPoolsResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10362,6 +10789,10 @@ type CreateConnectionPoolResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10393,6 +10824,10 @@ type DeleteConnectionPoolResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10426,6 +10861,8 @@ type GetConnectionPoolResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10457,6 +10894,10 @@ type UpdateConnectionPoolResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10488,6 +10929,10 @@ type UpdateDbInstanceFlavorResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10620,6 +11065,8 @@ type ListPrivilegeDatabasesResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10653,6 +11100,10 @@ type CreatePrivilegeDatabaseResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10686,6 +11137,10 @@ type DeletePrivilegeDatabaseResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10719,6 +11174,8 @@ type ListPrivilegeUsersResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10752,6 +11209,10 @@ type CreatePrivilegeUserResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10785,6 +11246,10 @@ type DeletePrivilegeUserResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10818,6 +11283,10 @@ type UpdatePrivilegeUserResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10851,6 +11320,8 @@ type ListPrivilegeUserDatabasesResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10884,6 +11355,10 @@ type GrantPrivilegeUserDatabasesResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -10917,6 +11392,10 @@ type RevokePrivilegeUserDatabaseResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -11107,6 +11586,10 @@ type UpdateDbInstanceVolumeSizeResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponseSchema
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -11916,6 +12399,11 @@ func (c *ClientWithResponses) ListDbInstancesWithResponse(ctx context.Context, p
 
 // CreateDbInstanceWithBodyWithResponse Create Db Instance
 //
+// Creates a DB instance, restored from `restore.backup_id` when it is set.
+//
+// Returns 404 when the region, DB version, flavor, volume type, subnet or
+// backup does not exist or belongs to another project.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:create`
@@ -11933,6 +12421,11 @@ func (c *ClientWithResponses) CreateDbInstanceWithBodyWithResponse(ctx context.C
 
 // CreateDbInstanceWithResponse Create Db Instance
 //
+// Creates a DB instance, restored from `restore.backup_id` when it is set.
+//
+// Returns 404 when the region, DB version, flavor, volume type, subnet or
+// backup does not exist or belongs to another project.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:create`
@@ -11949,6 +12442,10 @@ func (c *ClientWithResponses) CreateDbInstanceWithResponse(ctx context.Context, 
 }
 
 // DeleteDbInstanceWithResponse Delete Db Instance
+//
+// Deletes the instance. Its status must be ACTIVE or ERROR.
+//
+// Returns 409 `resource_busy` while another operation runs on the instance.
 //
 // **Required permissions:**
 //
@@ -12038,6 +12535,12 @@ func (c *ClientWithResponses) ListAdvancedConfigsWithResponse(ctx context.Contex
 // Applies advanced configuration changes to the instance.
 // Static parameters may require an instance restart to take effect.
 //
+// Each parameter must belong to the DB version of the instance (names match
+// case-insensitively), and its value must match the type, range, length and
+// choices the version defines. A boolean, integer or float value may also be
+// sent as a string, such as the version's `default_value`.
+// Returns 409 `resource_busy` while another operation runs on the instance.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance_advanced_config:apply`
@@ -12057,6 +12560,12 @@ func (c *ClientWithResponses) ApplyAdvancedConfigsWithBodyWithResponse(ctx conte
 //
 // Applies advanced configuration changes to the instance.
 // Static parameters may require an instance restart to take effect.
+//
+// Each parameter must belong to the DB version of the instance (names match
+// case-insensitively), and its value must match the type, range, length and
+// choices the version defines. A boolean, integer or float value may also be
+// sent as a string, such as the version's `default_value`.
+// Returns 409 `resource_busy` while another operation runs on the instance.
 //
 // **Required permissions:**
 //
@@ -12126,6 +12635,10 @@ func (c *ClientWithResponses) UpdateAllowedCidrsWithResponse(ctx context.Context
 
 // ListConnectionPoolsWithResponse List Connection Pools
 //
+// Lists the connection pools of a PostgreSQL instance.
+//
+// Returns 404 when the instance is not PostgreSQL.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:get`
@@ -12142,6 +12655,12 @@ func (c *ClientWithResponses) ListConnectionPoolsWithResponse(ctx context.Contex
 }
 
 // CreateConnectionPoolWithBodyWithResponse Create Connection Pool
+//
+// Creates a connection pool on a PostgreSQL instance.
+//
+// The instance status must be ACTIVE: otherwise it returns 400, and 409
+// `resource_busy` while another operation runs on the instance. Returns 409
+// `pool_name_exists` when a pool with exactly this name already exists.
 //
 // **Required permissions:**
 //
@@ -12160,6 +12679,12 @@ func (c *ClientWithResponses) CreateConnectionPoolWithBodyWithResponse(ctx conte
 
 // CreateConnectionPoolWithResponse Create Connection Pool
 //
+// Creates a connection pool on a PostgreSQL instance.
+//
+// The instance status must be ACTIVE: otherwise it returns 400, and 409
+// `resource_busy` while another operation runs on the instance. Returns 409
+// `pool_name_exists` when a pool with exactly this name already exists.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance_connection_pool:create`
@@ -12177,6 +12702,13 @@ func (c *ClientWithResponses) CreateConnectionPoolWithResponse(ctx context.Conte
 
 // DeleteConnectionPoolWithResponse Delete Connection Pool
 //
+// Deletes a connection pool of a PostgreSQL instance.
+//
+// The instance status must be ACTIVE: otherwise it returns 400, and 409
+// `resource_busy` while another operation runs on the instance. The pool
+// status must be ACTIVE or FAILED: otherwise it returns 409
+// `pool_not_deletable`.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance_connection_pool:delete`
@@ -12184,7 +12716,7 @@ func (c *ClientWithResponses) CreateConnectionPoolWithResponse(ctx context.Conte
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with DELETE /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/ (the `DeleteConnectionPool` operationId).
-func (c *ClientWithResponses) DeleteConnectionPoolWithResponse(ctx context.Context, instanceId core.UUID, poolId string, params *DeleteConnectionPoolParams, reqEditors ...RequestEditorFn) (*DeleteConnectionPoolResponse, error) {
+func (c *ClientWithResponses) DeleteConnectionPoolWithResponse(ctx context.Context, instanceId core.UUID, poolId core.UUID, params *DeleteConnectionPoolParams, reqEditors ...RequestEditorFn) (*DeleteConnectionPoolResponse, error) {
 	rsp, err := c.DeleteConnectionPool(ctx, instanceId, poolId, params, reqEditors...)
 	if err != nil {
 		return nil, err
@@ -12194,6 +12726,11 @@ func (c *ClientWithResponses) DeleteConnectionPoolWithResponse(ctx context.Conte
 
 // GetConnectionPoolWithResponse Get Connection Pool
 //
+// Gets a connection pool of a PostgreSQL instance.
+//
+// Returns 404 when the pool belongs to another instance or the instance is
+// not PostgreSQL.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:get`
@@ -12201,7 +12738,7 @@ func (c *ClientWithResponses) DeleteConnectionPoolWithResponse(ctx context.Conte
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with GET /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/ (the `GetConnectionPool` operationId).
-func (c *ClientWithResponses) GetConnectionPoolWithResponse(ctx context.Context, instanceId core.UUID, poolId string, params *GetConnectionPoolParams, reqEditors ...RequestEditorFn) (*GetConnectionPoolResponse, error) {
+func (c *ClientWithResponses) GetConnectionPoolWithResponse(ctx context.Context, instanceId core.UUID, poolId core.UUID, params *GetConnectionPoolParams, reqEditors ...RequestEditorFn) (*GetConnectionPoolResponse, error) {
 	rsp, err := c.GetConnectionPool(ctx, instanceId, poolId, params, reqEditors...)
 	if err != nil {
 		return nil, err
@@ -12211,6 +12748,12 @@ func (c *ClientWithResponses) GetConnectionPoolWithResponse(ctx context.Context,
 
 // UpdateConnectionPoolWithBodyWithResponse Update Connection Pool
 //
+// Changes the mode or size of a connection pool of a PostgreSQL instance.
+//
+// The instance status must be ACTIVE: otherwise it returns 400, and 409
+// `resource_busy` while another operation runs on the instance. Returns 404
+// when the pool belongs to another instance.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance_connection_pool:update`
@@ -12218,7 +12761,7 @@ func (c *ClientWithResponses) GetConnectionPoolWithResponse(ctx context.Context,
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PATCH /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/ (the `UpdateConnectionPool` operationId).
-func (c *ClientWithResponses) UpdateConnectionPoolWithBodyWithResponse(ctx context.Context, instanceId core.UUID, poolId string, params *UpdateConnectionPoolParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateConnectionPoolResponse, error) {
+func (c *ClientWithResponses) UpdateConnectionPoolWithBodyWithResponse(ctx context.Context, instanceId core.UUID, poolId core.UUID, params *UpdateConnectionPoolParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateConnectionPoolResponse, error) {
 	rsp, err := c.UpdateConnectionPoolWithBody(ctx, instanceId, poolId, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
@@ -12228,6 +12771,12 @@ func (c *ClientWithResponses) UpdateConnectionPoolWithBodyWithResponse(ctx conte
 
 // UpdateConnectionPoolWithResponse Update Connection Pool
 //
+// Changes the mode or size of a connection pool of a PostgreSQL instance.
+//
+// The instance status must be ACTIVE: otherwise it returns 400, and 409
+// `resource_busy` while another operation runs on the instance. Returns 404
+// when the pool belongs to another instance.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance_connection_pool:update`
@@ -12235,7 +12784,7 @@ func (c *ClientWithResponses) UpdateConnectionPoolWithBodyWithResponse(ctx conte
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PATCH /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/ (the `UpdateConnectionPool` operationId).
-func (c *ClientWithResponses) UpdateConnectionPoolWithResponse(ctx context.Context, instanceId core.UUID, poolId string, params *UpdateConnectionPoolParams, body UpdateConnectionPoolJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateConnectionPoolResponse, error) {
+func (c *ClientWithResponses) UpdateConnectionPoolWithResponse(ctx context.Context, instanceId core.UUID, poolId core.UUID, params *UpdateConnectionPoolParams, body UpdateConnectionPoolJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateConnectionPoolResponse, error) {
 	rsp, err := c.UpdateConnectionPool(ctx, instanceId, poolId, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
@@ -12244,6 +12793,10 @@ func (c *ClientWithResponses) UpdateConnectionPoolWithResponse(ctx context.Conte
 }
 
 // UpdateDbInstanceFlavorWithBodyWithResponse Update Db Instance Flavor
+//
+// Changes the flavor of the instance. Its status must be ACTIVE.
+//
+// Returns 409 `resource_busy` while another operation runs on the instance.
 //
 // **Required permissions:**
 //
@@ -12261,6 +12814,10 @@ func (c *ClientWithResponses) UpdateDbInstanceFlavorWithBodyWithResponse(ctx con
 }
 
 // UpdateDbInstanceFlavorWithResponse Update Db Instance Flavor
+//
+// Changes the flavor of the instance. Its status must be ACTIVE.
+//
+// Returns 409 `resource_busy` while another operation runs on the instance.
 //
 // **Required permissions:**
 //
@@ -12347,6 +12904,11 @@ func (c *ClientWithResponses) ListPrivilegeDatabasesWithResponse(ctx context.Con
 
 // CreatePrivilegeDatabaseWithBodyWithResponse Create Privilege Database
 //
+// Creates a database on the instance.
+//
+// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+// and 409 `resource_busy` while another operation runs on the instance.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:create_database`
@@ -12364,6 +12926,11 @@ func (c *ClientWithResponses) CreatePrivilegeDatabaseWithBodyWithResponse(ctx co
 
 // CreatePrivilegeDatabaseWithResponse Create Privilege Database
 //
+// Creates a database on the instance.
+//
+// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+// and 409 `resource_busy` while another operation runs on the instance.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:create_database`
@@ -12380,6 +12947,13 @@ func (c *ClientWithResponses) CreatePrivilegeDatabaseWithResponse(ctx context.Co
 }
 
 // DeletePrivilegeDatabaseWithResponse Delete Privilege Database
+//
+// Deletes a database of the instance.
+//
+// Its status must be ACTIVE or ABNORMAL: otherwise it returns 409
+// `instance_not_active`, and 409 `resource_busy` while another operation runs
+// on the instance.
+// Returns 404 when the database does not exist.
 //
 // **Required permissions:**
 //
@@ -12415,6 +12989,12 @@ func (c *ClientWithResponses) ListPrivilegeUsersWithResponse(ctx context.Context
 
 // CreatePrivilegeUserWithBodyWithResponse Create Privilege User
 //
+// Creates a database user on the instance.
+//
+// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+// and 409 `resource_busy` while another operation runs on the instance.
+// Returns 409 `user_name_exists` when the user already exists on that host.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:create_user`
@@ -12431,6 +13011,12 @@ func (c *ClientWithResponses) CreatePrivilegeUserWithBodyWithResponse(ctx contex
 }
 
 // CreatePrivilegeUserWithResponse Create Privilege User
+//
+// Creates a database user on the instance.
+//
+// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+// and 409 `resource_busy` while another operation runs on the instance.
+// Returns 409 `user_name_exists` when the user already exists on that host.
 //
 // **Required permissions:**
 //
@@ -12449,6 +13035,13 @@ func (c *ClientWithResponses) CreatePrivilegeUserWithResponse(ctx context.Contex
 
 // DeletePrivilegeUserWithResponse Delete Privilege User
 //
+// Deletes a database user of the instance.
+//
+// Its status must be ACTIVE or ABNORMAL: otherwise it returns 409
+// `instance_not_active`, and 409 `resource_busy` while another operation runs
+// on the instance.
+// Returns 404 when the user does not exist.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:delete_user`
@@ -12466,6 +13059,13 @@ func (c *ClientWithResponses) DeletePrivilegeUserWithResponse(ctx context.Contex
 
 // UpdatePrivilegeUserWithBodyWithResponse Update Privilege User
 //
+// Updates a database user of the instance.
+//
+// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+// and 409 `resource_busy` while another operation runs on the instance.
+// Returns 404 when the user does not exist, and 409 `user_host_exists` when
+// `new_host` already holds a user with that name.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:update_user`
@@ -12482,6 +13082,13 @@ func (c *ClientWithResponses) UpdatePrivilegeUserWithBodyWithResponse(ctx contex
 }
 
 // UpdatePrivilegeUserWithResponse Update Privilege User
+//
+// Updates a database user of the instance.
+//
+// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+// and 409 `resource_busy` while another operation runs on the instance.
+// Returns 404 when the user does not exist, and 409 `user_host_exists` when
+// `new_host` already holds a user with that name.
 //
 // **Required permissions:**
 //
@@ -12517,6 +13124,12 @@ func (c *ClientWithResponses) ListPrivilegeUserDatabasesWithResponse(ctx context
 
 // GrantPrivilegeUserDatabasesWithBodyWithResponse Grant Privilege User Databases
 //
+// Grants a database user access to databases of the instance.
+//
+// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+// and 409 `resource_busy` while another operation runs on the instance.
+// Returns 404 when the user does not exist.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:grant_database_access`
@@ -12534,6 +13147,12 @@ func (c *ClientWithResponses) GrantPrivilegeUserDatabasesWithBodyWithResponse(ct
 
 // GrantPrivilegeUserDatabasesWithResponse Grant Privilege User Databases
 //
+// Grants a database user access to databases of the instance.
+//
+// Its status must be ACTIVE: otherwise it returns 409 `instance_not_active`,
+// and 409 `resource_busy` while another operation runs on the instance.
+// Returns 404 when the user does not exist.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:grant_database_access`
@@ -12550,6 +13169,13 @@ func (c *ClientWithResponses) GrantPrivilegeUserDatabasesWithResponse(ctx contex
 }
 
 // RevokePrivilegeUserDatabaseWithResponse Revoke Privilege User Database
+//
+// Revokes a database user's access to a database.
+//
+// Its status must be ACTIVE or ABNORMAL: otherwise it returns 409
+// `instance_not_active`, and 409 `resource_busy` while another operation runs
+// on the instance.
+// Returns 404 when the user does not exist or has no access to the database.
 //
 // **Required permissions:**
 //
@@ -12687,6 +13313,10 @@ func (c *ClientWithResponses) UpgradeMinorVersionWithResponse(ctx context.Contex
 
 // UpdateDbInstanceVolumeSizeWithBodyWithResponse Update Db Instance Volume Size
 //
+// Extends the disk of the instance. Its status must be ACTIVE.
+//
+// Returns 409 `resource_busy` while another operation runs on the instance.
+//
 // **Required permissions:**
 //
 // - `urn:action:dbaas:db_instance:extend_volume_size`
@@ -12703,6 +13333,10 @@ func (c *ClientWithResponses) UpdateDbInstanceVolumeSizeWithBodyWithResponse(ctx
 }
 
 // UpdateDbInstanceVolumeSizeWithResponse Update Db Instance Volume Size
+//
+// Extends the disk of the instance. Its status must be ACTIVE.
+//
+// Returns 409 `resource_busy` while another operation runs on the instance.
 //
 // **Required permissions:**
 //
@@ -13728,6 +14362,13 @@ func ParseCreateDbInstanceResponse(rsp *http.Response) (*CreateDbInstanceRespons
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -13784,6 +14425,20 @@ func ParseDeleteDbInstanceResponse(rsp *http.Response) (*DeleteDbInstanceRespons
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
@@ -13845,6 +14500,13 @@ func ParseGetDbInstanceResponse(rsp *http.Response) (*GetDbInstanceResponse, err
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
@@ -14020,6 +14682,20 @@ func ParseApplyAdvancedConfigsResponse(rsp *http.Response) (*ApplyAdvancedConfig
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
@@ -14200,6 +14876,13 @@ func ParseListConnectionPoolsResponse(rsp *http.Response) (*ListConnectionPoolsR
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -14257,6 +14940,20 @@ func ParseCreateConnectionPoolResponse(rsp *http.Response) (*CreateConnectionPoo
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -14313,6 +15010,20 @@ func ParseDeleteConnectionPoolResponse(rsp *http.Response) (*DeleteConnectionPoo
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
@@ -14375,6 +15086,13 @@ func ParseGetConnectionPoolResponse(rsp *http.Response) (*GetConnectionPoolRespo
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -14432,6 +15150,20 @@ func ParseUpdateConnectionPoolResponse(rsp *http.Response) (*UpdateConnectionPoo
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -14488,6 +15220,20 @@ func ParseUpdateDbInstanceFlavorResponse(rsp *http.Response) (*UpdateDbInstanceF
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
@@ -14733,6 +15479,13 @@ func ParseListPrivilegeDatabasesResponse(rsp *http.Response) (*ListPrivilegeData
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -14793,6 +15546,20 @@ func ParseCreatePrivilegeDatabaseResponse(rsp *http.Response) (*CreatePrivilegeD
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
@@ -14855,6 +15622,20 @@ func ParseDeletePrivilegeDatabaseResponse(rsp *http.Response) (*DeletePrivilegeD
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -14915,6 +15696,13 @@ func ParseListPrivilegeUsersResponse(rsp *http.Response) (*ListPrivilegeUsersRes
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
@@ -14977,6 +15765,20 @@ func ParseCreatePrivilegeUserResponse(rsp *http.Response) (*CreatePrivilegeUserR
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -15037,6 +15839,20 @@ func ParseDeletePrivilegeUserResponse(rsp *http.Response) (*DeletePrivilegeUserR
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
@@ -15099,6 +15915,20 @@ func ParseUpdatePrivilegeUserResponse(rsp *http.Response) (*UpdatePrivilegeUserR
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -15159,6 +15989,13 @@ func ParseListPrivilegeUserDatabasesResponse(rsp *http.Response) (*ListPrivilege
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
@@ -15221,6 +16058,20 @@ func ParseGrantPrivilegeUserDatabasesResponse(rsp *http.Response) (*GrantPrivile
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -15281,6 +16132,20 @@ func ParseRevokePrivilegeUserDatabaseResponse(rsp *http.Response) (*RevokePrivil
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
@@ -15631,6 +16496,20 @@ func ParseUpdateDbInstanceVolumeSizeResponse(rsp *http.Response) (*UpdateDbInsta
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError

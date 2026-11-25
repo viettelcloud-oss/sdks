@@ -8369,6 +8369,8 @@ type UpdateVolumeResponse struct {
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
 	JSON200 *VolumeSchema
+	// JSON202 the response for an HTTP 202 `application/json` response
+	JSON202 *VolumeSchema
 	// JSON400 the response for an HTTP 400 `application/json` response
 	JSON400 *ValidationError
 	// JSON401 the response for an HTTP 401 `application/json` response
@@ -11244,6 +11246,13 @@ func ParseUpdateVolumeResponse(rsp *http.Response) (*UpdateVolumeResponse, error
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
+		var dest VolumeSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON202 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest ValidationError

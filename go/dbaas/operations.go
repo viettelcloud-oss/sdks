@@ -486,7 +486,7 @@ func (c *Client) CreateConnectionPool(ctx context.Context, InstanceID core.UUID,
 // GetConnectionPool Get Connection Pool
 //
 // GET /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/
-func (c *Client) GetConnectionPool(ctx context.Context, InstanceID core.UUID, PoolID string, params GetConnectionPoolParams) (*DBaaSPgPoolSchema, error) {
+func (c *Client) GetConnectionPool(ctx context.Context, InstanceID core.UUID, PoolID core.UUID, params GetConnectionPoolParams) (*DBaaSPgPoolSchema, error) {
 	genParams := params
 	resp, err := c.gen.GetConnectionPoolWithResponse(ctx, InstanceID, PoolID, &genParams)
 	if err != nil {
@@ -498,7 +498,7 @@ func (c *Client) GetConnectionPool(ctx context.Context, InstanceID core.UUID, Po
 // DeleteConnectionPool Delete Connection Pool
 //
 // DELETE /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/
-func (c *Client) DeleteConnectionPool(ctx context.Context, InstanceID core.UUID, PoolID string, params DeleteConnectionPoolParams) error {
+func (c *Client) DeleteConnectionPool(ctx context.Context, InstanceID core.UUID, PoolID core.UUID, params DeleteConnectionPoolParams) error {
 	genParams := params
 	resp, err := c.gen.DeleteConnectionPoolWithResponse(ctx, InstanceID, PoolID, &genParams)
 	if err != nil {
@@ -510,7 +510,7 @@ func (c *Client) DeleteConnectionPool(ctx context.Context, InstanceID core.UUID,
 // UpdateConnectionPool Update Connection Pool
 //
 // PATCH /v2/dbaas/db-instances/{instance_id}/connection-pools/{pool_id}/
-func (c *Client) UpdateConnectionPool(ctx context.Context, InstanceID core.UUID, PoolID string, params UpdateConnectionPoolParams, body PoolPartialUpdateSchema) error {
+func (c *Client) UpdateConnectionPool(ctx context.Context, InstanceID core.UUID, PoolID core.UUID, params UpdateConnectionPoolParams, body PoolPartialUpdateSchema) error {
 	genParams := params
 	resp, err := c.gen.UpdateConnectionPoolWithResponse(ctx, InstanceID, PoolID, &genParams, body)
 	if err != nil {

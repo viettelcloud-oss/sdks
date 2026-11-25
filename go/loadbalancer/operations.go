@@ -244,7 +244,7 @@ func (c *Client) ChangePasswordListenerAuthUser(ctx context.Context, ListenerID 
 	if err != nil {
 		return nil, err
 	}
-	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, core.FirstNonNil(resp.JSON200, resp.JSON202), 200, 202)
 }
 
 // DeleteListenerAuthUser Delete Listener Auth User
@@ -256,7 +256,7 @@ func (c *Client) DeleteListenerAuthUser(ctx context.Context, ListenerID core.UUI
 	if err != nil {
 		return err
 	}
-	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 202)
 }
 
 // ListListenerRateLimits List Listener Rate Limits
@@ -292,7 +292,7 @@ func (c *Client) PartialUpdateListenerRateLimit(ctx context.Context, ListenerID 
 	if err != nil {
 		return nil, err
 	}
-	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, core.FirstNonNil(resp.JSON200, resp.JSON202), 200, 202)
 }
 
 // DeleteListenerRateLimit Delete Listener Rate Limit
@@ -304,7 +304,7 @@ func (c *Client) DeleteListenerRateLimit(ctx context.Context, ListenerID core.UU
 	if err != nil {
 		return err
 	}
-	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 202)
 }
 
 // ListServerGroups List Server Groups

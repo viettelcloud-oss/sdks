@@ -159,6 +159,17 @@ type SecretListSchema struct {
 	Name      string    `json:"name"`
 }
 
+// SecretMetadataCreateSchema defines model for SecretMetadataCreateSchema.
+type SecretMetadataCreateSchema struct {
+	Metadata map[string]string `json:"metadata"`
+}
+
+// SecretMetadataSchema defines model for SecretMetadataSchema.
+type SecretMetadataSchema struct {
+	Id       core.UUID                            `json:"id"`
+	Metadata nullable.Nullable[map[string]string] `json:"metadata,omitempty"`
+}
+
 // SecretRetrieveSchema defines model for SecretRetrieveSchema.
 type SecretRetrieveSchema struct {
 	CreatedAt time.Time                                 `json:"created_at"`
@@ -271,6 +282,16 @@ type UpdateSecretParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
+// GetSecretMetadataParams defines parameters for GetSecretMetadata.
+type GetSecretMetadataParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// CreateSecretMetadataParams defines parameters for CreateSecretMetadata.
+type CreateSecretMetadataParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
 // CreateCertificateJSONRequestBody defines body for CreateCertificate for application/json ContentType.
 type CreateCertificateJSONRequestBody = CertificateCreateSchema
 
@@ -282,6 +303,9 @@ type CreateSecretJSONRequestBody = SecretCreateSchema
 
 // UpdateSecretJSONRequestBody defines body for UpdateSecret for application/json ContentType.
 type UpdateSecretJSONRequestBody = SecretUpdateSchema
+
+// CreateSecretMetadataJSONRequestBody defines body for CreateSecretMetadata for application/json ContentType.
+type CreateSecretMetadataJSONRequestBody = SecretMetadataCreateSchema
 
 // RequestEditorFn is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -525,6 +549,37 @@ type ClientInterface interface {
 	//
 	// Corresponds with PUT /v2/kms/secrets/{secret_id}/ (the `UpdateSecret` operationId).
 	UpdateSecret(ctx context.Context, secretId core.UUID, params *UpdateSecretParams, body UpdateSecretJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetSecretMetadata Get Secret Metadata
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:kms:secret:get`
+	//
+	// Corresponds with GET /v2/kms/secrets/{secret_id}/metadata/ (the `GetSecretMetadata` operationId).
+	GetSecretMetadata(ctx context.Context, secretId core.UUID, params *GetSecretMetadataParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateSecretMetadataWithBody Create Secret Metadata
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:kms:secret:update`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v2/kms/secrets/{secret_id}/metadata/ (the `CreateSecretMetadata` operationId).
+	CreateSecretMetadataWithBody(ctx context.Context, secretId core.UUID, params *CreateSecretMetadataParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateSecretMetadata Create Secret Metadata
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:kms:secret:update`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v2/kms/secrets/{secret_id}/metadata/ (the `CreateSecretMetadata` operationId).
+	CreateSecretMetadata(ctx context.Context, secretId core.UUID, params *CreateSecretMetadataParams, body CreateSecretMetadataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 // ListCertificates List Certificates
@@ -856,6 +911,67 @@ func (c *Client) UpdateSecretWithBody(ctx context.Context, secretId core.UUID, p
 // Corresponds with PUT /v2/kms/secrets/{secret_id}/ (the `UpdateSecret` operationId).
 func (c *Client) UpdateSecret(ctx context.Context, secretId core.UUID, params *UpdateSecretParams, body UpdateSecretJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateSecretRequest(c.Server, secretId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetSecretMetadata Get Secret Metadata
+//
+// **Required permissions:**
+//
+// - `urn:action:kms:secret:get`
+//
+// Corresponds with GET /v2/kms/secrets/{secret_id}/metadata/ (the `GetSecretMetadata` operationId).
+func (c *Client) GetSecretMetadata(ctx context.Context, secretId core.UUID, params *GetSecretMetadataParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSecretMetadataRequest(c.Server, secretId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateSecretMetadataWithBody Create Secret Metadata
+//
+// **Required permissions:**
+//
+// - `urn:action:kms:secret:update`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/kms/secrets/{secret_id}/metadata/ (the `CreateSecretMetadata` operationId).
+func (c *Client) CreateSecretMetadataWithBody(ctx context.Context, secretId core.UUID, params *CreateSecretMetadataParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSecretMetadataRequestWithBody(c.Server, secretId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateSecretMetadata Create Secret Metadata
+//
+// **Required permissions:**
+//
+// - `urn:action:kms:secret:update`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/kms/secrets/{secret_id}/metadata/ (the `CreateSecretMetadata` operationId).
+func (c *Client) CreateSecretMetadata(ctx context.Context, secretId core.UUID, params *CreateSecretMetadataParams, body CreateSecretMetadataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSecretMetadataRequest(c.Server, secretId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1748,6 +1864,113 @@ func NewUpdateSecretRequestWithBody(server string, secretId core.UUID, params *U
 	return req, nil
 }
 
+// NewGetSecretMetadataRequest constructs an http.Request for the GetSecretMetadata method
+func NewGetSecretMetadataRequest(server string, secretId core.UUID, params *GetSecretMetadataParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "secret_id", secretId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/kms/secrets/%s/metadata/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewCreateSecretMetadataRequest calls the generic CreateSecretMetadata builder with application/json body
+func NewCreateSecretMetadataRequest(server string, secretId core.UUID, params *CreateSecretMetadataParams, body CreateSecretMetadataJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateSecretMetadataRequestWithBody(server, secretId, params, "application/json", bodyReader)
+}
+
+// NewCreateSecretMetadataRequestWithBody constructs an http.Request for the CreateSecretMetadata method, with any body, and a specified content type
+func NewCreateSecretMetadataRequestWithBody(server string, secretId core.UUID, params *CreateSecretMetadataParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "secret_id", secretId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/kms/secrets/%s/metadata/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -1978,6 +2201,39 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with PUT /v2/kms/secrets/{secret_id}/ (the `UpdateSecret` operationId).
 	UpdateSecretWithResponse(ctx context.Context, secretId core.UUID, params *UpdateSecretParams, body UpdateSecretJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSecretResponse, error)
+
+	// GetSecretMetadataWithResponse Get Secret Metadata
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:kms:secret:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/kms/secrets/{secret_id}/metadata/ (the `GetSecretMetadata` operationId).
+	GetSecretMetadataWithResponse(ctx context.Context, secretId core.UUID, params *GetSecretMetadataParams, reqEditors ...RequestEditorFn) (*GetSecretMetadataResponse, error)
+
+	// CreateSecretMetadataWithBodyWithResponse Create Secret Metadata
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:kms:secret:update`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/kms/secrets/{secret_id}/metadata/ (the `CreateSecretMetadata` operationId).
+	CreateSecretMetadataWithBodyWithResponse(ctx context.Context, secretId core.UUID, params *CreateSecretMetadataParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSecretMetadataResponse, error)
+
+	// CreateSecretMetadataWithResponse Create Secret Metadata
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:kms:secret:update`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/kms/secrets/{secret_id}/metadata/ (the `CreateSecretMetadata` operationId).
+	CreateSecretMetadataWithResponse(ctx context.Context, secretId core.UUID, params *CreateSecretMetadataParams, body CreateSecretMetadataJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSecretMetadataResponse, error)
 }
 
 type ListCertificatesResponse struct {
@@ -2403,6 +2659,72 @@ func (r UpdateSecretResponse) StatusCode() int {
 	return 0
 }
 
+type GetSecretMetadataResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SecretMetadataSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetSecretMetadataResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetSecretMetadataResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateSecretMetadataResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SecretMetadataSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateSecretMetadataResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateSecretMetadataResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // ListCertificatesWithResponse List Certificates
 //
 // **Required permissions:**
@@ -2690,6 +3012,57 @@ func (c *ClientWithResponses) UpdateSecretWithResponse(ctx context.Context, secr
 		return nil, err
 	}
 	return ParseUpdateSecretResponse(rsp)
+}
+
+// GetSecretMetadataWithResponse Get Secret Metadata
+//
+// **Required permissions:**
+//
+// - `urn:action:kms:secret:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/kms/secrets/{secret_id}/metadata/ (the `GetSecretMetadata` operationId).
+func (c *ClientWithResponses) GetSecretMetadataWithResponse(ctx context.Context, secretId core.UUID, params *GetSecretMetadataParams, reqEditors ...RequestEditorFn) (*GetSecretMetadataResponse, error) {
+	rsp, err := c.GetSecretMetadata(ctx, secretId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetSecretMetadataResponse(rsp)
+}
+
+// CreateSecretMetadataWithBodyWithResponse Create Secret Metadata
+//
+// **Required permissions:**
+//
+// - `urn:action:kms:secret:update`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/kms/secrets/{secret_id}/metadata/ (the `CreateSecretMetadata` operationId).
+func (c *ClientWithResponses) CreateSecretMetadataWithBodyWithResponse(ctx context.Context, secretId core.UUID, params *CreateSecretMetadataParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSecretMetadataResponse, error) {
+	rsp, err := c.CreateSecretMetadataWithBody(ctx, secretId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSecretMetadataResponse(rsp)
+}
+
+// CreateSecretMetadataWithResponse Create Secret Metadata
+//
+// **Required permissions:**
+//
+// - `urn:action:kms:secret:update`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/kms/secrets/{secret_id}/metadata/ (the `CreateSecretMetadata` operationId).
+func (c *ClientWithResponses) CreateSecretMetadataWithResponse(ctx context.Context, secretId core.UUID, params *CreateSecretMetadataParams, body CreateSecretMetadataJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSecretMetadataResponse, error) {
+	rsp, err := c.CreateSecretMetadata(ctx, secretId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSecretMetadataResponse(rsp)
 }
 
 // ParseListCertificatesResponse parses an HTTP response from a ListCertificatesWithResponse call
@@ -3428,6 +3801,128 @@ func ParseUpdateSecretResponse(rsp *http.Response) (*UpdateSecretResponse, error
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest SecretListSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetSecretMetadataResponse parses an HTTP response from a GetSecretMetadataWithResponse call
+func ParseGetSecretMetadataResponse(rsp *http.Response) (*GetSecretMetadataResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetSecretMetadataResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SecretMetadataSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateSecretMetadataResponse parses an HTTP response from a CreateSecretMetadataWithResponse call
+func ParseCreateSecretMetadataResponse(rsp *http.Response) (*CreateSecretMetadataResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateSecretMetadataResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SecretMetadataSchema
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

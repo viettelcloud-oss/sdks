@@ -165,6 +165,30 @@ func (c *Client) DeleteSecret(ctx context.Context, SecretID core.UUID, params De
 	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
 }
 
+// GetSecretMetadata Get Secret Metadata
+//
+// GET /v2/kms/secrets/{secret_id}/metadata/
+func (c *Client) GetSecretMetadata(ctx context.Context, SecretID core.UUID, params GetSecretMetadataParams) (*SecretMetadataSchema, error) {
+	genParams := params
+	resp, err := c.gen.GetSecretMetadataWithResponse(ctx, SecretID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// CreateSecretMetadata Create Secret Metadata
+//
+// POST /v2/kms/secrets/{secret_id}/metadata/
+func (c *Client) CreateSecretMetadata(ctx context.Context, SecretID core.UUID, params CreateSecretMetadataParams, body SecretMetadataCreateSchema) (*SecretMetadataSchema, error) {
+	genParams := params
+	resp, err := c.gen.CreateSecretMetadataWithResponse(ctx, SecretID, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
 // ListKeysIter returns an iterator over all KeySchema pages.
 // Automatically advances pages until all results are exhausted.
 func (c *Client) ListKeysIter(ctx context.Context, params ListKeysParams) iter.Seq2[*KeySchema, error] {

@@ -501,6 +501,186 @@ func (c *Client) GetImage(ctx context.Context, ImageID core.UUID, params GetImag
 	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
 }
 
+// ListImageComponents List Image Components
+//
+// GET /v2/server/image-components/
+func (c *Client) ListImageComponents(ctx context.Context, params ListImageComponentsParams) (*PagedImageComponentSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListImageComponentsWithResponse(ctx, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// CreateImageComponent Create Image Component
+//
+// POST /v2/server/image-components/
+func (c *Client) CreateImageComponent(ctx context.Context, params CreateImageComponentParams, body ImageComponentCreateSchema) (*ImageComponentSchema, error) {
+	genParams := params
+	resp, err := c.gen.CreateImageComponentWithResponse(ctx, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON201, 201)
+}
+
+// GetImageComponent Get Image Component Detail
+//
+// GET /v2/server/image-components/{component_id}/
+func (c *Client) GetImageComponent(ctx context.Context, ComponentID core.UUID, params GetImageComponentParams) (*ImageComponentSchema, error) {
+	genParams := params
+	resp, err := c.gen.GetImageComponentWithResponse(ctx, ComponentID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// UpdateImageComponent Update Image Component
+//
+// PATCH /v2/server/image-components/{component_id}/
+func (c *Client) UpdateImageComponent(ctx context.Context, ComponentID core.UUID, params UpdateImageComponentParams, body ImageComponentPartialUpdateSchema) (*ImageComponentSchema, error) {
+	genParams := params
+	resp, err := c.gen.UpdateImageComponentWithResponse(ctx, ComponentID, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// DeleteImageComponent Delete Image Component
+//
+// DELETE /v2/server/image-components/{component_id}/
+func (c *Client) DeleteImageComponent(ctx context.Context, ComponentID core.UUID, params DeleteImageComponentParams) error {
+	genParams := params
+	resp, err := c.gen.DeleteImageComponentWithResponse(ctx, ComponentID, &genParams)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
+}
+
+// ListImageRecipes List Image Recipes
+//
+// GET /v2/server/image-recipes/
+func (c *Client) ListImageRecipes(ctx context.Context, params ListImageRecipesParams) (*PagedImageRecipeSummarySchema, error) {
+	genParams := params
+	resp, err := c.gen.ListImageRecipesWithResponse(ctx, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// CreateImageRecipe Create Image Recipe
+//
+// POST /v2/server/image-recipes/
+func (c *Client) CreateImageRecipe(ctx context.Context, params CreateImageRecipeParams, body ImageRecipeCreateSchema) (*ImageRecipeSchema, error) {
+	genParams := params
+	resp, err := c.gen.CreateImageRecipeWithResponse(ctx, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON201, 201)
+}
+
+// GetImageRecipe Get Image Recipe Detail
+//
+// GET /v2/server/image-recipes/{recipe_id}/
+func (c *Client) GetImageRecipe(ctx context.Context, RecipeID core.UUID, params GetImageRecipeParams) (*ImageRecipeSchema, error) {
+	genParams := params
+	resp, err := c.gen.GetImageRecipeWithResponse(ctx, RecipeID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// DeleteImageRecipe Delete Image Recipe
+//
+// DELETE /v2/server/image-recipes/{recipe_id}/
+func (c *Client) DeleteImageRecipe(ctx context.Context, RecipeID core.UUID, params DeleteImageRecipeParams) error {
+	genParams := params
+	resp, err := c.gen.DeleteImageRecipeWithResponse(ctx, RecipeID, &genParams)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
+}
+
+// ListImageBuilds List Image Builds
+//
+// GET /v2/server/image-builds/
+func (c *Client) ListImageBuilds(ctx context.Context, params ListImageBuildsParams) (*PagedImageBuildSummarySchema, error) {
+	genParams := params
+	resp, err := c.gen.ListImageBuildsWithResponse(ctx, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// CreateImageBuild Create Image Build
+//
+// POST /v2/server/image-builds/
+func (c *Client) CreateImageBuild(ctx context.Context, params CreateImageBuildParams, body ImageBuildCreateSchema) (*ImageBuildSchema, error) {
+	genParams := params
+	resp, err := c.gen.CreateImageBuildWithResponse(ctx, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON201, 201)
+}
+
+// GetImageBuild Get Image Build Detail
+//
+// GET /v2/server/image-builds/{build_id}/
+func (c *Client) GetImageBuild(ctx context.Context, BuildID core.UUID, params GetImageBuildParams) (*ImageBuildSchema, error) {
+	genParams := params
+	resp, err := c.gen.GetImageBuildWithResponse(ctx, BuildID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// DeleteImageBuild Delete Image Build
+//
+// DELETE /v2/server/image-builds/{build_id}/
+func (c *Client) DeleteImageBuild(ctx context.Context, BuildID core.UUID, params DeleteImageBuildParams) error {
+	genParams := params
+	resp, err := c.gen.DeleteImageBuildWithResponse(ctx, BuildID, &genParams)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
+}
+
+// ListImageBuildRuns List Build Runs
+//
+// GET /v2/server/image-builds/{build_id}/runs/
+func (c *Client) ListImageBuildRuns(ctx context.Context, BuildID core.UUID, params ListImageBuildRunsParams) (*PagedImageBuildRunSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListImageBuildRunsWithResponse(ctx, BuildID, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// ExecuteImageBuild Execute Image Build
+//
+// POST /v2/server/image-builds/{build_id}/build/
+func (c *Client) ExecuteImageBuild(ctx context.Context, BuildID core.UUID, params ExecuteImageBuildParams) error {
+	genParams := params
+	resp, err := c.gen.ExecuteImageBuildWithResponse(ctx, BuildID, &genParams)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 202)
+}
+
 // ListKeyPairs List Key Pairs
 //
 // GET /v2/server/key-pairs/
@@ -723,6 +903,66 @@ func (c *Client) ListImagesIter(ctx context.Context, params ListImagesParams) it
 			return core.Page[ImageSchema]{}, err
 		}
 		return core.Page[ImageSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListImageComponentsIter returns an iterator over all ImageComponentSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListImageComponentsIter(ctx context.Context, params ListImageComponentsParams) iter.Seq2[*ImageComponentSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[ImageComponentSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListImageComponents(ctx, p)
+		if err != nil {
+			return core.Page[ImageComponentSchema]{}, err
+		}
+		return core.Page[ImageComponentSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListImageRecipesIter returns an iterator over all ImageRecipeSummarySchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListImageRecipesIter(ctx context.Context, params ListImageRecipesParams) iter.Seq2[*ImageRecipeSummarySchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[ImageRecipeSummarySchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListImageRecipes(ctx, p)
+		if err != nil {
+			return core.Page[ImageRecipeSummarySchema]{}, err
+		}
+		return core.Page[ImageRecipeSummarySchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListImageBuildsIter returns an iterator over all ImageBuildSummarySchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListImageBuildsIter(ctx context.Context, params ListImageBuildsParams) iter.Seq2[*ImageBuildSummarySchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[ImageBuildSummarySchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListImageBuilds(ctx, p)
+		if err != nil {
+			return core.Page[ImageBuildSummarySchema]{}, err
+		}
+		return core.Page[ImageBuildSummarySchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListImageBuildRunsIter returns an iterator over all ImageBuildRunSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListImageBuildRunsIter(ctx context.Context, BuildID core.UUID, params ListImageBuildRunsParams) iter.Seq2[*ImageBuildRunSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[ImageBuildRunSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListImageBuildRuns(ctx, BuildID, p)
+		if err != nil {
+			return core.Page[ImageBuildRunSchema]{}, err
+		}
+		return core.Page[ImageBuildRunSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
 	})
 }
 

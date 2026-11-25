@@ -20,6 +20,27 @@ import (
 	runtime "github.com/viettelcloud-oss/sdks/go/internal/oapi"
 )
 
+// Defines values for BuildRunStatus.
+const (
+	BuildRunStatusBuilding BuildRunStatus = "building"
+	BuildRunStatusFailed   BuildRunStatus = "failed"
+	BuildRunStatusSuccess  BuildRunStatus = "success"
+)
+
+// Valid indicates whether the value is a known member of the BuildRunStatus enum.
+func (e BuildRunStatus) Valid() bool {
+	switch e {
+	case BuildRunStatusBuilding:
+		return true
+	case BuildRunStatusFailed:
+		return true
+	case BuildRunStatusSuccess:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CustomServerFlavorKind.
 const (
 	CustomServerFlavorKindCustom CustomServerFlavorKind = "custom"
@@ -104,6 +125,42 @@ func (e FlavorFamily) Valid() bool {
 	case FlavorFamilyPremium:
 		return true
 	case FlavorFamilySpot:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ImageBuildStatus.
+const (
+	ImageBuildStatusAvailable ImageBuildStatus = "available"
+	ImageBuildStatusBuilding  ImageBuildStatus = "building"
+)
+
+// Valid indicates whether the value is a known member of the ImageBuildStatus enum.
+func (e ImageBuildStatus) Valid() bool {
+	switch e {
+	case ImageBuildStatusAvailable:
+		return true
+	case ImageBuildStatusBuilding:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ImageComponentState.
+const (
+	ImageComponentStateDisabled ImageComponentState = "disabled"
+	ImageComponentStateEnabled  ImageComponentState = "enabled"
+)
+
+// Valid indicates whether the value is a known member of the ImageComponentState enum.
+func (e ImageComponentState) Valid() bool {
+	switch e {
+	case ImageComponentStateDisabled:
+		return true
+	case ImageComponentStateEnabled:
 		return true
 	default:
 		return false
@@ -314,6 +371,24 @@ const (
 func (e PredefinedServerFlavorKind) Valid() bool {
 	switch e {
 	case PredefinedServerFlavorKindPredefined:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepoType.
+const (
+	RepoTypeInternal RepoType = "internal"
+	RepoTypePublic   RepoType = "public"
+)
+
+// Valid indicates whether the value is a known member of the RepoType enum.
+func (e RepoType) Valid() bool {
+	switch e {
+	case RepoTypeInternal:
+		return true
+	case RepoTypePublic:
 		return true
 	default:
 		return false
@@ -563,6 +638,9 @@ func (e VolumeTypeEncryptKeySize) Valid() bool {
 	}
 }
 
+// BuildRunStatus defines model for BuildRunStatus.
+type BuildRunStatus string
+
 // CustomImageCreateSchema defines model for CustomImageCreateSchema.
 type CustomImageCreateSchema struct {
 	ContainerFormat ImageCustomContainerFormat `json:"container_format"`
@@ -711,11 +789,131 @@ type FlavorSchema struct {
 	Zone     NestedZoneSchema `json:"zone"`
 }
 
+// ImageBuildCreateSchema defines model for ImageBuildCreateSchema.
+type ImageBuildCreateSchema struct {
+	Description *string   `json:"description,omitempty"`
+	Name        string    `json:"name"`
+	RecipeId    core.UUID `json:"recipe_id"`
+	RegionId    core.UUID `json:"region_id"`
+	RepoType    RepoType  `json:"repo_type"`
+	Version     string    `json:"version"`
+}
+
+// ImageBuildRunSchema defines model for ImageBuildRunSchema.
+type ImageBuildRunSchema struct {
+	EndedAt   nullable.Nullable[time.Time]               `json:"ended_at,omitempty"`
+	Id        core.UUID                                  `json:"id"`
+	Image     nullable.Nullable[NestedCustomImageSchema] `json:"image,omitempty"`
+	Sequence  int                                        `json:"sequence"`
+	StartedAt time.Time                                  `json:"started_at"`
+	Status    BuildRunStatus                             `json:"status"`
+}
+
+// ImageBuildSchema defines model for ImageBuildSchema.
+type ImageBuildSchema struct {
+	CreatedAt   time.Time                 `json:"created_at"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Id          core.UUID                 `json:"id"`
+	Name        string                    `json:"name"`
+	Project     NestedProjectSchema       `json:"project"`
+
+	// Recipe Nested schema for recipe summary in image build.
+	Recipe   NestedRecipeSummarySchema `json:"recipe"`
+	Region   NestedRegionSchema        `json:"region"`
+	RepoType RepoType                  `json:"repo_type"`
+	Status   ImageBuildStatus          `json:"status"`
+	Version  string                    `json:"version"`
+}
+
+// ImageBuildStatus defines model for ImageBuildStatus.
+type ImageBuildStatus string
+
+// ImageBuildSummarySchema defines model for ImageBuildSummarySchema.
+type ImageBuildSummarySchema struct {
+	Id      core.UUID           `json:"id"`
+	Name    string              `json:"name"`
+	Project NestedProjectSchema `json:"project"`
+
+	// Recipe Nested schema for recipe summary in image build.
+	Recipe  NestedRecipeSummarySchema `json:"recipe"`
+	Region  NestedRegionSchema        `json:"region"`
+	Status  ImageBuildStatus          `json:"status"`
+	Version string                    `json:"version"`
+}
+
+// ImageComponentCreateSchema defines model for ImageComponentCreateSchema.
+type ImageComponentCreateSchema struct {
+	BashScript  *string              `json:"bash_script,omitempty"`
+	Description *string              `json:"description,omitempty"`
+	Name        string               `json:"name"`
+	Packages    *[]string            `json:"packages,omitempty"`
+	State       *ImageComponentState `json:"state,omitempty"`
+}
+
+// ImageComponentPartialUpdateSchema defines model for ImageComponentPartialUpdateSchema.
+type ImageComponentPartialUpdateSchema struct {
+	BashScript  *string              `json:"bash_script,omitempty"`
+	Description *string              `json:"description,omitempty"`
+	Name        *string              `json:"name,omitempty"`
+	Packages    *[]string            `json:"packages,omitempty"`
+	State       *ImageComponentState `json:"state,omitempty"`
+}
+
+// ImageComponentSchema Response schema for Image Component.
+type ImageComponentSchema struct {
+	BashScript  nullable.Nullable[string] `json:"bash_script,omitempty"`
+	CreatedAt   time.Time                 `json:"created_at"`
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	HasRecipe   *bool                     `json:"has_recipe,omitempty"`
+	Id          core.UUID                 `json:"id"`
+	Name        string                    `json:"name"`
+	Packages    *[]string                 `json:"packages,omitempty"`
+	Project     NestedProjectSchema       `json:"project"`
+	State       ImageComponentState       `json:"state"`
+	UpdatedAt   time.Time                 `json:"updated_at"`
+}
+
+// ImageComponentState defines model for ImageComponentState.
+type ImageComponentState string
+
 // ImageCustomContainerFormat defines model for ImageCustomContainerFormat.
 type ImageCustomContainerFormat string
 
 // ImageCustomFormat defines model for ImageCustomFormat.
 type ImageCustomFormat string
+
+// ImageRecipeCreateSchema defines model for ImageRecipeCreateSchema.
+type ImageRecipeCreateSchema struct {
+	ComponentIds  []core.UUID                  `json:"component_ids"`
+	CustomImageId nullable.Nullable[core.UUID] `json:"custom_image_id,omitempty"`
+	Description   *string                      `json:"description,omitempty"`
+	Name          string                       `json:"name"`
+	PublicImageId nullable.Nullable[core.UUID] `json:"public_image_id,omitempty"`
+}
+
+// ImageRecipeSchema Full schema for Image Recipe (used in detail view).
+type ImageRecipeSchema struct {
+	Components  *[]NestedImageRecipeComponentSchema        `json:"components,omitempty"`
+	CreatedAt   time.Time                                  `json:"created_at"`
+	CustomImage nullable.Nullable[NestedCustomImageSchema] `json:"custom_image,omitempty"`
+	Description nullable.Nullable[string]                  `json:"description,omitempty"`
+	HasBuild    bool                                       `json:"has_build"`
+	Id          core.UUID                                  `json:"id"`
+	Name        string                                     `json:"name"`
+	Project     NestedProjectSchema                        `json:"project"`
+	PublicImage nullable.Nullable[NestedBaseImageSchema]   `json:"public_image,omitempty"`
+}
+
+// ImageRecipeSummarySchema Summary schema for Image Recipe (used in list view).
+type ImageRecipeSummarySchema struct {
+	CreatedAt   time.Time                                  `json:"created_at"`
+	CustomImage nullable.Nullable[NestedCustomImageSchema] `json:"custom_image,omitempty"`
+	HasBuild    bool                                       `json:"has_build"`
+	Id          core.UUID                                  `json:"id"`
+	Name        string                                     `json:"name"`
+	Project     NestedProjectSchema                        `json:"project"`
+	PublicImage nullable.Nullable[NestedBaseImageSchema]   `json:"public_image,omitempty"`
+}
 
 // ImageSchema defines model for ImageSchema.
 type ImageSchema struct {
@@ -781,6 +979,21 @@ type KeyPairSchema struct {
 // KeyPairType defines model for KeyPairType.
 type KeyPairType string
 
+// NestedBaseImageSchema Nested schema for base image info in recipe.
+type NestedBaseImageSchema struct {
+	Id   core.UUID `json:"id"`
+	Name string    `json:"name"`
+}
+
+// NestedCustomImageSchema defines model for NestedCustomImageSchema.
+type NestedCustomImageSchema struct {
+	Id      core.UUID   `json:"id"`
+	Name    string      `json:"name"`
+	Os      *string     `json:"os,omitempty"`
+	Status  ImageStatus `json:"status"`
+	Version *string     `json:"version,omitempty"`
+}
+
 // NestedDPCSchema defines model for NestedDPCSchema.
 type NestedDPCSchema struct {
 	Id   core.UUID `json:"id"`
@@ -805,6 +1018,14 @@ type NestedFlavorSchema struct {
 	Name     string    `json:"name"`
 	Ram      int       `json:"ram"`
 	Vcpus    int       `json:"vcpus"`
+}
+
+// NestedImageRecipeComponentSchema Nested schema for image component in recipe detail.
+type NestedImageRecipeComponentSchema struct {
+	Id    core.UUID           `json:"id"`
+	Name  string              `json:"name"`
+	Order int                 `json:"order"`
+	State ImageComponentState `json:"state"`
 }
 
 // NestedImageSchema defines model for NestedImageSchema.
@@ -840,6 +1061,12 @@ type NestedProjectSchema struct {
 	Id   core.UUID `json:"id"`
 	Name string    `json:"name"`
 	Slug string    `json:"slug"`
+}
+
+// NestedRecipeSummarySchema Nested schema for recipe summary in image build.
+type NestedRecipeSummarySchema struct {
+	Id   core.UUID `json:"id"`
+	Name string    `json:"name"`
 }
 
 // NestedRegionSchema defines model for NestedRegionSchema.
@@ -929,6 +1156,38 @@ type PagedFlavorSchema struct {
 	Next     nullable.Nullable[string] `json:"next,omitempty"`
 	Previous nullable.Nullable[string] `json:"previous,omitempty"`
 	Results  []FlavorSchema            `json:"results"`
+}
+
+// PagedImageBuildRunSchema defines model for PagedImageBuildRunSchema.
+type PagedImageBuildRunSchema struct {
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []ImageBuildRunSchema     `json:"results"`
+}
+
+// PagedImageBuildSummarySchema defines model for PagedImageBuildSummarySchema.
+type PagedImageBuildSummarySchema struct {
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []ImageBuildSummarySchema `json:"results"`
+}
+
+// PagedImageComponentSchema defines model for PagedImageComponentSchema.
+type PagedImageComponentSchema struct {
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []ImageComponentSchema    `json:"results"`
+}
+
+// PagedImageRecipeSummarySchema defines model for PagedImageRecipeSummarySchema.
+type PagedImageRecipeSummarySchema struct {
+	Count    int                        `json:"count"`
+	Next     nullable.Nullable[string]  `json:"next,omitempty"`
+	Previous nullable.Nullable[string]  `json:"previous,omitempty"`
+	Results  []ImageRecipeSummarySchema `json:"results"`
 }
 
 // PagedImageSchema defines model for PagedImageSchema.
@@ -1032,6 +1291,9 @@ type PredefinedServerFlavor struct {
 
 // PredefinedServerFlavorKind defines model for PredefinedServerFlavor.Kind.
 type PredefinedServerFlavorKind string
+
+// RepoType defines model for RepoType.
+type RepoType string
 
 // ServerAttachPrivateIPSchema Schema for attaching a private IP to a server.
 type ServerAttachPrivateIPSchema struct {
@@ -1425,6 +1687,98 @@ type GetFlavorParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
+// ListImageBuildsParams defines parameters for ListImageBuilds.
+type ListImageBuildsParams struct {
+	Name       *string           `form:"name,omitempty" json:"name,omitempty"`
+	Status     *ImageBuildStatus `form:"status,omitempty" json:"status,omitempty"`
+	Region     *string           `form:"region,omitempty" json:"region,omitempty"`
+	RegionId   *core.UUID        `form:"region_id,omitempty" json:"region_id,omitempty"`
+	PageSize   *int              `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber *int              `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID  core.UUID         `json:"Project-ID"`
+}
+
+// CreateImageBuildParams defines parameters for CreateImageBuild.
+type CreateImageBuildParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// DeleteImageBuildParams defines parameters for DeleteImageBuild.
+type DeleteImageBuildParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// GetImageBuildParams defines parameters for GetImageBuild.
+type GetImageBuildParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// ExecuteImageBuildParams defines parameters for ExecuteImageBuild.
+type ExecuteImageBuildParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// ListImageBuildRunsParams defines parameters for ListImageBuildRuns.
+type ListImageBuildRunsParams struct {
+	StartedAtGte *time.Time `form:"started_at_gte,omitempty" json:"started_at_gte,omitempty"`
+	StartedAtLte *time.Time `form:"started_at_lte,omitempty" json:"started_at_lte,omitempty"`
+	PageSize     *int       `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber   *int       `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID    core.UUID  `json:"Project-ID"`
+}
+
+// ListImageComponentsParams defines parameters for ListImageComponents.
+type ListImageComponentsParams struct {
+	Name       *string                `form:"name,omitempty" json:"name,omitempty"`
+	State      *[]ImageComponentState `form:"state,omitempty" json:"state,omitempty"`
+	PageSize   *int                   `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber *int                   `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID  core.UUID              `json:"Project-ID"`
+}
+
+// CreateImageComponentParams defines parameters for CreateImageComponent.
+type CreateImageComponentParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// DeleteImageComponentParams defines parameters for DeleteImageComponent.
+type DeleteImageComponentParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// GetImageComponentParams defines parameters for GetImageComponent.
+type GetImageComponentParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// UpdateImageComponentParams defines parameters for UpdateImageComponent.
+type UpdateImageComponentParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// ListImageRecipesParams defines parameters for ListImageRecipes.
+type ListImageRecipesParams struct {
+	Name       *string   `form:"name,omitempty" json:"name,omitempty"`
+	PageSize   *int      `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber *int      `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID  core.UUID `json:"Project-ID"`
+}
+
+// CreateImageRecipeParams defines parameters for CreateImageRecipe.
+type CreateImageRecipeParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// DeleteImageRecipeParams defines parameters for DeleteImageRecipe.
+type DeleteImageRecipeParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// GetImageRecipeParams defines parameters for GetImageRecipe.
+type GetImageRecipeParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
 // ListImagesParams defines parameters for ListImages.
 type ListImagesParams struct {
 	Name       *string        `form:"name,omitempty" json:"name,omitempty"`
@@ -1698,6 +2052,18 @@ type PartialUpdateCustomImageJSONRequestBody = CustomImagePartialUpdateSchema
 
 // ExportCustomImageJSONRequestBody defines body for ExportCustomImage for application/json ContentType.
 type ExportCustomImageJSONRequestBody = CustomImageExportSchema
+
+// CreateImageBuildJSONRequestBody defines body for CreateImageBuild for application/json ContentType.
+type CreateImageBuildJSONRequestBody = ImageBuildCreateSchema
+
+// CreateImageComponentJSONRequestBody defines body for CreateImageComponent for application/json ContentType.
+type CreateImageComponentJSONRequestBody = ImageComponentCreateSchema
+
+// UpdateImageComponentJSONRequestBody defines body for UpdateImageComponent for application/json ContentType.
+type UpdateImageComponentJSONRequestBody = ImageComponentPartialUpdateSchema
+
+// CreateImageRecipeJSONRequestBody defines body for CreateImageRecipe for application/json ContentType.
+type CreateImageRecipeJSONRequestBody = ImageRecipeCreateSchema
 
 // CreateKeyPairJSONRequestBody defines body for CreateKeyPair for application/json ContentType.
 type CreateKeyPairJSONRequestBody = KeyPairCreateSchema
@@ -2461,6 +2827,193 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /v2/server/flavors/{flavor_id}/ (the `GetFlavor` operationId).
 	GetFlavor(ctx context.Context, flavorId core.UUID, params *GetFlavorParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListImageBuilds List Image Builds
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_build:list`
+	//
+	// Corresponds with GET /v2/server/image-builds/ (the `ListImageBuilds` operationId).
+	ListImageBuilds(ctx context.Context, params *ListImageBuildsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateImageBuildWithBody Create Image Build
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_build:create`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v2/server/image-builds/ (the `CreateImageBuild` operationId).
+	CreateImageBuildWithBody(ctx context.Context, params *CreateImageBuildParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateImageBuild Create Image Build
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_build:create`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v2/server/image-builds/ (the `CreateImageBuild` operationId).
+	CreateImageBuild(ctx context.Context, params *CreateImageBuildParams, body CreateImageBuildJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteImageBuild Delete Image Build
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_build:delete`
+	//
+	// Corresponds with DELETE /v2/server/image-builds/{build_id}/ (the `DeleteImageBuild` operationId).
+	DeleteImageBuild(ctx context.Context, buildId core.UUID, params *DeleteImageBuildParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetImageBuild Get Image Build Detail
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_build:get`
+	//
+	// Corresponds with GET /v2/server/image-builds/{build_id}/ (the `GetImageBuild` operationId).
+	GetImageBuild(ctx context.Context, buildId core.UUID, params *GetImageBuildParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ExecuteImageBuild Execute Image Build
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_build:build`
+	//
+	// Corresponds with POST /v2/server/image-builds/{build_id}/build/ (the `ExecuteImageBuild` operationId).
+	ExecuteImageBuild(ctx context.Context, buildId core.UUID, params *ExecuteImageBuildParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListImageBuildRuns List Build Runs
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_build:list_runs`
+	//
+	// Corresponds with GET /v2/server/image-builds/{build_id}/runs/ (the `ListImageBuildRuns` operationId).
+	ListImageBuildRuns(ctx context.Context, buildId core.UUID, params *ListImageBuildRunsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListImageComponents List Image Components
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_component:list`
+	//
+	// Corresponds with GET /v2/server/image-components/ (the `ListImageComponents` operationId).
+	ListImageComponents(ctx context.Context, params *ListImageComponentsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateImageComponentWithBody Create Image Component
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_component:create`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v2/server/image-components/ (the `CreateImageComponent` operationId).
+	CreateImageComponentWithBody(ctx context.Context, params *CreateImageComponentParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateImageComponent Create Image Component
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_component:create`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v2/server/image-components/ (the `CreateImageComponent` operationId).
+	CreateImageComponent(ctx context.Context, params *CreateImageComponentParams, body CreateImageComponentJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteImageComponent Delete Image Component
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_component:delete`
+	//
+	// Corresponds with DELETE /v2/server/image-components/{component_id}/ (the `DeleteImageComponent` operationId).
+	DeleteImageComponent(ctx context.Context, componentId core.UUID, params *DeleteImageComponentParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetImageComponent Get Image Component Detail
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_component:get`
+	//
+	// Corresponds with GET /v2/server/image-components/{component_id}/ (the `GetImageComponent` operationId).
+	GetImageComponent(ctx context.Context, componentId core.UUID, params *GetImageComponentParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateImageComponentWithBody Update Image Component
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_component:update`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PATCH /v2/server/image-components/{component_id}/ (the `UpdateImageComponent` operationId).
+	UpdateImageComponentWithBody(ctx context.Context, componentId core.UUID, params *UpdateImageComponentParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateImageComponent Update Image Component
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_component:update`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PATCH /v2/server/image-components/{component_id}/ (the `UpdateImageComponent` operationId).
+	UpdateImageComponent(ctx context.Context, componentId core.UUID, params *UpdateImageComponentParams, body UpdateImageComponentJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListImageRecipes List Image Recipes
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_recipe:list`
+	//
+	// Corresponds with GET /v2/server/image-recipes/ (the `ListImageRecipes` operationId).
+	ListImageRecipes(ctx context.Context, params *ListImageRecipesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateImageRecipeWithBody Create Image Recipe
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_recipe:create`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v2/server/image-recipes/ (the `CreateImageRecipe` operationId).
+	CreateImageRecipeWithBody(ctx context.Context, params *CreateImageRecipeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateImageRecipe Create Image Recipe
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_recipe:create`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v2/server/image-recipes/ (the `CreateImageRecipe` operationId).
+	CreateImageRecipe(ctx context.Context, params *CreateImageRecipeParams, body CreateImageRecipeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteImageRecipe Delete Image Recipe
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_recipe:delete`
+	//
+	// Corresponds with DELETE /v2/server/image-recipes/{recipe_id}/ (the `DeleteImageRecipe` operationId).
+	DeleteImageRecipe(ctx context.Context, recipeId core.UUID, params *DeleteImageRecipeParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetImageRecipe Get Image Recipe Detail
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_recipe:get`
+	//
+	// Corresponds with GET /v2/server/image-recipes/{recipe_id}/ (the `GetImageRecipe` operationId).
+	GetImageRecipe(ctx context.Context, recipeId core.UUID, params *GetImageRecipeParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListImages List Images
 	//
@@ -3444,6 +3997,383 @@ func (c *Client) ListFlavors(ctx context.Context, params *ListFlavorsParams, req
 // Corresponds with GET /v2/server/flavors/{flavor_id}/ (the `GetFlavor` operationId).
 func (c *Client) GetFlavor(ctx context.Context, flavorId core.UUID, params *GetFlavorParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetFlavorRequest(c.Server, flavorId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListImageBuilds List Image Builds
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_build:list`
+//
+// Corresponds with GET /v2/server/image-builds/ (the `ListImageBuilds` operationId).
+func (c *Client) ListImageBuilds(ctx context.Context, params *ListImageBuildsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListImageBuildsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateImageBuildWithBody Create Image Build
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_build:create`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/server/image-builds/ (the `CreateImageBuild` operationId).
+func (c *Client) CreateImageBuildWithBody(ctx context.Context, params *CreateImageBuildParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateImageBuildRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateImageBuild Create Image Build
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_build:create`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/server/image-builds/ (the `CreateImageBuild` operationId).
+func (c *Client) CreateImageBuild(ctx context.Context, params *CreateImageBuildParams, body CreateImageBuildJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateImageBuildRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteImageBuild Delete Image Build
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_build:delete`
+//
+// Corresponds with DELETE /v2/server/image-builds/{build_id}/ (the `DeleteImageBuild` operationId).
+func (c *Client) DeleteImageBuild(ctx context.Context, buildId core.UUID, params *DeleteImageBuildParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteImageBuildRequest(c.Server, buildId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetImageBuild Get Image Build Detail
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_build:get`
+//
+// Corresponds with GET /v2/server/image-builds/{build_id}/ (the `GetImageBuild` operationId).
+func (c *Client) GetImageBuild(ctx context.Context, buildId core.UUID, params *GetImageBuildParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetImageBuildRequest(c.Server, buildId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ExecuteImageBuild Execute Image Build
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_build:build`
+//
+// Corresponds with POST /v2/server/image-builds/{build_id}/build/ (the `ExecuteImageBuild` operationId).
+func (c *Client) ExecuteImageBuild(ctx context.Context, buildId core.UUID, params *ExecuteImageBuildParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewExecuteImageBuildRequest(c.Server, buildId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListImageBuildRuns List Build Runs
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_build:list_runs`
+//
+// Corresponds with GET /v2/server/image-builds/{build_id}/runs/ (the `ListImageBuildRuns` operationId).
+func (c *Client) ListImageBuildRuns(ctx context.Context, buildId core.UUID, params *ListImageBuildRunsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListImageBuildRunsRequest(c.Server, buildId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListImageComponents List Image Components
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_component:list`
+//
+// Corresponds with GET /v2/server/image-components/ (the `ListImageComponents` operationId).
+func (c *Client) ListImageComponents(ctx context.Context, params *ListImageComponentsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListImageComponentsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateImageComponentWithBody Create Image Component
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_component:create`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/server/image-components/ (the `CreateImageComponent` operationId).
+func (c *Client) CreateImageComponentWithBody(ctx context.Context, params *CreateImageComponentParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateImageComponentRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateImageComponent Create Image Component
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_component:create`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/server/image-components/ (the `CreateImageComponent` operationId).
+func (c *Client) CreateImageComponent(ctx context.Context, params *CreateImageComponentParams, body CreateImageComponentJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateImageComponentRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteImageComponent Delete Image Component
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_component:delete`
+//
+// Corresponds with DELETE /v2/server/image-components/{component_id}/ (the `DeleteImageComponent` operationId).
+func (c *Client) DeleteImageComponent(ctx context.Context, componentId core.UUID, params *DeleteImageComponentParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteImageComponentRequest(c.Server, componentId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetImageComponent Get Image Component Detail
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_component:get`
+//
+// Corresponds with GET /v2/server/image-components/{component_id}/ (the `GetImageComponent` operationId).
+func (c *Client) GetImageComponent(ctx context.Context, componentId core.UUID, params *GetImageComponentParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetImageComponentRequest(c.Server, componentId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateImageComponentWithBody Update Image Component
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_component:update`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PATCH /v2/server/image-components/{component_id}/ (the `UpdateImageComponent` operationId).
+func (c *Client) UpdateImageComponentWithBody(ctx context.Context, componentId core.UUID, params *UpdateImageComponentParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateImageComponentRequestWithBody(c.Server, componentId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateImageComponent Update Image Component
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_component:update`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PATCH /v2/server/image-components/{component_id}/ (the `UpdateImageComponent` operationId).
+func (c *Client) UpdateImageComponent(ctx context.Context, componentId core.UUID, params *UpdateImageComponentParams, body UpdateImageComponentJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateImageComponentRequest(c.Server, componentId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListImageRecipes List Image Recipes
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_recipe:list`
+//
+// Corresponds with GET /v2/server/image-recipes/ (the `ListImageRecipes` operationId).
+func (c *Client) ListImageRecipes(ctx context.Context, params *ListImageRecipesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListImageRecipesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateImageRecipeWithBody Create Image Recipe
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_recipe:create`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/server/image-recipes/ (the `CreateImageRecipe` operationId).
+func (c *Client) CreateImageRecipeWithBody(ctx context.Context, params *CreateImageRecipeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateImageRecipeRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateImageRecipe Create Image Recipe
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_recipe:create`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/server/image-recipes/ (the `CreateImageRecipe` operationId).
+func (c *Client) CreateImageRecipe(ctx context.Context, params *CreateImageRecipeParams, body CreateImageRecipeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateImageRecipeRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteImageRecipe Delete Image Recipe
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_recipe:delete`
+//
+// Corresponds with DELETE /v2/server/image-recipes/{recipe_id}/ (the `DeleteImageRecipe` operationId).
+func (c *Client) DeleteImageRecipe(ctx context.Context, recipeId core.UUID, params *DeleteImageRecipeParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteImageRecipeRequest(c.Server, recipeId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetImageRecipe Get Image Recipe Detail
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_recipe:get`
+//
+// Corresponds with GET /v2/server/image-recipes/{recipe_id}/ (the `GetImageRecipe` operationId).
+func (c *Client) GetImageRecipe(ctx context.Context, recipeId core.UUID, params *GetImageRecipeParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetImageRecipeRequest(c.Server, recipeId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -5556,6 +6486,985 @@ func NewGetFlavorRequest(server string, flavorId core.UUID, params *GetFlavorPar
 	}
 
 	operationPath := fmt.Sprintf("/v2/server/flavors/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListImageBuildsRequest constructs an http.Request for the ListImageBuilds method
+func NewListImageBuildsRequest(server string, params *ListImageBuildsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/image-builds/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Name != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "name", *params.Name, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Status != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "status", *params.Status, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Region != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "region", *params.Region, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.RegionId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "region_id", *params.RegionId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewCreateImageBuildRequest calls the generic CreateImageBuild builder with application/json body
+func NewCreateImageBuildRequest(server string, params *CreateImageBuildParams, body CreateImageBuildJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateImageBuildRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCreateImageBuildRequestWithBody constructs an http.Request for the CreateImageBuild method, with any body, and a specified content type
+func NewCreateImageBuildRequestWithBody(server string, params *CreateImageBuildParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/image-builds/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteImageBuildRequest constructs an http.Request for the DeleteImageBuild method
+func NewDeleteImageBuildRequest(server string, buildId core.UUID, params *DeleteImageBuildParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "build_id", buildId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/image-builds/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetImageBuildRequest constructs an http.Request for the GetImageBuild method
+func NewGetImageBuildRequest(server string, buildId core.UUID, params *GetImageBuildParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "build_id", buildId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/image-builds/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewExecuteImageBuildRequest constructs an http.Request for the ExecuteImageBuild method
+func NewExecuteImageBuildRequest(server string, buildId core.UUID, params *ExecuteImageBuildParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "build_id", buildId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/image-builds/%s/build/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListImageBuildRunsRequest constructs an http.Request for the ListImageBuildRuns method
+func NewListImageBuildRunsRequest(server string, buildId core.UUID, params *ListImageBuildRunsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "build_id", buildId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/image-builds/%s/runs/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.StartedAtGte != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "started_at_gte", *params.StartedAtGte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.StartedAtLte != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "started_at_lte", *params.StartedAtLte, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListImageComponentsRequest constructs an http.Request for the ListImageComponents method
+func NewListImageComponentsRequest(server string, params *ListImageComponentsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/image-components/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Name != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "name", *params.Name, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.State != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "state", *params.State, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewCreateImageComponentRequest calls the generic CreateImageComponent builder with application/json body
+func NewCreateImageComponentRequest(server string, params *CreateImageComponentParams, body CreateImageComponentJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateImageComponentRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCreateImageComponentRequestWithBody constructs an http.Request for the CreateImageComponent method, with any body, and a specified content type
+func NewCreateImageComponentRequestWithBody(server string, params *CreateImageComponentParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/image-components/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteImageComponentRequest constructs an http.Request for the DeleteImageComponent method
+func NewDeleteImageComponentRequest(server string, componentId core.UUID, params *DeleteImageComponentParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "component_id", componentId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/image-components/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetImageComponentRequest constructs an http.Request for the GetImageComponent method
+func NewGetImageComponentRequest(server string, componentId core.UUID, params *GetImageComponentParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "component_id", componentId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/image-components/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewUpdateImageComponentRequest calls the generic UpdateImageComponent builder with application/json body
+func NewUpdateImageComponentRequest(server string, componentId core.UUID, params *UpdateImageComponentParams, body UpdateImageComponentJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateImageComponentRequestWithBody(server, componentId, params, "application/json", bodyReader)
+}
+
+// NewUpdateImageComponentRequestWithBody constructs an http.Request for the UpdateImageComponent method, with any body, and a specified content type
+func NewUpdateImageComponentRequestWithBody(server string, componentId core.UUID, params *UpdateImageComponentParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "component_id", componentId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/image-components/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListImageRecipesRequest constructs an http.Request for the ListImageRecipes method
+func NewListImageRecipesRequest(server string, params *ListImageRecipesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/image-recipes/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Name != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "name", *params.Name, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewCreateImageRecipeRequest calls the generic CreateImageRecipe builder with application/json body
+func NewCreateImageRecipeRequest(server string, params *CreateImageRecipeParams, body CreateImageRecipeJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateImageRecipeRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCreateImageRecipeRequestWithBody constructs an http.Request for the CreateImageRecipe method, with any body, and a specified content type
+func NewCreateImageRecipeRequestWithBody(server string, params *CreateImageRecipeParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/image-recipes/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewDeleteImageRecipeRequest constructs an http.Request for the DeleteImageRecipe method
+func NewDeleteImageRecipeRequest(server string, recipeId core.UUID, params *DeleteImageRecipeParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "recipe_id", recipeId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/image-recipes/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetImageRecipeRequest constructs an http.Request for the GetImageRecipe method
+func NewGetImageRecipeRequest(server string, recipeId core.UUID, params *GetImageRecipeParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "recipe_id", recipeId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/server/image-recipes/%s/", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -8723,6 +10632,215 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /v2/server/flavors/{flavor_id}/ (the `GetFlavor` operationId).
 	GetFlavorWithResponse(ctx context.Context, flavorId core.UUID, params *GetFlavorParams, reqEditors ...RequestEditorFn) (*GetFlavorResponse, error)
 
+	// ListImageBuildsWithResponse List Image Builds
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_build:list`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/server/image-builds/ (the `ListImageBuilds` operationId).
+	ListImageBuildsWithResponse(ctx context.Context, params *ListImageBuildsParams, reqEditors ...RequestEditorFn) (*ListImageBuildsResponse, error)
+
+	// CreateImageBuildWithBodyWithResponse Create Image Build
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_build:create`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/server/image-builds/ (the `CreateImageBuild` operationId).
+	CreateImageBuildWithBodyWithResponse(ctx context.Context, params *CreateImageBuildParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateImageBuildResponse, error)
+
+	// CreateImageBuildWithResponse Create Image Build
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_build:create`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/server/image-builds/ (the `CreateImageBuild` operationId).
+	CreateImageBuildWithResponse(ctx context.Context, params *CreateImageBuildParams, body CreateImageBuildJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateImageBuildResponse, error)
+
+	// DeleteImageBuildWithResponse Delete Image Build
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_build:delete`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v2/server/image-builds/{build_id}/ (the `DeleteImageBuild` operationId).
+	DeleteImageBuildWithResponse(ctx context.Context, buildId core.UUID, params *DeleteImageBuildParams, reqEditors ...RequestEditorFn) (*DeleteImageBuildResponse, error)
+
+	// GetImageBuildWithResponse Get Image Build Detail
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_build:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/server/image-builds/{build_id}/ (the `GetImageBuild` operationId).
+	GetImageBuildWithResponse(ctx context.Context, buildId core.UUID, params *GetImageBuildParams, reqEditors ...RequestEditorFn) (*GetImageBuildResponse, error)
+
+	// ExecuteImageBuildWithResponse Execute Image Build
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_build:build`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/server/image-builds/{build_id}/build/ (the `ExecuteImageBuild` operationId).
+	ExecuteImageBuildWithResponse(ctx context.Context, buildId core.UUID, params *ExecuteImageBuildParams, reqEditors ...RequestEditorFn) (*ExecuteImageBuildResponse, error)
+
+	// ListImageBuildRunsWithResponse List Build Runs
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_build:list_runs`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/server/image-builds/{build_id}/runs/ (the `ListImageBuildRuns` operationId).
+	ListImageBuildRunsWithResponse(ctx context.Context, buildId core.UUID, params *ListImageBuildRunsParams, reqEditors ...RequestEditorFn) (*ListImageBuildRunsResponse, error)
+
+	// ListImageComponentsWithResponse List Image Components
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_component:list`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/server/image-components/ (the `ListImageComponents` operationId).
+	ListImageComponentsWithResponse(ctx context.Context, params *ListImageComponentsParams, reqEditors ...RequestEditorFn) (*ListImageComponentsResponse, error)
+
+	// CreateImageComponentWithBodyWithResponse Create Image Component
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_component:create`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/server/image-components/ (the `CreateImageComponent` operationId).
+	CreateImageComponentWithBodyWithResponse(ctx context.Context, params *CreateImageComponentParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateImageComponentResponse, error)
+
+	// CreateImageComponentWithResponse Create Image Component
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_component:create`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/server/image-components/ (the `CreateImageComponent` operationId).
+	CreateImageComponentWithResponse(ctx context.Context, params *CreateImageComponentParams, body CreateImageComponentJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateImageComponentResponse, error)
+
+	// DeleteImageComponentWithResponse Delete Image Component
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_component:delete`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v2/server/image-components/{component_id}/ (the `DeleteImageComponent` operationId).
+	DeleteImageComponentWithResponse(ctx context.Context, componentId core.UUID, params *DeleteImageComponentParams, reqEditors ...RequestEditorFn) (*DeleteImageComponentResponse, error)
+
+	// GetImageComponentWithResponse Get Image Component Detail
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_component:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/server/image-components/{component_id}/ (the `GetImageComponent` operationId).
+	GetImageComponentWithResponse(ctx context.Context, componentId core.UUID, params *GetImageComponentParams, reqEditors ...RequestEditorFn) (*GetImageComponentResponse, error)
+
+	// UpdateImageComponentWithBodyWithResponse Update Image Component
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_component:update`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /v2/server/image-components/{component_id}/ (the `UpdateImageComponent` operationId).
+	UpdateImageComponentWithBodyWithResponse(ctx context.Context, componentId core.UUID, params *UpdateImageComponentParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateImageComponentResponse, error)
+
+	// UpdateImageComponentWithResponse Update Image Component
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_component:update`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /v2/server/image-components/{component_id}/ (the `UpdateImageComponent` operationId).
+	UpdateImageComponentWithResponse(ctx context.Context, componentId core.UUID, params *UpdateImageComponentParams, body UpdateImageComponentJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateImageComponentResponse, error)
+
+	// ListImageRecipesWithResponse List Image Recipes
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_recipe:list`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/server/image-recipes/ (the `ListImageRecipes` operationId).
+	ListImageRecipesWithResponse(ctx context.Context, params *ListImageRecipesParams, reqEditors ...RequestEditorFn) (*ListImageRecipesResponse, error)
+
+	// CreateImageRecipeWithBodyWithResponse Create Image Recipe
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_recipe:create`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/server/image-recipes/ (the `CreateImageRecipe` operationId).
+	CreateImageRecipeWithBodyWithResponse(ctx context.Context, params *CreateImageRecipeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateImageRecipeResponse, error)
+
+	// CreateImageRecipeWithResponse Create Image Recipe
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_recipe:create`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/server/image-recipes/ (the `CreateImageRecipe` operationId).
+	CreateImageRecipeWithResponse(ctx context.Context, params *CreateImageRecipeParams, body CreateImageRecipeJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateImageRecipeResponse, error)
+
+	// DeleteImageRecipeWithResponse Delete Image Recipe
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_recipe:delete`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v2/server/image-recipes/{recipe_id}/ (the `DeleteImageRecipe` operationId).
+	DeleteImageRecipeWithResponse(ctx context.Context, recipeId core.UUID, params *DeleteImageRecipeParams, reqEditors ...RequestEditorFn) (*DeleteImageRecipeResponse, error)
+
+	// GetImageRecipeWithResponse Get Image Recipe Detail
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:custom_image_manager:image_recipe:get`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/server/image-recipes/{recipe_id}/ (the `GetImageRecipe` operationId).
+	GetImageRecipeWithResponse(ctx context.Context, recipeId core.UUID, params *GetImageRecipeParams, reqEditors ...RequestEditorFn) (*GetImageRecipeResponse, error)
+
 	// ListImagesWithResponse List Images
 	//
 	// List available images.
@@ -9766,6 +11884,493 @@ func (r GetFlavorResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetFlavorResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListImageBuildsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedImageBuildSummarySchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListImageBuildsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListImageBuildsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateImageBuildResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *ImageBuildSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateImageBuildResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateImageBuildResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteImageBuildResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteImageBuildResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteImageBuildResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetImageBuildResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ImageBuildSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetImageBuildResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetImageBuildResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ExecuteImageBuildResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ExecuteImageBuildResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ExecuteImageBuildResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListImageBuildRunsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedImageBuildRunSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListImageBuildRunsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListImageBuildRunsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListImageComponentsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedImageComponentSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListImageComponentsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListImageComponentsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateImageComponentResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *ImageComponentSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateImageComponentResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateImageComponentResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteImageComponentResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteImageComponentResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteImageComponentResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetImageComponentResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ImageComponentSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetImageComponentResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetImageComponentResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateImageComponentResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ImageComponentSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateImageComponentResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateImageComponentResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListImageRecipesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedImageRecipeSummarySchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListImageRecipesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListImageRecipesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateImageRecipeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *ImageRecipeSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateImageRecipeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateImageRecipeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteImageRecipeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteImageRecipeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteImageRecipeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetImageRecipeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ImageRecipeSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetImageRecipeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetImageRecipeResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -11352,6 +13957,329 @@ func (c *ClientWithResponses) GetFlavorWithResponse(ctx context.Context, flavorI
 		return nil, err
 	}
 	return ParseGetFlavorResponse(rsp)
+}
+
+// ListImageBuildsWithResponse List Image Builds
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_build:list`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/server/image-builds/ (the `ListImageBuilds` operationId).
+func (c *ClientWithResponses) ListImageBuildsWithResponse(ctx context.Context, params *ListImageBuildsParams, reqEditors ...RequestEditorFn) (*ListImageBuildsResponse, error) {
+	rsp, err := c.ListImageBuilds(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListImageBuildsResponse(rsp)
+}
+
+// CreateImageBuildWithBodyWithResponse Create Image Build
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_build:create`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/server/image-builds/ (the `CreateImageBuild` operationId).
+func (c *ClientWithResponses) CreateImageBuildWithBodyWithResponse(ctx context.Context, params *CreateImageBuildParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateImageBuildResponse, error) {
+	rsp, err := c.CreateImageBuildWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateImageBuildResponse(rsp)
+}
+
+// CreateImageBuildWithResponse Create Image Build
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_build:create`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/server/image-builds/ (the `CreateImageBuild` operationId).
+func (c *ClientWithResponses) CreateImageBuildWithResponse(ctx context.Context, params *CreateImageBuildParams, body CreateImageBuildJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateImageBuildResponse, error) {
+	rsp, err := c.CreateImageBuild(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateImageBuildResponse(rsp)
+}
+
+// DeleteImageBuildWithResponse Delete Image Build
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_build:delete`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v2/server/image-builds/{build_id}/ (the `DeleteImageBuild` operationId).
+func (c *ClientWithResponses) DeleteImageBuildWithResponse(ctx context.Context, buildId core.UUID, params *DeleteImageBuildParams, reqEditors ...RequestEditorFn) (*DeleteImageBuildResponse, error) {
+	rsp, err := c.DeleteImageBuild(ctx, buildId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteImageBuildResponse(rsp)
+}
+
+// GetImageBuildWithResponse Get Image Build Detail
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_build:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/server/image-builds/{build_id}/ (the `GetImageBuild` operationId).
+func (c *ClientWithResponses) GetImageBuildWithResponse(ctx context.Context, buildId core.UUID, params *GetImageBuildParams, reqEditors ...RequestEditorFn) (*GetImageBuildResponse, error) {
+	rsp, err := c.GetImageBuild(ctx, buildId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetImageBuildResponse(rsp)
+}
+
+// ExecuteImageBuildWithResponse Execute Image Build
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_build:build`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/server/image-builds/{build_id}/build/ (the `ExecuteImageBuild` operationId).
+func (c *ClientWithResponses) ExecuteImageBuildWithResponse(ctx context.Context, buildId core.UUID, params *ExecuteImageBuildParams, reqEditors ...RequestEditorFn) (*ExecuteImageBuildResponse, error) {
+	rsp, err := c.ExecuteImageBuild(ctx, buildId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseExecuteImageBuildResponse(rsp)
+}
+
+// ListImageBuildRunsWithResponse List Build Runs
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_build:list_runs`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/server/image-builds/{build_id}/runs/ (the `ListImageBuildRuns` operationId).
+func (c *ClientWithResponses) ListImageBuildRunsWithResponse(ctx context.Context, buildId core.UUID, params *ListImageBuildRunsParams, reqEditors ...RequestEditorFn) (*ListImageBuildRunsResponse, error) {
+	rsp, err := c.ListImageBuildRuns(ctx, buildId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListImageBuildRunsResponse(rsp)
+}
+
+// ListImageComponentsWithResponse List Image Components
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_component:list`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/server/image-components/ (the `ListImageComponents` operationId).
+func (c *ClientWithResponses) ListImageComponentsWithResponse(ctx context.Context, params *ListImageComponentsParams, reqEditors ...RequestEditorFn) (*ListImageComponentsResponse, error) {
+	rsp, err := c.ListImageComponents(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListImageComponentsResponse(rsp)
+}
+
+// CreateImageComponentWithBodyWithResponse Create Image Component
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_component:create`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/server/image-components/ (the `CreateImageComponent` operationId).
+func (c *ClientWithResponses) CreateImageComponentWithBodyWithResponse(ctx context.Context, params *CreateImageComponentParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateImageComponentResponse, error) {
+	rsp, err := c.CreateImageComponentWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateImageComponentResponse(rsp)
+}
+
+// CreateImageComponentWithResponse Create Image Component
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_component:create`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/server/image-components/ (the `CreateImageComponent` operationId).
+func (c *ClientWithResponses) CreateImageComponentWithResponse(ctx context.Context, params *CreateImageComponentParams, body CreateImageComponentJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateImageComponentResponse, error) {
+	rsp, err := c.CreateImageComponent(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateImageComponentResponse(rsp)
+}
+
+// DeleteImageComponentWithResponse Delete Image Component
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_component:delete`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v2/server/image-components/{component_id}/ (the `DeleteImageComponent` operationId).
+func (c *ClientWithResponses) DeleteImageComponentWithResponse(ctx context.Context, componentId core.UUID, params *DeleteImageComponentParams, reqEditors ...RequestEditorFn) (*DeleteImageComponentResponse, error) {
+	rsp, err := c.DeleteImageComponent(ctx, componentId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteImageComponentResponse(rsp)
+}
+
+// GetImageComponentWithResponse Get Image Component Detail
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_component:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/server/image-components/{component_id}/ (the `GetImageComponent` operationId).
+func (c *ClientWithResponses) GetImageComponentWithResponse(ctx context.Context, componentId core.UUID, params *GetImageComponentParams, reqEditors ...RequestEditorFn) (*GetImageComponentResponse, error) {
+	rsp, err := c.GetImageComponent(ctx, componentId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetImageComponentResponse(rsp)
+}
+
+// UpdateImageComponentWithBodyWithResponse Update Image Component
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_component:update`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /v2/server/image-components/{component_id}/ (the `UpdateImageComponent` operationId).
+func (c *ClientWithResponses) UpdateImageComponentWithBodyWithResponse(ctx context.Context, componentId core.UUID, params *UpdateImageComponentParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateImageComponentResponse, error) {
+	rsp, err := c.UpdateImageComponentWithBody(ctx, componentId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateImageComponentResponse(rsp)
+}
+
+// UpdateImageComponentWithResponse Update Image Component
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_component:update`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /v2/server/image-components/{component_id}/ (the `UpdateImageComponent` operationId).
+func (c *ClientWithResponses) UpdateImageComponentWithResponse(ctx context.Context, componentId core.UUID, params *UpdateImageComponentParams, body UpdateImageComponentJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateImageComponentResponse, error) {
+	rsp, err := c.UpdateImageComponent(ctx, componentId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateImageComponentResponse(rsp)
+}
+
+// ListImageRecipesWithResponse List Image Recipes
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_recipe:list`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/server/image-recipes/ (the `ListImageRecipes` operationId).
+func (c *ClientWithResponses) ListImageRecipesWithResponse(ctx context.Context, params *ListImageRecipesParams, reqEditors ...RequestEditorFn) (*ListImageRecipesResponse, error) {
+	rsp, err := c.ListImageRecipes(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListImageRecipesResponse(rsp)
+}
+
+// CreateImageRecipeWithBodyWithResponse Create Image Recipe
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_recipe:create`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/server/image-recipes/ (the `CreateImageRecipe` operationId).
+func (c *ClientWithResponses) CreateImageRecipeWithBodyWithResponse(ctx context.Context, params *CreateImageRecipeParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateImageRecipeResponse, error) {
+	rsp, err := c.CreateImageRecipeWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateImageRecipeResponse(rsp)
+}
+
+// CreateImageRecipeWithResponse Create Image Recipe
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_recipe:create`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/server/image-recipes/ (the `CreateImageRecipe` operationId).
+func (c *ClientWithResponses) CreateImageRecipeWithResponse(ctx context.Context, params *CreateImageRecipeParams, body CreateImageRecipeJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateImageRecipeResponse, error) {
+	rsp, err := c.CreateImageRecipe(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateImageRecipeResponse(rsp)
+}
+
+// DeleteImageRecipeWithResponse Delete Image Recipe
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_recipe:delete`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v2/server/image-recipes/{recipe_id}/ (the `DeleteImageRecipe` operationId).
+func (c *ClientWithResponses) DeleteImageRecipeWithResponse(ctx context.Context, recipeId core.UUID, params *DeleteImageRecipeParams, reqEditors ...RequestEditorFn) (*DeleteImageRecipeResponse, error) {
+	rsp, err := c.DeleteImageRecipe(ctx, recipeId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteImageRecipeResponse(rsp)
+}
+
+// GetImageRecipeWithResponse Get Image Recipe Detail
+//
+// **Required permissions:**
+//
+// - `urn:action:custom_image_manager:image_recipe:get`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/server/image-recipes/{recipe_id}/ (the `GetImageRecipe` operationId).
+func (c *ClientWithResponses) GetImageRecipeWithResponse(ctx context.Context, recipeId core.UUID, params *GetImageRecipeParams, reqEditors ...RequestEditorFn) (*GetImageRecipeResponse, error) {
+	rsp, err := c.GetImageRecipe(ctx, recipeId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetImageRecipeResponse(rsp)
 }
 
 // ListImagesWithResponse List Images
@@ -12995,6 +15923,905 @@ func ParseGetFlavorResponse(rsp *http.Response) (*GetFlavorResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest FlavorDetailSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListImageBuildsResponse parses an HTTP response from a ListImageBuildsWithResponse call
+func ParseListImageBuildsResponse(rsp *http.Response) (*ListImageBuildsResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListImageBuildsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedImageBuildSummarySchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateImageBuildResponse parses an HTTP response from a CreateImageBuildWithResponse call
+func ParseCreateImageBuildResponse(rsp *http.Response) (*CreateImageBuildResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateImageBuildResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ImageBuildSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteImageBuildResponse parses an HTTP response from a DeleteImageBuildWithResponse call
+func ParseDeleteImageBuildResponse(rsp *http.Response) (*DeleteImageBuildResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteImageBuildResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetImageBuildResponse parses an HTTP response from a GetImageBuildWithResponse call
+func ParseGetImageBuildResponse(rsp *http.Response) (*GetImageBuildResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetImageBuildResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ImageBuildSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseExecuteImageBuildResponse parses an HTTP response from a ExecuteImageBuildWithResponse call
+func ParseExecuteImageBuildResponse(rsp *http.Response) (*ExecuteImageBuildResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ExecuteImageBuildResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 202:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListImageBuildRunsResponse parses an HTTP response from a ListImageBuildRunsWithResponse call
+func ParseListImageBuildRunsResponse(rsp *http.Response) (*ListImageBuildRunsResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListImageBuildRunsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedImageBuildRunSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListImageComponentsResponse parses an HTTP response from a ListImageComponentsWithResponse call
+func ParseListImageComponentsResponse(rsp *http.Response) (*ListImageComponentsResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListImageComponentsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedImageComponentSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateImageComponentResponse parses an HTTP response from a CreateImageComponentWithResponse call
+func ParseCreateImageComponentResponse(rsp *http.Response) (*CreateImageComponentResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateImageComponentResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ImageComponentSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteImageComponentResponse parses an HTTP response from a DeleteImageComponentWithResponse call
+func ParseDeleteImageComponentResponse(rsp *http.Response) (*DeleteImageComponentResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteImageComponentResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetImageComponentResponse parses an HTTP response from a GetImageComponentWithResponse call
+func ParseGetImageComponentResponse(rsp *http.Response) (*GetImageComponentResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetImageComponentResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ImageComponentSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateImageComponentResponse parses an HTTP response from a UpdateImageComponentWithResponse call
+func ParseUpdateImageComponentResponse(rsp *http.Response) (*UpdateImageComponentResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateImageComponentResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ImageComponentSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListImageRecipesResponse parses an HTTP response from a ListImageRecipesWithResponse call
+func ParseListImageRecipesResponse(rsp *http.Response) (*ListImageRecipesResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListImageRecipesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedImageRecipeSummarySchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateImageRecipeResponse parses an HTTP response from a CreateImageRecipeWithResponse call
+func ParseCreateImageRecipeResponse(rsp *http.Response) (*CreateImageRecipeResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateImageRecipeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ImageRecipeSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteImageRecipeResponse parses an HTTP response from a DeleteImageRecipeWithResponse call
+func ParseDeleteImageRecipeResponse(rsp *http.Response) (*DeleteImageRecipeResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteImageRecipeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetImageRecipeResponse parses an HTTP response from a GetImageRecipeWithResponse call
+func ParseGetImageRecipeResponse(rsp *http.Response) (*GetImageRecipeResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetImageRecipeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ImageRecipeSchema
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

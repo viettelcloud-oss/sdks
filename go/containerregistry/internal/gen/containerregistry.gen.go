@@ -467,7 +467,7 @@ type ListMembersParams struct {
 	PageNumber *int `form:"page_number,omitempty" json:"page_number,omitempty"`
 	PageSize   *int `form:"page_size,omitempty" json:"page_size,omitempty"`
 
-	// Username Filter by username. Matching is delegated to the registry and may be partial, so a result is not proof of an exact username.
+	// Username Filter by username (exact match).
 	Username  *string   `form:"username,omitempty" json:"username,omitempty"`
 	ProjectID core.UUID `json:"Project-ID"`
 }
