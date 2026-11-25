@@ -842,7 +842,7 @@ type VPNConnectionCreateSchema struct {
 	LocalPrivateSubnetId core.UUID                 `json:"local_private_subnet_id"`
 	Mtu                  *int                      `json:"mtu,omitempty"`
 	Name                 string                    `json:"name"`
-	Psk                  string                    `json:"psk"`
+	Psk                  *string                   `json:"psk,omitempty"`
 	RegionId             core.UUID                 `json:"region_id"`
 	RemotePublicIp       string                    `json:"remote_public_ip"`
 	RemoteSubnetCidrs    []string                  `json:"remote_subnet_cidrs"`

@@ -742,16 +742,18 @@ type DBClusterCreateSchema struct {
 	Engine                       nullable.Nullable[DBClusterEngineType] `json:"engine,omitempty"`
 
 	// EngineConfig The modern alternative to topology_config: send this with node_pools instead of topology_config. Required for memcached, starrocks and mariadb, which accept no other form. OpenSearch and RabbitMQ may omit both fields.
-	EngineConfig      nullable.Nullable[map[string]interface{}] `json:"engine_config,omitempty"`
-	EngineVersionId   nullable.Nullable[core.UUID]              `json:"engine_version_id,omitempty"`
-	InitBackupId      nullable.Nullable[core.UUID]              `json:"init_backup_id,omitempty"`
-	KeepBackup        *bool                                     `json:"keep_backup,omitempty"`
-	MaintenanceConfig *MaintenanceConfig                        `json:"maintenance_config,omitempty"`
-	Metadata          *map[string]interface{}                   `json:"metadata,omitempty"`
-	Name              string                                    `json:"name"`
-	NodePools         *[]DBClusterNodePoolCreateSchema          `json:"node_pools,omitempty"`
-	Plugins           *[]DBClusterPluginSelectionSchema         `json:"plugins,omitempty"`
-	RegionId          core.UUID                                 `json:"region_id"`
+	EngineConfig nullable.Nullable[map[string]interface{}] `json:"engine_config,omitempty"`
+
+	// EngineVersionId An active engine version. A restore can keep its backup's version after that version becomes inactive.
+	EngineVersionId   nullable.Nullable[core.UUID]      `json:"engine_version_id,omitempty"`
+	InitBackupId      nullable.Nullable[core.UUID]      `json:"init_backup_id,omitempty"`
+	KeepBackup        *bool                             `json:"keep_backup,omitempty"`
+	MaintenanceConfig *MaintenanceConfig                `json:"maintenance_config,omitempty"`
+	Metadata          *map[string]interface{}           `json:"metadata,omitempty"`
+	Name              string                            `json:"name"`
+	NodePools         *[]DBClusterNodePoolCreateSchema  `json:"node_pools,omitempty"`
+	Plugins           *[]DBClusterPluginSelectionSchema `json:"plugins,omitempty"`
+	RegionId          core.UUID                         `json:"region_id"`
 
 	// ResourceConfigId Use node_pools[].resource_config_id.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
@@ -770,7 +772,9 @@ type DBClusterCreateSchema struct {
 	// TopologyConfig Use node_pools and engine_config. Not supported for memcached, starrocks, mariadb or rabbitmq.
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	TopologyConfig nullable.Nullable[DBClusterTopologyConfig] `json:"topology_config,omitempty"`
-	ZoneId         nullable.Nullable[core.UUID]               `json:"zone_id,omitempty"`
+
+	// ZoneId A zone of region_id.
+	ZoneId nullable.Nullable[core.UUID] `json:"zone_id,omitempty"`
 }
 
 // DBClusterDetailSchema defines model for DBClusterDetailSchema.

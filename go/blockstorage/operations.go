@@ -54,7 +54,7 @@ func (c *Client) UpdateVolume(ctx context.Context, VolumeID core.UUID, params Up
 	if err != nil {
 		return nil, err
 	}
-	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, core.FirstNonNil(resp.JSON200, resp.JSON202), 200, 202)
 }
 
 // DeleteVolume Delete Volume

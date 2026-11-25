@@ -888,16 +888,17 @@ type VPCPeeringUpdateSchema struct {
 
 // VPCSchema defines model for VPCSchema.
 type VPCSchema struct {
-	Cidr        string                              `json:"cidr"`
-	CreatedAt   time.Time                           `json:"created_at"`
-	Description nullable.Nullable[string]           `json:"description,omitempty"`
-	DisplayName string                              `json:"display_name"`
-	Id          core.UUID                           `json:"id"`
-	Name        string                              `json:"name"`
-	Project     NestedProjectSchema                 `json:"project"`
-	Region      NestedRegionSchema                  `json:"region"`
-	UpdatedAt   time.Time                           `json:"updated_at"`
-	Zone        nullable.Nullable[NestedZoneSchema] `json:"zone,omitempty"`
+	Cidr           string                              `json:"cidr"`
+	CreatedAt      time.Time                           `json:"created_at"`
+	Description    nullable.Nullable[string]           `json:"description,omitempty"`
+	DisplayName    string                              `json:"display_name"`
+	Id             core.UUID                           `json:"id"`
+	InternetAccess bool                                `json:"internet_access"`
+	Name           string                              `json:"name"`
+	Project        NestedProjectSchema                 `json:"project"`
+	Region         NestedRegionSchema                  `json:"region"`
+	UpdatedAt      time.Time                           `json:"updated_at"`
+	Zone           nullable.Nullable[NestedZoneSchema] `json:"zone,omitempty"`
 }
 
 // VPCShareSchema defines model for VPCShareSchema.
@@ -1274,6 +1275,7 @@ type ListVpcsParams struct {
 	Name           *string    `form:"name,omitempty" json:"name,omitempty"`
 	HasNatGateway  *bool      `form:"has_nat_gateway,omitempty" json:"has_nat_gateway,omitempty"`
 	InternetAccess *bool      `form:"internet_access,omitempty" json:"internet_access,omitempty"`
+	HasSubnet      *bool      `form:"has_subnet,omitempty" json:"has_subnet,omitempty"`
 	IsSharedVpc    *bool      `form:"is_shared_vpc,omitempty" json:"is_shared_vpc,omitempty"`
 	PageSize       *int       `form:"page_size,omitempty" json:"page_size,omitempty"`
 	PageNumber     *int       `form:"page_number,omitempty" json:"page_number,omitempty"`
@@ -8100,6 +8102,18 @@ func NewListVpcsRequest(server string, params *ListVpcsParams) (*http.Request, e
 		if params.InternetAccess != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "internet_access", *params.InternetAccess, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.HasSubnet != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "has_subnet", *params.HasSubnet, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {

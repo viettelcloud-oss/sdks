@@ -496,7 +496,7 @@ type KaasNodePoolCreateSchema struct {
 	Name                     string                                                      `json:"name"`
 	PrivateIpIds             nullable.Nullable[[]core.UUID]                              `json:"private_ip_ids,omitempty"`
 
-	// Scaling NodePoolScalingSchema is exactly one of: NodePoolManualScalingSchema, NodePoolAutoScalingSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+	// Scaling NodePoolScalingSchema is exactly one of: NodePoolManualScalingSchema, NodePoolAutoScalingSchema. Use the As*/From* helpers to read or set the active variant.
 	Scaling    NodePoolScalingSchema  `json:"scaling"`
 	Taints     *[]string              `json:"taints,omitempty"`
 	VolumeSize nullable.Nullable[int] `json:"volume_size,omitempty"`
@@ -535,7 +535,7 @@ type KaasNodePoolPartialUpdateSchema struct {
 	MachineRemediationPolicy nullable.Nullable[KaasMachineRemediationPolicyCreateSchema] `json:"machine_remediation_policy,omitempty"`
 	PrivateIpIds             *[]core.UUID                                                `json:"private_ip_ids,omitempty"`
 
-	// Scaling NodePoolScalingSchema is exactly one of: NodePoolManualScalingSchema, NodePoolAutoScalingSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+	// Scaling NodePoolScalingSchema is exactly one of: NodePoolManualScalingSchema, NodePoolAutoScalingSchema. Use the As*/From* helpers to read or set the active variant.
 	Scaling *NodePoolScalingSchema `json:"scaling,omitempty"`
 	Taints  *[]string              `json:"taints,omitempty"`
 }
@@ -695,7 +695,7 @@ type NodePoolManualScalingSchema struct {
 // NodePoolManualScalingSchemaEnableAutoscaler defines model for NodePoolManualScalingSchema.EnableAutoscaler.
 type NodePoolManualScalingSchemaEnableAutoscaler bool
 
-// NodePoolScalingSchema NodePoolScalingSchema is exactly one of: NodePoolManualScalingSchema, NodePoolAutoScalingSchema. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
+// NodePoolScalingSchema NodePoolScalingSchema is exactly one of: NodePoolManualScalingSchema, NodePoolAutoScalingSchema. Use the As*/From* helpers to read or set the active variant.
 type NodePoolScalingSchema struct {
 	union json.RawMessage
 }
@@ -925,10 +925,6 @@ func (t NodePoolScalingSchema) AsNodePoolManualScalingSchema() (NodePoolManualSc
 // FromNodePoolManualScalingSchema overwrites any union data inside the NodePoolScalingSchema as the provided NodePoolManualScalingSchema
 func (t *NodePoolScalingSchema) FromNodePoolManualScalingSchema(v NodePoolManualScalingSchema) error {
 	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-	b, err = runtime.JSONMerge(b, []byte(`{"enable_autoscaler":"False"}`))
 	t.union = b
 	return err
 }
@@ -936,10 +932,6 @@ func (t *NodePoolScalingSchema) FromNodePoolManualScalingSchema(v NodePoolManual
 // MergeNodePoolManualScalingSchema performs a merge with any union data inside the NodePoolScalingSchema, using the provided NodePoolManualScalingSchema
 func (t *NodePoolScalingSchema) MergeNodePoolManualScalingSchema(v NodePoolManualScalingSchema) error {
 	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-	b, err = runtime.JSONMerge(b, []byte(`{"enable_autoscaler":"False"}`))
 	if err != nil {
 		return err
 	}
@@ -959,10 +951,6 @@ func (t NodePoolScalingSchema) AsNodePoolAutoScalingSchema() (NodePoolAutoScalin
 // FromNodePoolAutoScalingSchema overwrites any union data inside the NodePoolScalingSchema as the provided NodePoolAutoScalingSchema
 func (t *NodePoolScalingSchema) FromNodePoolAutoScalingSchema(v NodePoolAutoScalingSchema) error {
 	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-	b, err = runtime.JSONMerge(b, []byte(`{"enable_autoscaler":"True"}`))
 	t.union = b
 	return err
 }
@@ -973,37 +961,10 @@ func (t *NodePoolScalingSchema) MergeNodePoolAutoScalingSchema(v NodePoolAutoSca
 	if err != nil {
 		return err
 	}
-	b, err = runtime.JSONMerge(b, []byte(`{"enable_autoscaler":"True"}`))
-	if err != nil {
-		return err
-	}
 
 	merged, err := runtime.JSONMerge(t.union, b)
 	t.union = merged
 	return err
-}
-
-func (t NodePoolScalingSchema) Discriminator() (string, error) {
-	var discriminator struct {
-		Discriminator string `json:"enable_autoscaler"`
-	}
-	err := json.Unmarshal(t.union, &discriminator)
-	return discriminator.Discriminator, err
-}
-
-func (t NodePoolScalingSchema) ValueByDiscriminator() (interface{}, error) {
-	discriminator, err := t.Discriminator()
-	if err != nil {
-		return nil, err
-	}
-	switch discriminator {
-	case "False":
-		return t.AsNodePoolManualScalingSchema()
-	case "True":
-		return t.AsNodePoolAutoScalingSchema()
-	default:
-		return nil, errors.New("unknown discriminator value: " + discriminator)
-	}
 }
 
 func (t NodePoolScalingSchema) MarshalJSON() ([]byte, error) {
