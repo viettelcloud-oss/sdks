@@ -196,8 +196,223 @@ func (e RetentionType) Valid() bool {
 	}
 }
 
+// Defines values for ScanStatus.
+const (
+	ScanStatusError     ScanStatus = "Error"
+	ScanStatusPending   ScanStatus = "Pending"
+	ScanStatusRunning   ScanStatus = "Running"
+	ScanStatusScheduled ScanStatus = "Scheduled"
+	ScanStatusStopped   ScanStatus = "Stopped"
+	ScanStatusSuccess   ScanStatus = "Success"
+)
+
+// Valid indicates whether the value is a known member of the ScanStatus enum.
+func (e ScanStatus) Valid() bool {
+	switch e {
+	case ScanStatusError:
+		return true
+	case ScanStatusPending:
+		return true
+	case ScanStatusRunning:
+		return true
+	case ScanStatusScheduled:
+		return true
+	case ScanStatusStopped:
+		return true
+	case ScanStatusSuccess:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for VulnerabilitySeverity.
+const (
+	VulnerabilitySeverityCritical   VulnerabilitySeverity = "Critical"
+	VulnerabilitySeverityHigh       VulnerabilitySeverity = "High"
+	VulnerabilitySeverityLow        VulnerabilitySeverity = "Low"
+	VulnerabilitySeverityMedium     VulnerabilitySeverity = "Medium"
+	VulnerabilitySeverityNegligible VulnerabilitySeverity = "Negligible"
+	VulnerabilitySeverityNone       VulnerabilitySeverity = "None"
+	VulnerabilitySeverityUnknown    VulnerabilitySeverity = "Unknown"
+)
+
+// Valid indicates whether the value is a known member of the VulnerabilitySeverity enum.
+func (e VulnerabilitySeverity) Valid() bool {
+	switch e {
+	case VulnerabilitySeverityCritical:
+		return true
+	case VulnerabilitySeverityHigh:
+		return true
+	case VulnerabilitySeverityLow:
+		return true
+	case VulnerabilitySeverityMedium:
+		return true
+	case VulnerabilitySeverityNegligible:
+		return true
+	case VulnerabilitySeverityNone:
+		return true
+	case VulnerabilitySeverityUnknown:
+		return true
+	default:
+		return false
+	}
+}
+
+// ContainerImageListSchema A page of the images of a registry project.
+type ContainerImageListSchema struct {
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next"`
+	Previous nullable.Nullable[string] `json:"previous"`
+	Results  []ContainerImageSchema    `json:"results"`
+}
+
+// ContainerImageSchema defines model for ContainerImageSchema.
+type ContainerImageSchema struct {
+	ArtifactCount int       `json:"artifact_count"`
+	CreatedAt     time.Time `json:"created_at"`
+	Name          string    `json:"name"`
+	PullCount     int       `json:"pull_count"`
+	UpdatedAt     time.Time `json:"updated_at"`
+}
+
+// ContainerRegistryArtifactExtraAttrsSchema defines model for ContainerRegistryArtifactExtraAttrsSchema.
+type ContainerRegistryArtifactExtraAttrsSchema struct {
+	Architecture string `json:"architecture"`
+	Author       string `json:"author"`
+	Created      string `json:"created"`
+	Os           string `json:"os"`
+}
+
+// ContainerRegistryArtifactListSchema A page of the artifacts of an image.
+type ContainerRegistryArtifactListSchema struct {
+	Count    int                               `json:"count"`
+	Next     nullable.Nullable[string]         `json:"next"`
+	Previous nullable.Nullable[string]         `json:"previous"`
+	Results  []ContainerRegistryArtifactSchema `json:"results"`
+}
+
+// ContainerRegistryArtifactSchema defines model for ContainerRegistryArtifactSchema.
+type ContainerRegistryArtifactSchema struct {
+	Digest string `json:"digest"`
+
+	// ExtraAttrs Only the single-artifact endpoint fills this; a list omits it.
+	ExtraAttrs   nullable.Nullable[ContainerRegistryArtifactExtraAttrsSchema] `json:"extra_attrs,omitempty"`
+	PullTime     time.Time                                                    `json:"pull_time"`
+	PushTime     time.Time                                                    `json:"push_time"`
+	ScanOverview nullable.Nullable[ContainerRegistryScanOverviewSchema]       `json:"scan_overview,omitempty"`
+	Size         int                                                          `json:"size"`
+	Tags         []ContainerRegistryArtifactTagSchema                         `json:"tags"`
+}
+
+// ContainerRegistryArtifactTagListSchema A page of the tags of an artifact.
+type ContainerRegistryArtifactTagListSchema struct {
+	Count    int                                  `json:"count"`
+	Next     nullable.Nullable[string]            `json:"next"`
+	Previous nullable.Nullable[string]            `json:"previous"`
+	Results  []ContainerRegistryArtifactTagSchema `json:"results"`
+}
+
+// ContainerRegistryArtifactTagSchema defines model for ContainerRegistryArtifactTagSchema.
+type ContainerRegistryArtifactTagSchema struct {
+	Name     string    `json:"name"`
+	PullTime time.Time `json:"pull_time"`
+	PushTime time.Time `json:"push_time"`
+}
+
+// ContainerRegistryCVSSScoreSchema defines model for ContainerRegistryCVSSScoreSchema.
+type ContainerRegistryCVSSScoreSchema struct {
+	V2Score  nullable.Nullable[float32] `json:"v2_score,omitempty"`
+	V2Vector nullable.Nullable[string]  `json:"v2_vector,omitempty"`
+	V3Score  nullable.Nullable[float32] `json:"v3_score,omitempty"`
+	V3Vector nullable.Nullable[string]  `json:"v3_vector,omitempty"`
+	Vendor   string                     `json:"vendor"`
+}
+
+// ContainerRegistryCliSecretSchema defines model for ContainerRegistryCliSecretSchema.
+type ContainerRegistryCliSecretSchema struct {
+	Secret *string `json:"secret,omitempty"`
+}
+
+// ContainerRegistryProjectLogListSchema A page of the action history of a registry project.
+type ContainerRegistryProjectLogListSchema struct {
+	Count    int                                 `json:"count"`
+	Next     nullable.Nullable[string]           `json:"next"`
+	Previous nullable.Nullable[string]           `json:"previous"`
+	Results  []ContainerRegistryProjectLogSchema `json:"results"`
+}
+
+// ContainerRegistryProjectLogSchema defines model for ContainerRegistryProjectLogSchema.
+type ContainerRegistryProjectLogSchema struct {
+	Operation    string    `json:"operation"`
+	Resource     string    `json:"resource"`
+	ResourceType string    `json:"resource_type"`
+	Timestamp    time.Time `json:"timestamp"`
+	Username     string    `json:"username"`
+}
+
 // ContainerRegistryProjectStatus defines model for ContainerRegistryProjectStatus.
 type ContainerRegistryProjectStatus string
+
+// ContainerRegistryScanOverviewSchema defines model for ContainerRegistryScanOverviewSchema.
+type ContainerRegistryScanOverviewSchema struct {
+	CompletePercent nullable.Nullable[int]       `json:"complete_percent,omitempty"`
+	Duration        nullable.Nullable[int]       `json:"duration,omitempty"`
+	EndTime         nullable.Nullable[time.Time] `json:"end_time,omitempty"`
+	ReportId        nullable.Nullable[string]    `json:"report_id,omitempty"`
+
+	// ScanStatus The scan states Harbor reports for an artifact, in Harbor's own casing.
+	ScanStatus ScanStatus                                            `json:"scan_status"`
+	Scanner    nullable.Nullable[ContainerRegistryScannerSchema]     `json:"scanner,omitempty"`
+	Severity   nullable.Nullable[VulnerabilitySeverity]              `json:"severity,omitempty"`
+	StartTime  nullable.Nullable[time.Time]                          `json:"start_time,omitempty"`
+	Summary    nullable.Nullable[ContainerRegistryScanSummarySchema] `json:"summary,omitempty"`
+}
+
+// ContainerRegistryScanSummarySchema defines model for ContainerRegistryScanSummarySchema.
+type ContainerRegistryScanSummarySchema struct {
+	Fixable        int                                   `json:"fixable"`
+	SeverityCounts *ContainerRegistrySeverityCountSchema `json:"severity_counts,omitempty"`
+	Total          int                                   `json:"total"`
+}
+
+// ContainerRegistryScannerSchema defines model for ContainerRegistryScannerSchema.
+type ContainerRegistryScannerSchema struct {
+	Name    string `json:"name"`
+	Vendor  string `json:"vendor"`
+	Version string `json:"version"`
+}
+
+// ContainerRegistrySeverityCountSchema defines model for ContainerRegistrySeverityCountSchema.
+type ContainerRegistrySeverityCountSchema struct {
+	Critical   *int `json:"critical,omitempty"`
+	High       *int `json:"high,omitempty"`
+	Low        *int `json:"low,omitempty"`
+	Medium     *int `json:"medium,omitempty"`
+	Negligible *int `json:"negligible,omitempty"`
+	None       *int `json:"none,omitempty"`
+	Unknown    *int `json:"unknown,omitempty"`
+}
+
+// ContainerRegistryVendorAttributesSchema defines model for ContainerRegistryVendorAttributesSchema.
+type ContainerRegistryVendorAttributesSchema struct {
+	Cvss *[]ContainerRegistryCVSSScoreSchema `json:"cvss,omitempty"`
+}
+
+// ContainerRegistryVulnerabilitySchema defines model for ContainerRegistryVulnerabilitySchema.
+type ContainerRegistryVulnerabilitySchema struct {
+	Description string                    `json:"description"`
+	FixVersion  nullable.Nullable[string] `json:"fix_version,omitempty"`
+	Id          string                    `json:"id"`
+	Links       *string                   `json:"links,omitempty"`
+	Package     string                    `json:"package"`
+
+	// Severity A severity Harbor adds later fails the response schema until it is
+	// added here.
+	Severity         VulnerabilitySeverity                   `json:"severity"`
+	VendorAttributes ContainerRegistryVendorAttributesSchema `json:"vendor_attributes"`
+	Version          string                                  `json:"version"`
+}
 
 // ErrorResponseSchema defines model for ErrorResponseSchema.
 type ErrorResponseSchema struct {
@@ -299,6 +514,12 @@ type NestedUserSchema struct {
 	Username string    `json:"username"`
 }
 
+// PagedContainerRegistryVulnerabilitySchema defines model for PagedContainerRegistryVulnerabilitySchema.
+type PagedContainerRegistryVulnerabilitySchema struct {
+	Count   int                                    `json:"count"`
+	Results []ContainerRegistryVulnerabilitySchema `json:"results"`
+}
+
 // PagedRetentionPolicySchema defines model for PagedRetentionPolicySchema.
 type PagedRetentionPolicySchema struct {
 	Count    int                       `json:"count"`
@@ -374,6 +595,13 @@ type RetentionSchedule string
 
 // RetentionType defines model for RetentionType.
 type RetentionType string
+
+// ScanStatus The scan states Harbor reports for an artifact, in Harbor's own casing.
+type ScanStatus string
+
+// VulnerabilitySeverity A severity Harbor adds later fails the response schema until it is
+// added here.
+type VulnerabilitySeverity string
 
 // WebhookBaseSchema defines model for WebhookBaseSchema.
 type WebhookBaseSchema struct {
@@ -457,6 +685,55 @@ type CreateExecutionParams struct {
 
 // ListExecutionTasksParams defines parameters for ListExecutionTasks.
 type ListExecutionTasksParams struct {
+	PageNumber *int      `form:"page_number,omitempty" json:"page_number,omitempty"`
+	PageSize   *int      `form:"page_size,omitempty" json:"page_size,omitempty"`
+	ProjectID  core.UUID `json:"Project-ID"`
+}
+
+// ListImagesParams defines parameters for ListImages.
+type ListImagesParams struct {
+	PageNumber *int `form:"page_number,omitempty" json:"page_number,omitempty"`
+	PageSize   *int `form:"page_size,omitempty" json:"page_size,omitempty"`
+
+	// Name Filter by the start of the image name; matching is partial.
+	Name      *string   `form:"name,omitempty" json:"name,omitempty"`
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// ListArtifactsParams defines parameters for ListArtifacts.
+type ListArtifactsParams struct {
+	PageNumber *int `form:"page_number,omitempty" json:"page_number,omitempty"`
+	PageSize   *int `form:"page_size,omitempty" json:"page_size,omitempty"`
+
+	// Tag Filter by tag; matching is partial.
+	Tag       *string   `form:"tag,omitempty" json:"tag,omitempty"`
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// GetArtifactParams defines parameters for GetArtifact.
+type GetArtifactParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// ScanArtifactParams defines parameters for ScanArtifact.
+type ScanArtifactParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// ListArtifactTagsParams defines parameters for ListArtifactTags.
+type ListArtifactTagsParams struct {
+	PageNumber *int      `form:"page_number,omitempty" json:"page_number,omitempty"`
+	PageSize   *int      `form:"page_size,omitempty" json:"page_size,omitempty"`
+	ProjectID  core.UUID `json:"Project-ID"`
+}
+
+// ListArtifactVulnerabilitiesParams defines parameters for ListArtifactVulnerabilities.
+type ListArtifactVulnerabilitiesParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// ListLogsParams defines parameters for ListLogs.
+type ListLogsParams struct {
 	PageNumber *int      `form:"page_number,omitempty" json:"page_number,omitempty"`
 	PageSize   *int      `form:"page_size,omitempty" json:"page_size,omitempty"`
 	ProjectID  core.UUID `json:"Project-ID"`
@@ -640,6 +917,13 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 // The interface specification for the client above.
 type ClientInterface interface {
 
+	// GetCliSecret Get Cli Secret
+	//
+	// Get the current user's registry CLI secret.
+	//
+	// Corresponds with GET /v2/container-registry/cli-secret/ (the `GetCliSecret` operationId).
+	GetCliSecret(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListExecutions List Executions
 	//
 	// **Required permissions:**
@@ -679,6 +963,83 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /v2/container-registry/executions/{execution_id}/tasks/ (the `ListExecutionTasks` operationId).
 	ListExecutionTasks(ctx context.Context, executionId string, params *ListExecutionTasksParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListImages List Images
+	//
+	// List the images of the project's registry.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:container_registry:container_image:list`
+	//
+	// Corresponds with GET /v2/container-registry/images/ (the `ListImages` operationId).
+	ListImages(ctx context.Context, params *ListImagesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListArtifacts List Artifacts
+	//
+	// List the artifacts of an image.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:container_registry:container_image:list_artifacts`
+	//
+	// Corresponds with GET /v2/container-registry/images/{image_name}/artifacts/ (the `ListArtifacts` operationId).
+	ListArtifacts(ctx context.Context, imageName string, params *ListArtifactsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetArtifact Get Artifact
+	//
+	// Retrieve an artifact of an image by digest or tag name.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:container_registry:container_image:get_artifact`
+	//
+	// Corresponds with GET /v2/container-registry/images/{image_name}/artifacts/{reference}/ (the `GetArtifact` operationId).
+	GetArtifact(ctx context.Context, imageName string, reference string, params *GetArtifactParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ScanArtifact Scan Artifact
+	//
+	// Scan an artifact for vulnerabilities.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:container_registry:container_image:scan`
+	//
+	// Corresponds with POST /v2/container-registry/images/{image_name}/artifacts/{reference}/scan/ (the `ScanArtifact` operationId).
+	ScanArtifact(ctx context.Context, imageName string, reference string, params *ScanArtifactParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListArtifactTags List Artifact Tags
+	//
+	// List the tags of an artifact.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:container_registry:container_image:list_tags`
+	//
+	// Corresponds with GET /v2/container-registry/images/{image_name}/artifacts/{reference}/tags/ (the `ListArtifactTags` operationId).
+	ListArtifactTags(ctx context.Context, imageName string, reference string, params *ListArtifactTagsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListArtifactVulnerabilities List Artifact Vulnerabilities
+	//
+	// List the vulnerabilities found by the artifact's last scan.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:container_registry:container_image:get_vulnerabilities`
+	//
+	// Corresponds with GET /v2/container-registry/images/{image_name}/artifacts/{reference}/vulnerabilities/ (the `ListArtifactVulnerabilities` operationId).
+	ListArtifactVulnerabilities(ctx context.Context, imageName string, reference string, params *ListArtifactVulnerabilitiesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListLogs List Logs
+	//
+	// List the project registry's action history.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:container_registry:project:get_logs`
+	//
+	// Corresponds with GET /v2/container-registry/logs/ (the `ListLogs` operationId).
+	ListLogs(ctx context.Context, params *ListLogsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListMembers List Members
 	//
@@ -899,6 +1260,23 @@ type ClientInterface interface {
 	UpdateWebhook(ctx context.Context, webhookId core.UUID, params *UpdateWebhookParams, body UpdateWebhookJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
+// GetCliSecret Get Cli Secret
+//
+// Get the current user's registry CLI secret.
+//
+// Corresponds with GET /v2/container-registry/cli-secret/ (the `GetCliSecret` operationId).
+func (c *Client) GetCliSecret(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCliSecretRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // ListExecutions List Executions
 //
 // **Required permissions:**
@@ -969,6 +1347,153 @@ func (c *Client) CreateExecution(ctx context.Context, params *CreateExecutionPar
 // Corresponds with GET /v2/container-registry/executions/{execution_id}/tasks/ (the `ListExecutionTasks` operationId).
 func (c *Client) ListExecutionTasks(ctx context.Context, executionId string, params *ListExecutionTasksParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListExecutionTasksRequest(c.Server, executionId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListImages List Images
+//
+// List the images of the project's registry.
+//
+// **Required permissions:**
+//
+// - `urn:action:container_registry:container_image:list`
+//
+// Corresponds with GET /v2/container-registry/images/ (the `ListImages` operationId).
+func (c *Client) ListImages(ctx context.Context, params *ListImagesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListImagesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListArtifacts List Artifacts
+//
+// List the artifacts of an image.
+//
+// **Required permissions:**
+//
+// - `urn:action:container_registry:container_image:list_artifacts`
+//
+// Corresponds with GET /v2/container-registry/images/{image_name}/artifacts/ (the `ListArtifacts` operationId).
+func (c *Client) ListArtifacts(ctx context.Context, imageName string, params *ListArtifactsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListArtifactsRequest(c.Server, imageName, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetArtifact Get Artifact
+//
+// Retrieve an artifact of an image by digest or tag name.
+//
+// **Required permissions:**
+//
+// - `urn:action:container_registry:container_image:get_artifact`
+//
+// Corresponds with GET /v2/container-registry/images/{image_name}/artifacts/{reference}/ (the `GetArtifact` operationId).
+func (c *Client) GetArtifact(ctx context.Context, imageName string, reference string, params *GetArtifactParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetArtifactRequest(c.Server, imageName, reference, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ScanArtifact Scan Artifact
+//
+// Scan an artifact for vulnerabilities.
+//
+// **Required permissions:**
+//
+// - `urn:action:container_registry:container_image:scan`
+//
+// Corresponds with POST /v2/container-registry/images/{image_name}/artifacts/{reference}/scan/ (the `ScanArtifact` operationId).
+func (c *Client) ScanArtifact(ctx context.Context, imageName string, reference string, params *ScanArtifactParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewScanArtifactRequest(c.Server, imageName, reference, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListArtifactTags List Artifact Tags
+//
+// List the tags of an artifact.
+//
+// **Required permissions:**
+//
+// - `urn:action:container_registry:container_image:list_tags`
+//
+// Corresponds with GET /v2/container-registry/images/{image_name}/artifacts/{reference}/tags/ (the `ListArtifactTags` operationId).
+func (c *Client) ListArtifactTags(ctx context.Context, imageName string, reference string, params *ListArtifactTagsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListArtifactTagsRequest(c.Server, imageName, reference, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListArtifactVulnerabilities List Artifact Vulnerabilities
+//
+// List the vulnerabilities found by the artifact's last scan.
+//
+// **Required permissions:**
+//
+// - `urn:action:container_registry:container_image:get_vulnerabilities`
+//
+// Corresponds with GET /v2/container-registry/images/{image_name}/artifacts/{reference}/vulnerabilities/ (the `ListArtifactVulnerabilities` operationId).
+func (c *Client) ListArtifactVulnerabilities(ctx context.Context, imageName string, reference string, params *ListArtifactVulnerabilitiesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListArtifactVulnerabilitiesRequest(c.Server, imageName, reference, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListLogs List Logs
+//
+// List the project registry's action history.
+//
+// **Required permissions:**
+//
+// - `urn:action:container_registry:project:get_logs`
+//
+// Corresponds with GET /v2/container-registry/logs/ (the `ListLogs` operationId).
+func (c *Client) ListLogs(ctx context.Context, params *ListLogsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListLogsRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -1397,6 +1922,33 @@ func (c *Client) UpdateWebhook(ctx context.Context, webhookId core.UUID, params 
 	return c.Client.Do(req)
 }
 
+// NewGetCliSecretRequest constructs an http.Request for the GetCliSecret method
+func NewGetCliSecretRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/container-registry/cli-secret/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewListExecutionsRequest constructs an http.Request for the ListExecutions method
 func NewListExecutionsRequest(server string, params *ListExecutionsParams) (*http.Request, error) {
 	var err error
@@ -1546,6 +2098,529 @@ func NewListExecutionTasksRequest(server string, executionId string, params *Lis
 	}
 
 	operationPath := fmt.Sprintf("/v2/container-registry/executions/%s/tasks/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListImagesRequest constructs an http.Request for the ListImages method
+func NewListImagesRequest(server string, params *ListImagesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/container-registry/images/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Name != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "name", *params.Name, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListArtifactsRequest constructs an http.Request for the ListArtifacts method
+func NewListArtifactsRequest(server string, imageName string, params *ListArtifactsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "image_name", imageName, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/container-registry/images/%s/artifacts/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Tag != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "tag", *params.Tag, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetArtifactRequest constructs an http.Request for the GetArtifact method
+func NewGetArtifactRequest(server string, imageName string, reference string, params *GetArtifactParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "image_name", imageName, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "reference", reference, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/container-registry/images/%s/artifacts/%s/", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewScanArtifactRequest constructs an http.Request for the ScanArtifact method
+func NewScanArtifactRequest(server string, imageName string, reference string, params *ScanArtifactParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "image_name", imageName, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "reference", reference, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/container-registry/images/%s/artifacts/%s/scan/", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListArtifactTagsRequest constructs an http.Request for the ListArtifactTags method
+func NewListArtifactTagsRequest(server string, imageName string, reference string, params *ListArtifactTagsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "image_name", imageName, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "reference", reference, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/container-registry/images/%s/artifacts/%s/tags/", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListArtifactVulnerabilitiesRequest constructs an http.Request for the ListArtifactVulnerabilities method
+func NewListArtifactVulnerabilitiesRequest(server string, imageName string, reference string, params *ListArtifactVulnerabilitiesParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "image_name", imageName, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "reference", reference, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/container-registry/images/%s/artifacts/%s/vulnerabilities/", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListLogsRequest constructs an http.Request for the ListLogs method
+func NewListLogsRequest(server string, params *ListLogsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/container-registry/logs/")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2499,6 +3574,15 @@ func WithBaseURL(baseURL string) ClientOption {
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
 
+	// GetCliSecretWithResponse Get Cli Secret
+	//
+	// Get the current user's registry CLI secret.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/container-registry/cli-secret/ (the `GetCliSecret` operationId).
+	GetCliSecretWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCliSecretResponse, error)
+
 	// ListExecutionsWithResponse List Executions
 	//
 	// **Required permissions:**
@@ -2542,6 +3626,97 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /v2/container-registry/executions/{execution_id}/tasks/ (the `ListExecutionTasks` operationId).
 	ListExecutionTasksWithResponse(ctx context.Context, executionId string, params *ListExecutionTasksParams, reqEditors ...RequestEditorFn) (*ListExecutionTasksResponse, error)
+
+	// ListImagesWithResponse List Images
+	//
+	// List the images of the project's registry.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:container_registry:container_image:list`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/container-registry/images/ (the `ListImages` operationId).
+	ListImagesWithResponse(ctx context.Context, params *ListImagesParams, reqEditors ...RequestEditorFn) (*ListImagesResponse, error)
+
+	// ListArtifactsWithResponse List Artifacts
+	//
+	// List the artifacts of an image.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:container_registry:container_image:list_artifacts`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/container-registry/images/{image_name}/artifacts/ (the `ListArtifacts` operationId).
+	ListArtifactsWithResponse(ctx context.Context, imageName string, params *ListArtifactsParams, reqEditors ...RequestEditorFn) (*ListArtifactsResponse, error)
+
+	// GetArtifactWithResponse Get Artifact
+	//
+	// Retrieve an artifact of an image by digest or tag name.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:container_registry:container_image:get_artifact`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/container-registry/images/{image_name}/artifacts/{reference}/ (the `GetArtifact` operationId).
+	GetArtifactWithResponse(ctx context.Context, imageName string, reference string, params *GetArtifactParams, reqEditors ...RequestEditorFn) (*GetArtifactResponse, error)
+
+	// ScanArtifactWithResponse Scan Artifact
+	//
+	// Scan an artifact for vulnerabilities.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:container_registry:container_image:scan`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v2/container-registry/images/{image_name}/artifacts/{reference}/scan/ (the `ScanArtifact` operationId).
+	ScanArtifactWithResponse(ctx context.Context, imageName string, reference string, params *ScanArtifactParams, reqEditors ...RequestEditorFn) (*ScanArtifactResponse, error)
+
+	// ListArtifactTagsWithResponse List Artifact Tags
+	//
+	// List the tags of an artifact.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:container_registry:container_image:list_tags`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/container-registry/images/{image_name}/artifacts/{reference}/tags/ (the `ListArtifactTags` operationId).
+	ListArtifactTagsWithResponse(ctx context.Context, imageName string, reference string, params *ListArtifactTagsParams, reqEditors ...RequestEditorFn) (*ListArtifactTagsResponse, error)
+
+	// ListArtifactVulnerabilitiesWithResponse List Artifact Vulnerabilities
+	//
+	// List the vulnerabilities found by the artifact's last scan.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:container_registry:container_image:get_vulnerabilities`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/container-registry/images/{image_name}/artifacts/{reference}/vulnerabilities/ (the `ListArtifactVulnerabilities` operationId).
+	ListArtifactVulnerabilitiesWithResponse(ctx context.Context, imageName string, reference string, params *ListArtifactVulnerabilitiesParams, reqEditors ...RequestEditorFn) (*ListArtifactVulnerabilitiesResponse, error)
+
+	// ListLogsWithResponse List Logs
+	//
+	// List the project registry's action history.
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:container_registry:project:get_logs`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/container-registry/logs/ (the `ListLogs` operationId).
+	ListLogsWithResponse(ctx context.Context, params *ListLogsParams, reqEditors ...RequestEditorFn) (*ListLogsResponse, error)
 
 	// ListMembersWithResponse List Members
 	//
@@ -2778,6 +3953,39 @@ type ClientWithResponsesInterface interface {
 	UpdateWebhookWithResponse(ctx context.Context, webhookId core.UUID, params *UpdateWebhookParams, body UpdateWebhookJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateWebhookResponse, error)
 }
 
+type GetCliSecretResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ContainerRegistryCliSecretSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCliSecretResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCliSecretResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type ListExecutionsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -2869,6 +4077,235 @@ func (r ListExecutionTasksResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r ListExecutionTasksResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListImagesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ContainerImageListSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListImagesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListImagesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListArtifactsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ContainerRegistryArtifactListSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListArtifactsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListArtifactsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetArtifactResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ContainerRegistryArtifactSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetArtifactResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetArtifactResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ScanArtifactResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ScanArtifactResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ScanArtifactResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListArtifactTagsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ContainerRegistryArtifactTagListSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListArtifactTagsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListArtifactTagsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListArtifactVulnerabilitiesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedContainerRegistryVulnerabilitySchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListArtifactVulnerabilitiesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListArtifactVulnerabilitiesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListLogsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ContainerRegistryProjectLogListSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListLogsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListLogsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -3333,6 +4770,21 @@ func (r UpdateWebhookResponse) StatusCode() int {
 	return 0
 }
 
+// GetCliSecretWithResponse Get Cli Secret
+//
+// Get the current user's registry CLI secret.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/container-registry/cli-secret/ (the `GetCliSecret` operationId).
+func (c *ClientWithResponses) GetCliSecretWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCliSecretResponse, error) {
+	rsp, err := c.GetCliSecret(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCliSecretResponse(rsp)
+}
+
 // ListExecutionsWithResponse List Executions
 //
 // **Required permissions:**
@@ -3399,6 +4851,139 @@ func (c *ClientWithResponses) ListExecutionTasksWithResponse(ctx context.Context
 		return nil, err
 	}
 	return ParseListExecutionTasksResponse(rsp)
+}
+
+// ListImagesWithResponse List Images
+//
+// List the images of the project's registry.
+//
+// **Required permissions:**
+//
+// - `urn:action:container_registry:container_image:list`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/container-registry/images/ (the `ListImages` operationId).
+func (c *ClientWithResponses) ListImagesWithResponse(ctx context.Context, params *ListImagesParams, reqEditors ...RequestEditorFn) (*ListImagesResponse, error) {
+	rsp, err := c.ListImages(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListImagesResponse(rsp)
+}
+
+// ListArtifactsWithResponse List Artifacts
+//
+// List the artifacts of an image.
+//
+// **Required permissions:**
+//
+// - `urn:action:container_registry:container_image:list_artifacts`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/container-registry/images/{image_name}/artifacts/ (the `ListArtifacts` operationId).
+func (c *ClientWithResponses) ListArtifactsWithResponse(ctx context.Context, imageName string, params *ListArtifactsParams, reqEditors ...RequestEditorFn) (*ListArtifactsResponse, error) {
+	rsp, err := c.ListArtifacts(ctx, imageName, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListArtifactsResponse(rsp)
+}
+
+// GetArtifactWithResponse Get Artifact
+//
+// Retrieve an artifact of an image by digest or tag name.
+//
+// **Required permissions:**
+//
+// - `urn:action:container_registry:container_image:get_artifact`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/container-registry/images/{image_name}/artifacts/{reference}/ (the `GetArtifact` operationId).
+func (c *ClientWithResponses) GetArtifactWithResponse(ctx context.Context, imageName string, reference string, params *GetArtifactParams, reqEditors ...RequestEditorFn) (*GetArtifactResponse, error) {
+	rsp, err := c.GetArtifact(ctx, imageName, reference, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetArtifactResponse(rsp)
+}
+
+// ScanArtifactWithResponse Scan Artifact
+//
+// Scan an artifact for vulnerabilities.
+//
+// **Required permissions:**
+//
+// - `urn:action:container_registry:container_image:scan`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/container-registry/images/{image_name}/artifacts/{reference}/scan/ (the `ScanArtifact` operationId).
+func (c *ClientWithResponses) ScanArtifactWithResponse(ctx context.Context, imageName string, reference string, params *ScanArtifactParams, reqEditors ...RequestEditorFn) (*ScanArtifactResponse, error) {
+	rsp, err := c.ScanArtifact(ctx, imageName, reference, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseScanArtifactResponse(rsp)
+}
+
+// ListArtifactTagsWithResponse List Artifact Tags
+//
+// List the tags of an artifact.
+//
+// **Required permissions:**
+//
+// - `urn:action:container_registry:container_image:list_tags`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/container-registry/images/{image_name}/artifacts/{reference}/tags/ (the `ListArtifactTags` operationId).
+func (c *ClientWithResponses) ListArtifactTagsWithResponse(ctx context.Context, imageName string, reference string, params *ListArtifactTagsParams, reqEditors ...RequestEditorFn) (*ListArtifactTagsResponse, error) {
+	rsp, err := c.ListArtifactTags(ctx, imageName, reference, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListArtifactTagsResponse(rsp)
+}
+
+// ListArtifactVulnerabilitiesWithResponse List Artifact Vulnerabilities
+//
+// List the vulnerabilities found by the artifact's last scan.
+//
+// **Required permissions:**
+//
+// - `urn:action:container_registry:container_image:get_vulnerabilities`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/container-registry/images/{image_name}/artifacts/{reference}/vulnerabilities/ (the `ListArtifactVulnerabilities` operationId).
+func (c *ClientWithResponses) ListArtifactVulnerabilitiesWithResponse(ctx context.Context, imageName string, reference string, params *ListArtifactVulnerabilitiesParams, reqEditors ...RequestEditorFn) (*ListArtifactVulnerabilitiesResponse, error) {
+	rsp, err := c.ListArtifactVulnerabilities(ctx, imageName, reference, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListArtifactVulnerabilitiesResponse(rsp)
+}
+
+// ListLogsWithResponse List Logs
+//
+// List the project registry's action history.
+//
+// **Required permissions:**
+//
+// - `urn:action:container_registry:project:get_logs`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/container-registry/logs/ (the `ListLogs` operationId).
+func (c *ClientWithResponses) ListLogsWithResponse(ctx context.Context, params *ListLogsParams, reqEditors ...RequestEditorFn) (*ListLogsResponse, error) {
+	rsp, err := c.ListLogs(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListLogsResponse(rsp)
 }
 
 // ListMembersWithResponse List Members
@@ -3755,6 +5340,67 @@ func (c *ClientWithResponses) UpdateWebhookWithResponse(ctx context.Context, web
 	return ParseUpdateWebhookResponse(rsp)
 }
 
+// ParseGetCliSecretResponse parses an HTTP response from a GetCliSecretWithResponse call
+func ParseGetCliSecretResponse(rsp *http.Response) (*GetCliSecretResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCliSecretResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ContainerRegistryCliSecretSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseListExecutionsResponse parses an HTTP response from a ListExecutionsWithResponse call
 func ParseListExecutionsResponse(rsp *http.Response) (*ListExecutionsResponse, error) {
 	bodyBytes, err := core.ReadResponseBody(rsp)
@@ -3889,6 +5535,429 @@ func ParseListExecutionTasksResponse(rsp *http.Response) (*ListExecutionTasksRes
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest ExecutionTaskListSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListImagesResponse parses an HTTP response from a ListImagesWithResponse call
+func ParseListImagesResponse(rsp *http.Response) (*ListImagesResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListImagesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ContainerImageListSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListArtifactsResponse parses an HTTP response from a ListArtifactsWithResponse call
+func ParseListArtifactsResponse(rsp *http.Response) (*ListArtifactsResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListArtifactsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ContainerRegistryArtifactListSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetArtifactResponse parses an HTTP response from a GetArtifactWithResponse call
+func ParseGetArtifactResponse(rsp *http.Response) (*GetArtifactResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetArtifactResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ContainerRegistryArtifactSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseScanArtifactResponse parses an HTTP response from a ScanArtifactWithResponse call
+func ParseScanArtifactResponse(rsp *http.Response) (*ScanArtifactResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ScanArtifactResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 202:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListArtifactTagsResponse parses an HTTP response from a ListArtifactTagsWithResponse call
+func ParseListArtifactTagsResponse(rsp *http.Response) (*ListArtifactTagsResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListArtifactTagsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ContainerRegistryArtifactTagListSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListArtifactVulnerabilitiesResponse parses an HTTP response from a ListArtifactVulnerabilitiesWithResponse call
+func ParseListArtifactVulnerabilitiesResponse(rsp *http.Response) (*ListArtifactVulnerabilitiesResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListArtifactVulnerabilitiesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedContainerRegistryVulnerabilitySchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListLogsResponse parses an HTTP response from a ListLogsWithResponse call
+func ParseListLogsResponse(rsp *http.Response) (*ListLogsResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListLogsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ContainerRegistryProjectLogListSchema
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

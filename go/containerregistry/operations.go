@@ -189,6 +189,101 @@ func (c *Client) DeleteWebhook(ctx context.Context, WebhookID core.UUID, params 
 	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
 }
 
+// GetCliSecret Get Cli Secret
+//
+// GET /v2/container-registry/cli-secret/
+func (c *Client) GetCliSecret(ctx context.Context) (*ContainerRegistryCliSecretSchema, error) {
+	resp, err := c.gen.GetCliSecretWithResponse(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// ListImages List Images
+//
+// GET /v2/container-registry/images/
+func (c *Client) ListImages(ctx context.Context, params ListImagesParams) (*ContainerImageListSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListImagesWithResponse(ctx, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// ListArtifacts List Artifacts
+//
+// GET /v2/container-registry/images/{image_name}/artifacts/
+func (c *Client) ListArtifacts(ctx context.Context, ImageName string, params ListArtifactsParams) (*ContainerRegistryArtifactListSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListArtifactsWithResponse(ctx, ImageName, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// GetArtifact Get Artifact
+//
+// GET /v2/container-registry/images/{image_name}/artifacts/{reference}/
+func (c *Client) GetArtifact(ctx context.Context, ImageName string, Reference string, params GetArtifactParams) (*ContainerRegistryArtifactSchema, error) {
+	genParams := params
+	resp, err := c.gen.GetArtifactWithResponse(ctx, ImageName, Reference, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// ScanArtifact Scan Artifact
+//
+// POST /v2/container-registry/images/{image_name}/artifacts/{reference}/scan/
+func (c *Client) ScanArtifact(ctx context.Context, ImageName string, Reference string, params ScanArtifactParams) error {
+	genParams := params
+	resp, err := c.gen.ScanArtifactWithResponse(ctx, ImageName, Reference, &genParams)
+	if err != nil {
+		return err
+	}
+	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 202)
+}
+
+// ListArtifactTags List Artifact Tags
+//
+// GET /v2/container-registry/images/{image_name}/artifacts/{reference}/tags/
+func (c *Client) ListArtifactTags(ctx context.Context, ImageName string, Reference string, params ListArtifactTagsParams) (*ContainerRegistryArtifactTagListSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListArtifactTagsWithResponse(ctx, ImageName, Reference, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// ListArtifactVulnerabilities List Artifact Vulnerabilities
+//
+// GET /v2/container-registry/images/{image_name}/artifacts/{reference}/vulnerabilities/
+func (c *Client) ListArtifactVulnerabilities(ctx context.Context, ImageName string, Reference string, params ListArtifactVulnerabilitiesParams) (*PagedContainerRegistryVulnerabilitySchema, error) {
+	genParams := params
+	resp, err := c.gen.ListArtifactVulnerabilitiesWithResponse(ctx, ImageName, Reference, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
+// ListLogs List Logs
+//
+// GET /v2/container-registry/logs/
+func (c *Client) ListLogs(ctx context.Context, params ListLogsParams) (*ContainerRegistryProjectLogListSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListLogsWithResponse(ctx, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
 // GetProjectConfig Get Project Config
 //
 // GET /v2/container-registry/project-config/
@@ -285,5 +380,65 @@ func (c *Client) ListWebhooksIter(ctx context.Context, params ListWebhooksParams
 			return core.Page[WebhookBaseSchema]{}, err
 		}
 		return core.Page[WebhookBaseSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListImagesIter returns an iterator over all ContainerImageSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListImagesIter(ctx context.Context, params ListImagesParams) iter.Seq2[*ContainerImageSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[ContainerImageSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListImages(ctx, p)
+		if err != nil {
+			return core.Page[ContainerImageSchema]{}, err
+		}
+		return core.Page[ContainerImageSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListArtifactsIter returns an iterator over all ContainerRegistryArtifactSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListArtifactsIter(ctx context.Context, ImageName string, params ListArtifactsParams) iter.Seq2[*ContainerRegistryArtifactSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[ContainerRegistryArtifactSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListArtifacts(ctx, ImageName, p)
+		if err != nil {
+			return core.Page[ContainerRegistryArtifactSchema]{}, err
+		}
+		return core.Page[ContainerRegistryArtifactSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListArtifactTagsIter returns an iterator over all ContainerRegistryArtifactTagSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListArtifactTagsIter(ctx context.Context, ImageName string, Reference string, params ListArtifactTagsParams) iter.Seq2[*ContainerRegistryArtifactTagSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[ContainerRegistryArtifactTagSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListArtifactTags(ctx, ImageName, Reference, p)
+		if err != nil {
+			return core.Page[ContainerRegistryArtifactTagSchema]{}, err
+		}
+		return core.Page[ContainerRegistryArtifactTagSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListLogsIter returns an iterator over all ContainerRegistryProjectLogSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListLogsIter(ctx context.Context, params ListLogsParams) iter.Seq2[*ContainerRegistryProjectLogSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[ContainerRegistryProjectLogSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListLogs(ctx, p)
+		if err != nil {
+			return core.Page[ContainerRegistryProjectLogSchema]{}, err
+		}
+		return core.Page[ContainerRegistryProjectLogSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
 	})
 }
