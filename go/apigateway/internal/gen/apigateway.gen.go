@@ -147,6 +147,7 @@ func (e UpstreamType) Valid() bool {
 type APIBaseSchema struct {
 	CorsConfig          nullable.Nullable[NestedCORSConfigSchema] `json:"cors_config,omitempty"`
 	CreatedAt           time.Time                                 `json:"created_at"`
+	DefaultStageId      nullable.Nullable[core.UUID]              `json:"default_stage_id,omitempty"`
 	Description         string                                    `json:"description"`
 	GatewayUrl          string                                    `json:"gateway_url"`
 	Id                  core.UUID                                 `json:"id"`
@@ -162,15 +163,16 @@ type APIBaseSchema struct {
 
 // APICreateSchema defines model for APICreateSchema.
 type APICreateSchema struct {
-	Description nullable.Nullable[string] `json:"description,omitempty"`
-	Name        string                    `json:"name"`
-	RegionId    core.UUID                 `json:"region_id"`
+	Description *string   `json:"description,omitempty"`
+	Name        string    `json:"name"`
+	RegionId    core.UUID `json:"region_id"`
 }
 
 // APIDetailSchema defines model for APIDetailSchema.
 type APIDetailSchema struct {
 	CorsConfig                       nullable.Nullable[NestedCORSConfigSchema] `json:"cors_config,omitempty"`
 	CreatedAt                        time.Time                                 `json:"created_at"`
+	DefaultStageId                   nullable.Nullable[core.UUID]              `json:"default_stage_id,omitempty"`
 	Description                      string                                    `json:"description"`
 	GatewayUrl                       string                                    `json:"gateway_url"`
 	Id                               core.UUID                                 `json:"id"`
@@ -197,9 +199,9 @@ type AuthenticatorCreateSchema struct {
 	ApiId core.UUID `json:"api_id"`
 
 	// AuthConfig AuthOptions is exactly one of: BasicAuthConfig, KeyAuthConfig, JWTAuthConfig. Use the As*/From* helpers to read or set the active variant, or ValueByDiscriminator to dispatch on the wire value.
-	AuthConfig  AuthOptions               `json:"auth_config"`
-	Description nullable.Nullable[string] `json:"description,omitempty"`
-	Name        string                    `json:"name"`
+	AuthConfig  AuthOptions `json:"auth_config"`
+	Description *string     `json:"description,omitempty"`
+	Name        string      `json:"name"`
 }
 
 // AuthenticatorDetailSchema defines model for AuthenticatorDetailSchema.
@@ -219,6 +221,11 @@ type AuthenticatorDetailSchema struct {
 	Type        string                              `json:"type"`
 	UpdatedAt   time.Time                           `json:"updated_at"`
 	Username    nullable.Nullable[string]           `json:"username,omitempty"`
+}
+
+// AuthenticatorPartialUpdateSchema defines model for AuthenticatorPartialUpdateSchema.
+type AuthenticatorPartialUpdateSchema struct {
+	Description *string `json:"description,omitempty"`
 }
 
 // AuthenticatorSchema defines model for AuthenticatorSchema.
@@ -247,12 +254,12 @@ type BasicAuthConfigAuthType string
 
 // CORSConfigPartialUpdateSchema defines model for CORSConfigPartialUpdateSchema.
 type CORSConfigPartialUpdateSchema struct {
-	AllowCredential *bool     `json:"allow_credential,omitempty"`
-	AllowHeaders    *[]string `json:"allow_headers,omitempty"`
-	AllowMethods    *[]string `json:"allow_methods,omitempty"`
-	AllowOrigins    *[]string `json:"allow_origins,omitempty"`
-	ExposeHeaders   *[]string `json:"expose_headers,omitempty"`
-	MaxAge          *int      `json:"max_age,omitempty"`
+	AllowCredential *bool         `json:"allow_credential,omitempty"`
+	AllowHeaders    *[]string     `json:"allow_headers,omitempty"`
+	AllowMethods    *[]MethodType `json:"allow_methods,omitempty"`
+	AllowOrigins    *[]string     `json:"allow_origins,omitempty"`
+	ExposeHeaders   *[]string     `json:"expose_headers,omitempty"`
+	MaxAge          *int          `json:"max_age,omitempty"`
 }
 
 // CORSConfigSchema defines model for CORSConfigSchema.
@@ -273,11 +280,12 @@ type CORSConfigSchema struct {
 
 // CustomDomainCreateSchema defines model for CustomDomainCreateSchema.
 type CustomDomainCreateSchema struct {
-	CertificateId core.UUID                 `json:"certificate_id"`
-	Description   nullable.Nullable[string] `json:"description,omitempty"`
-	Domain        string                    `json:"domain"`
-	Name          string                    `json:"name"`
-	RegionId      core.UUID                 `json:"region_id"`
+	CertificateId core.UUID    `json:"certificate_id"`
+	Description   *string      `json:"description,omitempty"`
+	Domain        string       `json:"domain"`
+	Name          string       `json:"name"`
+	RegionId      core.UUID    `json:"region_id"`
+	StageIds      *[]core.UUID `json:"stage_ids,omitempty"`
 }
 
 // CustomDomainPartialUpdateSchema defines model for CustomDomainPartialUpdateSchema.
@@ -418,6 +426,14 @@ type PagedAuthenticatorSchema struct {
 	Results  []AuthenticatorSchema     `json:"results"`
 }
 
+// PagedCORSConfigSchema defines model for PagedCORSConfigSchema.
+type PagedCORSConfigSchema struct {
+	Count    int                       `json:"count"`
+	Next     nullable.Nullable[string] `json:"next,omitempty"`
+	Previous nullable.Nullable[string] `json:"previous,omitempty"`
+	Results  []CORSConfigSchema        `json:"results"`
+}
+
 // PagedCustomDomainSchema defines model for PagedCustomDomainSchema.
 type PagedCustomDomainSchema struct {
 	Count    int                       `json:"count"`
@@ -452,23 +468,23 @@ type PagedUpstreamSchema struct {
 
 // RouteCreateSchema defines model for RouteCreateSchema.
 type RouteCreateSchema struct {
-	ApiId           core.UUID                                 `json:"api_id"`
-	AuthenticatorId nullable.Nullable[core.UUID]              `json:"authenticator_id,omitempty"`
-	Description     nullable.Nullable[string]                 `json:"description,omitempty"`
-	EnableRateLimit *bool                                     `json:"enable_rate_limit,omitempty"`
-	Headers         nullable.Nullable[map[string]interface{}] `json:"headers,omitempty"`
-	IsActive        *bool                                     `json:"is_active,omitempty"`
-	Method          nullable.Nullable[[]MethodType]           `json:"method"`
-	Name            string                                    `json:"name"`
-	Path            string                                    `json:"path"`
-	RatePerDay      *int                                      `json:"rate_per_day,omitempty"`
-	RatePerHour     *int                                      `json:"rate_per_hour,omitempty"`
-	RatePerMinute   *int                                      `json:"rate_per_minute,omitempty"`
-	RatePerMonth    *int                                      `json:"rate_per_month,omitempty"`
-	RatePerSecond   *int                                      `json:"rate_per_second,omitempty"`
-	RatePerYear     *int                                      `json:"rate_per_year,omitempty"`
-	ShowLimitHeader *bool                                     `json:"show_limit_header,omitempty"`
-	UpstreamId      nullable.Nullable[core.UUID]              `json:"upstream_id,omitempty"`
+	ApiId           core.UUID                    `json:"api_id"`
+	AuthenticatorId nullable.Nullable[core.UUID] `json:"authenticator_id,omitempty"`
+	Description     *string                      `json:"description,omitempty"`
+	EnableRateLimit *bool                        `json:"enable_rate_limit,omitempty"`
+	Headers         *map[string]interface{}      `json:"headers,omitempty"`
+	IsActive        *bool                        `json:"is_active,omitempty"`
+	Method          []MethodType                 `json:"method"`
+	Name            string                       `json:"name"`
+	Path            string                       `json:"path"`
+	RatePerDay      *int                         `json:"rate_per_day,omitempty"`
+	RatePerHour     *int                         `json:"rate_per_hour,omitempty"`
+	RatePerMinute   *int                         `json:"rate_per_minute,omitempty"`
+	RatePerMonth    *int                         `json:"rate_per_month,omitempty"`
+	RatePerSecond   *int                         `json:"rate_per_second,omitempty"`
+	RatePerYear     *int                         `json:"rate_per_year,omitempty"`
+	ShowLimitHeader *bool                        `json:"show_limit_header,omitempty"`
+	UpstreamId      nullable.Nullable[core.UUID] `json:"upstream_id,omitempty"`
 }
 
 // RouteDetailSchema defines model for RouteDetailSchema.
@@ -499,22 +515,22 @@ type RouteDetailSchema struct {
 
 // RoutePartialUpdateSchema defines model for RoutePartialUpdateSchema.
 type RoutePartialUpdateSchema struct {
-	AuthenticatorId nullable.Nullable[core.UUID]              `json:"authenticator_id,omitempty"`
-	Description     *string                                   `json:"description,omitempty"`
-	EnableRateLimit *bool                                     `json:"enable_rate_limit,omitempty"`
-	Headers         nullable.Nullable[map[string]interface{}] `json:"headers,omitempty"`
-	IsActive        *bool                                     `json:"is_active,omitempty"`
-	Method          *[]MethodType                             `json:"method,omitempty"`
-	Name            *string                                   `json:"name,omitempty"`
-	Path            *string                                   `json:"path,omitempty"`
-	RatePerDay      *int                                      `json:"rate_per_day,omitempty"`
-	RatePerHour     *int                                      `json:"rate_per_hour,omitempty"`
-	RatePerMinute   *int                                      `json:"rate_per_minute,omitempty"`
-	RatePerMonth    *int                                      `json:"rate_per_month,omitempty"`
-	RatePerSecond   *int                                      `json:"rate_per_second,omitempty"`
-	RatePerYear     *int                                      `json:"rate_per_year,omitempty"`
-	ShowLimitHeader *bool                                     `json:"show_limit_header,omitempty"`
-	UpstreamId      nullable.Nullable[core.UUID]              `json:"upstream_id,omitempty"`
+	AuthenticatorId nullable.Nullable[core.UUID] `json:"authenticator_id,omitempty"`
+	Description     *string                      `json:"description,omitempty"`
+	EnableRateLimit *bool                        `json:"enable_rate_limit,omitempty"`
+	Headers         *map[string]interface{}      `json:"headers,omitempty"`
+	IsActive        *bool                        `json:"is_active,omitempty"`
+	Method          *[]MethodType                `json:"method,omitempty"`
+	Name            *string                      `json:"name,omitempty"`
+	Path            *string                      `json:"path,omitempty"`
+	RatePerDay      *int                         `json:"rate_per_day,omitempty"`
+	RatePerHour     *int                         `json:"rate_per_hour,omitempty"`
+	RatePerMinute   *int                         `json:"rate_per_minute,omitempty"`
+	RatePerMonth    *int                         `json:"rate_per_month,omitempty"`
+	RatePerSecond   *int                         `json:"rate_per_second,omitempty"`
+	RatePerYear     *int                         `json:"rate_per_year,omitempty"`
+	ShowLimitHeader *bool                        `json:"show_limit_header,omitempty"`
+	UpstreamId      nullable.Nullable[core.UUID] `json:"upstream_id,omitempty"`
 }
 
 // RouteSchema defines model for RouteSchema.
@@ -548,10 +564,16 @@ type SchemaType string
 
 // StageCreateSchema defines model for StageCreateSchema.
 type StageCreateSchema struct {
-	ApiId       core.UUID                 `json:"api_id"`
-	AutoDeploy  *bool                     `json:"auto_deploy,omitempty"`
-	Description nullable.Nullable[string] `json:"description,omitempty"`
-	Name        string                    `json:"name"`
+	ApiId       core.UUID `json:"api_id"`
+	AutoDeploy  *bool     `json:"auto_deploy,omitempty"`
+	Description *string   `json:"description,omitempty"`
+	Name        string    `json:"name"`
+}
+
+// StagePartialUpdateSchema defines model for StagePartialUpdateSchema.
+type StagePartialUpdateSchema struct {
+	AutoDeploy  *bool   `json:"auto_deploy,omitempty"`
+	Description *string `json:"description,omitempty"`
 }
 
 // StageSchema defines model for StageSchema.
@@ -574,7 +596,7 @@ type StageSchema struct {
 // UpstreamCreateSchema defines model for UpstreamCreateSchema.
 type UpstreamCreateSchema struct {
 	ApiId        core.UUID                 `json:"api_id"`
-	Description  nullable.Nullable[string] `json:"description,omitempty"`
+	Description  *string                   `json:"description,omitempty"`
 	Hosts        []UpstreamHostBodySchema  `json:"hosts"`
 	Name         string                    `json:"name"`
 	Retries      nullable.Nullable[int]    `json:"retries,omitempty"`
@@ -711,6 +733,19 @@ type GetAuthenticatorParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
+// UpdateAuthenticatorParams defines parameters for UpdateAuthenticator.
+type UpdateAuthenticatorParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
+// ListCorsConfigsParams defines parameters for ListCorsConfigs.
+type ListCorsConfigsParams struct {
+	ApiId      *core.UUID `form:"api_id,omitempty" json:"api_id,omitempty"`
+	PageSize   *int       `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageNumber *int       `form:"page_number,omitempty" json:"page_number,omitempty"`
+	ProjectID  core.UUID  `json:"Project-ID"`
+}
+
 // GetCorsConfigParams defines parameters for GetCorsConfig.
 type GetCorsConfigParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
@@ -807,6 +842,11 @@ type GetStageParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
 }
 
+// UpdateStageParams defines parameters for UpdateStage.
+type UpdateStageParams struct {
+	ProjectID core.UUID `json:"Project-ID"`
+}
+
 // DeployStageViewParams defines parameters for DeployStageView.
 type DeployStageViewParams struct {
 	ProjectID core.UUID `json:"Project-ID"`
@@ -848,6 +888,9 @@ type CreateApiJSONRequestBody = APICreateSchema
 // CreateAuthenticatorJSONRequestBody defines body for CreateAuthenticator for application/json ContentType.
 type CreateAuthenticatorJSONRequestBody = AuthenticatorCreateSchema
 
+// UpdateAuthenticatorJSONRequestBody defines body for UpdateAuthenticator for application/json ContentType.
+type UpdateAuthenticatorJSONRequestBody = AuthenticatorPartialUpdateSchema
+
 // UpdateCorsConfigJSONRequestBody defines body for UpdateCorsConfig for application/json ContentType.
 type UpdateCorsConfigJSONRequestBody = CORSConfigPartialUpdateSchema
 
@@ -865,6 +908,9 @@ type UpdateRouteJSONRequestBody = RoutePartialUpdateSchema
 
 // CreateStageJSONRequestBody defines body for CreateStage for application/json ContentType.
 type CreateStageJSONRequestBody = StageCreateSchema
+
+// UpdateStageJSONRequestBody defines body for UpdateStage for application/json ContentType.
+type UpdateStageJSONRequestBody = StagePartialUpdateSchema
 
 // CreateUpstreamJSONRequestBody defines body for CreateUpstream for application/json ContentType.
 type CreateUpstreamJSONRequestBody = UpstreamCreateSchema
@@ -1181,6 +1227,37 @@ type ClientInterface interface {
 	// Corresponds with GET /v2/api-gateway/authenticators/{authenticator_id}/ (the `GetAuthenticator` operationId).
 	GetAuthenticator(ctx context.Context, authenticatorId core.UUID, params *GetAuthenticatorParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// UpdateAuthenticatorWithBody Update Authenticator
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:api_gateway:authenticator:update`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PATCH /v2/api-gateway/authenticators/{authenticator_id}/ (the `UpdateAuthenticator` operationId).
+	UpdateAuthenticatorWithBody(ctx context.Context, authenticatorId core.UUID, params *UpdateAuthenticatorParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateAuthenticator Update Authenticator
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:api_gateway:authenticator:update`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PATCH /v2/api-gateway/authenticators/{authenticator_id}/ (the `UpdateAuthenticator` operationId).
+	UpdateAuthenticator(ctx context.Context, authenticatorId core.UUID, params *UpdateAuthenticatorParams, body UpdateAuthenticatorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListCorsConfigs List Cors Configs
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:api_gateway:cors_config:list`
+	//
+	// Corresponds with GET /v2/api-gateway/cors-configs/ (the `ListCorsConfigs` operationId).
+	ListCorsConfigs(ctx context.Context, params *ListCorsConfigsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetCorsConfig Get Cors Config
 	//
 	// **Required permissions:**
@@ -1402,6 +1479,28 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /v2/api-gateway/stages/{stage_id}/ (the `GetStage` operationId).
 	GetStage(ctx context.Context, stageId core.UUID, params *GetStageParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateStageWithBody Update Stage
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:api_gateway:stage:update`
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PATCH /v2/api-gateway/stages/{stage_id}/ (the `UpdateStage` operationId).
+	UpdateStageWithBody(ctx context.Context, stageId core.UUID, params *UpdateStageParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateStage Update Stage
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:api_gateway:stage:update`
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PATCH /v2/api-gateway/stages/{stage_id}/ (the `UpdateStage` operationId).
+	UpdateStage(ctx context.Context, stageId core.UUID, params *UpdateStageParams, body UpdateStageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeployStageView Deploy Stage View
 	//
@@ -1672,6 +1771,67 @@ func (c *Client) DeleteAuthenticator(ctx context.Context, authenticatorId core.U
 // Corresponds with GET /v2/api-gateway/authenticators/{authenticator_id}/ (the `GetAuthenticator` operationId).
 func (c *Client) GetAuthenticator(ctx context.Context, authenticatorId core.UUID, params *GetAuthenticatorParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetAuthenticatorRequest(c.Server, authenticatorId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateAuthenticatorWithBody Update Authenticator
+//
+// **Required permissions:**
+//
+// - `urn:action:api_gateway:authenticator:update`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PATCH /v2/api-gateway/authenticators/{authenticator_id}/ (the `UpdateAuthenticator` operationId).
+func (c *Client) UpdateAuthenticatorWithBody(ctx context.Context, authenticatorId core.UUID, params *UpdateAuthenticatorParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateAuthenticatorRequestWithBody(c.Server, authenticatorId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateAuthenticator Update Authenticator
+//
+// **Required permissions:**
+//
+// - `urn:action:api_gateway:authenticator:update`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PATCH /v2/api-gateway/authenticators/{authenticator_id}/ (the `UpdateAuthenticator` operationId).
+func (c *Client) UpdateAuthenticator(ctx context.Context, authenticatorId core.UUID, params *UpdateAuthenticatorParams, body UpdateAuthenticatorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateAuthenticatorRequest(c.Server, authenticatorId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListCorsConfigs List Cors Configs
+//
+// **Required permissions:**
+//
+// - `urn:action:api_gateway:cors_config:list`
+//
+// Corresponds with GET /v2/api-gateway/cors-configs/ (the `ListCorsConfigs` operationId).
+func (c *Client) ListCorsConfigs(ctx context.Context, params *ListCorsConfigsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListCorsConfigsRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2114,6 +2274,48 @@ func (c *Client) DeleteStage(ctx context.Context, stageId core.UUID, params *Del
 // Corresponds with GET /v2/api-gateway/stages/{stage_id}/ (the `GetStage` operationId).
 func (c *Client) GetStage(ctx context.Context, stageId core.UUID, params *GetStageParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetStageRequest(c.Server, stageId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateStageWithBody Update Stage
+//
+// **Required permissions:**
+//
+// - `urn:action:api_gateway:stage:update`
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PATCH /v2/api-gateway/stages/{stage_id}/ (the `UpdateStage` operationId).
+func (c *Client) UpdateStageWithBody(ctx context.Context, stageId core.UUID, params *UpdateStageParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateStageRequestWithBody(c.Server, stageId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateStage Update Stage
+//
+// **Required permissions:**
+//
+// - `urn:action:api_gateway:stage:update`
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PATCH /v2/api-gateway/stages/{stage_id}/ (the `UpdateStage` operationId).
+func (c *Client) UpdateStage(ctx context.Context, stageId core.UUID, params *UpdateStageParams, body UpdateStageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateStageRequest(c.Server, stageId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2773,6 +2975,157 @@ func NewGetAuthenticatorRequest(server string, authenticatorId core.UUID, params
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewUpdateAuthenticatorRequest calls the generic UpdateAuthenticator builder with application/json body
+func NewUpdateAuthenticatorRequest(server string, authenticatorId core.UUID, params *UpdateAuthenticatorParams, body UpdateAuthenticatorJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateAuthenticatorRequestWithBody(server, authenticatorId, params, "application/json", bodyReader)
+}
+
+// NewUpdateAuthenticatorRequestWithBody constructs an http.Request for the UpdateAuthenticator method, with any body, and a specified content type
+func NewUpdateAuthenticatorRequestWithBody(server string, authenticatorId core.UUID, params *UpdateAuthenticatorParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "authenticator_id", authenticatorId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/api-gateway/authenticators/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListCorsConfigsRequest constructs an http.Request for the ListCorsConfigs method
+func NewListCorsConfigsRequest(server string, params *ListCorsConfigsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/api-gateway/cors-configs/")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.ApiId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "api_id", *params.ApiId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_size", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page_number", *params.PageNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
 
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
@@ -3821,6 +4174,66 @@ func NewGetStageRequest(server string, stageId core.UUID, params *GetStageParams
 	return req, nil
 }
 
+// NewUpdateStageRequest calls the generic UpdateStage builder with application/json body
+func NewUpdateStageRequest(server string, stageId core.UUID, params *UpdateStageParams, body UpdateStageJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateStageRequestWithBody(server, stageId, params, "application/json", bodyReader)
+}
+
+// NewUpdateStageRequestWithBody constructs an http.Request for the UpdateStage method, with any body, and a specified content type
+func NewUpdateStageRequestWithBody(server string, stageId core.UUID, params *UpdateStageParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "stage_id", stageId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/api-gateway/stages/%s/", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Project-ID", params.ProjectID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("Project-ID", headerParam0)
+
+	}
+
+	return req, nil
+}
+
 // NewDeployStageViewRequest constructs an http.Request for the DeployStageView method
 func NewDeployStageViewRequest(server string, stageId core.UUID, params *DeployStageViewParams) (*http.Request, error) {
 	var err error
@@ -4344,6 +4757,39 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /v2/api-gateway/authenticators/{authenticator_id}/ (the `GetAuthenticator` operationId).
 	GetAuthenticatorWithResponse(ctx context.Context, authenticatorId core.UUID, params *GetAuthenticatorParams, reqEditors ...RequestEditorFn) (*GetAuthenticatorResponse, error)
 
+	// UpdateAuthenticatorWithBodyWithResponse Update Authenticator
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:api_gateway:authenticator:update`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /v2/api-gateway/authenticators/{authenticator_id}/ (the `UpdateAuthenticator` operationId).
+	UpdateAuthenticatorWithBodyWithResponse(ctx context.Context, authenticatorId core.UUID, params *UpdateAuthenticatorParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAuthenticatorResponse, error)
+
+	// UpdateAuthenticatorWithResponse Update Authenticator
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:api_gateway:authenticator:update`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /v2/api-gateway/authenticators/{authenticator_id}/ (the `UpdateAuthenticator` operationId).
+	UpdateAuthenticatorWithResponse(ctx context.Context, authenticatorId core.UUID, params *UpdateAuthenticatorParams, body UpdateAuthenticatorJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAuthenticatorResponse, error)
+
+	// ListCorsConfigsWithResponse List Cors Configs
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:api_gateway:cors_config:list`
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v2/api-gateway/cors-configs/ (the `ListCorsConfigs` operationId).
+	ListCorsConfigsWithResponse(ctx context.Context, params *ListCorsConfigsParams, reqEditors ...RequestEditorFn) (*ListCorsConfigsResponse, error)
+
 	// GetCorsConfigWithResponse Get Cors Config
 	//
 	// **Required permissions:**
@@ -4585,6 +5031,28 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /v2/api-gateway/stages/{stage_id}/ (the `GetStage` operationId).
 	GetStageWithResponse(ctx context.Context, stageId core.UUID, params *GetStageParams, reqEditors ...RequestEditorFn) (*GetStageResponse, error)
+
+	// UpdateStageWithBodyWithResponse Update Stage
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:api_gateway:stage:update`
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /v2/api-gateway/stages/{stage_id}/ (the `UpdateStage` operationId).
+	UpdateStageWithBodyWithResponse(ctx context.Context, stageId core.UUID, params *UpdateStageParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateStageResponse, error)
+
+	// UpdateStageWithResponse Update Stage
+	//
+	// **Required permissions:**
+	//
+	// - `urn:action:api_gateway:stage:update`
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PATCH /v2/api-gateway/stages/{stage_id}/ (the `UpdateStage` operationId).
+	UpdateStageWithResponse(ctx context.Context, stageId core.UUID, params *UpdateStageParams, body UpdateStageJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateStageResponse, error)
 
 	// DeployStageViewWithResponse Deploy Stage View
 	//
@@ -4929,6 +5397,72 @@ func (r GetAuthenticatorResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetAuthenticatorResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateAuthenticatorResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AuthenticatorSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateAuthenticatorResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateAuthenticatorResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListCorsConfigsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PagedCORSConfigSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r ListCorsConfigsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListCorsConfigsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -5457,6 +5991,39 @@ func (r GetStageResponse) StatusCode() int {
 	return 0
 }
 
+type UpdateStageResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *StageSchema
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ValidationError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *AuthenticationError
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *PermissionDenied
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *ProviderError
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateStageResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateStageResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type DeployStageViewResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -5466,6 +6033,8 @@ type DeployStageViewResponse struct {
 	JSON401 *AuthenticationError
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *PermissionDenied
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponseSchema
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -5819,6 +6388,57 @@ func (c *ClientWithResponses) GetAuthenticatorWithResponse(ctx context.Context, 
 		return nil, err
 	}
 	return ParseGetAuthenticatorResponse(rsp)
+}
+
+// UpdateAuthenticatorWithBodyWithResponse Update Authenticator
+//
+// **Required permissions:**
+//
+// - `urn:action:api_gateway:authenticator:update`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /v2/api-gateway/authenticators/{authenticator_id}/ (the `UpdateAuthenticator` operationId).
+func (c *ClientWithResponses) UpdateAuthenticatorWithBodyWithResponse(ctx context.Context, authenticatorId core.UUID, params *UpdateAuthenticatorParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAuthenticatorResponse, error) {
+	rsp, err := c.UpdateAuthenticatorWithBody(ctx, authenticatorId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateAuthenticatorResponse(rsp)
+}
+
+// UpdateAuthenticatorWithResponse Update Authenticator
+//
+// **Required permissions:**
+//
+// - `urn:action:api_gateway:authenticator:update`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /v2/api-gateway/authenticators/{authenticator_id}/ (the `UpdateAuthenticator` operationId).
+func (c *ClientWithResponses) UpdateAuthenticatorWithResponse(ctx context.Context, authenticatorId core.UUID, params *UpdateAuthenticatorParams, body UpdateAuthenticatorJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAuthenticatorResponse, error) {
+	rsp, err := c.UpdateAuthenticator(ctx, authenticatorId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateAuthenticatorResponse(rsp)
+}
+
+// ListCorsConfigsWithResponse List Cors Configs
+//
+// **Required permissions:**
+//
+// - `urn:action:api_gateway:cors_config:list`
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/api-gateway/cors-configs/ (the `ListCorsConfigs` operationId).
+func (c *ClientWithResponses) ListCorsConfigsWithResponse(ctx context.Context, params *ListCorsConfigsParams, reqEditors ...RequestEditorFn) (*ListCorsConfigsResponse, error) {
+	rsp, err := c.ListCorsConfigs(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListCorsConfigsResponse(rsp)
 }
 
 // GetCorsConfigWithResponse Get Cors Config
@@ -6193,6 +6813,40 @@ func (c *ClientWithResponses) GetStageWithResponse(ctx context.Context, stageId 
 		return nil, err
 	}
 	return ParseGetStageResponse(rsp)
+}
+
+// UpdateStageWithBodyWithResponse Update Stage
+//
+// **Required permissions:**
+//
+// - `urn:action:api_gateway:stage:update`
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /v2/api-gateway/stages/{stage_id}/ (the `UpdateStage` operationId).
+func (c *ClientWithResponses) UpdateStageWithBodyWithResponse(ctx context.Context, stageId core.UUID, params *UpdateStageParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateStageResponse, error) {
+	rsp, err := c.UpdateStageWithBody(ctx, stageId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateStageResponse(rsp)
+}
+
+// UpdateStageWithResponse Update Stage
+//
+// **Required permissions:**
+//
+// - `urn:action:api_gateway:stage:update`
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /v2/api-gateway/stages/{stage_id}/ (the `UpdateStage` operationId).
+func (c *ClientWithResponses) UpdateStageWithResponse(ctx context.Context, stageId core.UUID, params *UpdateStageParams, body UpdateStageJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateStageResponse, error) {
+	rsp, err := c.UpdateStage(ctx, stageId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateStageResponse(rsp)
 }
 
 // DeployStageViewWithResponse Deploy Stage View
@@ -6766,6 +7420,128 @@ func ParseGetAuthenticatorResponse(rsp *http.Response) (*GetAuthenticatorRespons
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest AuthenticatorDetailSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateAuthenticatorResponse parses an HTTP response from a UpdateAuthenticatorWithResponse call
+func ParseUpdateAuthenticatorResponse(rsp *http.Response) (*UpdateAuthenticatorResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateAuthenticatorResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AuthenticatorSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListCorsConfigsResponse parses an HTTP response from a ListCorsConfigsWithResponse call
+func ParseListCorsConfigsResponse(rsp *http.Response) (*ListCorsConfigsResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListCorsConfigsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PagedCORSConfigSchema
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -7775,6 +8551,67 @@ func ParseGetStageResponse(rsp *http.Response) (*GetStageResponse, error) {
 	return response, nil
 }
 
+// ParseUpdateStageResponse parses an HTTP response from a UpdateStageWithResponse call
+func ParseUpdateStageResponse(rsp *http.Response) (*UpdateStageResponse, error) {
+	bodyBytes, err := core.ReadResponseBody(rsp)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateStageResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest StageSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ValidationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest AuthenticationError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest PermissionDenied
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest ProviderError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseDeployStageViewResponse parses an HTTP response from a DeployStageViewWithResponse call
 func ParseDeployStageViewResponse(rsp *http.Response) (*DeployStageViewResponse, error) {
 	bodyBytes, err := core.ReadResponseBody(rsp)
@@ -7812,6 +8649,13 @@ func ParseDeployStageViewResponse(rsp *http.Response) (*DeployStageViewResponse,
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
