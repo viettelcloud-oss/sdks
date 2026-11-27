@@ -93,6 +93,18 @@ func (c *Client) GetAuthenticator(ctx context.Context, AuthenticatorID core.UUID
 	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
 }
 
+// UpdateAuthenticator Update Authenticator
+//
+// PATCH /v2/api-gateway/authenticators/{authenticator_id}/
+func (c *Client) UpdateAuthenticator(ctx context.Context, AuthenticatorID core.UUID, params UpdateAuthenticatorParams, body AuthenticatorPartialUpdateSchema) (*AuthenticatorSchema, error) {
+	genParams := params
+	resp, err := c.gen.UpdateAuthenticatorWithResponse(ctx, AuthenticatorID, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
 // DeleteAuthenticator Delete Authenticator
 //
 // DELETE /v2/api-gateway/authenticators/{authenticator_id}/
@@ -201,6 +213,18 @@ func (c *Client) GetStage(ctx context.Context, StageID core.UUID, params GetStag
 	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
 }
 
+// UpdateStage Update Stage
+//
+// PATCH /v2/api-gateway/stages/{stage_id}/
+func (c *Client) UpdateStage(ctx context.Context, StageID core.UUID, params UpdateStageParams, body StagePartialUpdateSchema) (*StageSchema, error) {
+	genParams := params
+	resp, err := c.gen.UpdateStageWithResponse(ctx, StageID, &genParams, body)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
+}
+
 // DeleteStage Delete Stage
 //
 // DELETE /v2/api-gateway/stages/{stage_id}/
@@ -283,6 +307,18 @@ func (c *Client) DeleteRoute(ctx context.Context, RouteID core.UUID, params Dele
 		return err
 	}
 	return core.ParseEmptyResponse(resp.HTTPResponse, resp.Body, 204)
+}
+
+// ListCorsConfigs List Cors Configs
+//
+// GET /v2/api-gateway/cors-configs/
+func (c *Client) ListCorsConfigs(ctx context.Context, params ListCorsConfigsParams) (*PagedCORSConfigSchema, error) {
+	genParams := params
+	resp, err := c.gen.ListCorsConfigsWithResponse(ctx, &genParams)
+	if err != nil {
+		return nil, err
+	}
+	return core.ParseResponse(resp.HTTPResponse, resp.Body, resp.JSON200, 200)
 }
 
 // GetCorsConfig Get Cors Config
@@ -441,6 +477,21 @@ func (c *Client) ListRoutesIter(ctx context.Context, params ListRoutesParams) it
 			return core.Page[RouteSchema]{}, err
 		}
 		return core.Page[RouteSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
+	})
+}
+
+// ListCorsConfigsIter returns an iterator over all CORSConfigSchema pages.
+// Automatically advances pages until all results are exhausted.
+func (c *Client) ListCorsConfigsIter(ctx context.Context, params ListCorsConfigsParams) iter.Seq2[*CORSConfigSchema, error] {
+	return core.Paginate(ctx, func(ctx context.Context, page, size int) (core.Page[CORSConfigSchema], error) {
+		p := params
+		p.PageNumber = &page
+		p.PageSize = &size
+		pageResult, err := c.ListCorsConfigs(ctx, p)
+		if err != nil {
+			return core.Page[CORSConfigSchema]{}, err
+		}
+		return core.Page[CORSConfigSchema]{Count: pageResult.Count, Results: pageResult.Results}, nil
 	})
 }
 
